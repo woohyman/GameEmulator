@@ -1,6 +1,5 @@
 package nostalgia.framework.ui;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
@@ -9,7 +8,6 @@ import android.os.Environment;
 import android.provider.Settings;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 
 import com.blankj.utilcode.constant.PermissionConstants;
 import com.blankj.utilcode.util.PermissionUtils;
@@ -42,7 +40,7 @@ public class SplashActivity extends Activity {
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivityForResult(intent, GET_ALL_FILE_ACCESS);
             }
-        }else{
+        } else {
             Timer timer = new Timer();
             timer.schedule(new TimerTask() {
                 @Override
@@ -54,9 +52,9 @@ public class SplashActivity extends Activity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == GET_ALL_FILE_ACCESS && resultCode == RESULT_OK) {
+    protected void onStart() {
+        super.onStart();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && Environment.isExternalStorageManager()) {
             Intent intent = new Intent();
             intent.setAction(getString(R.string.action_gallery_page));
             startActivity(intent);
