@@ -4,13 +4,19 @@ import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.documentfile.provider.DocumentFile;
+
+import com.blankj.utilcode.util.StringUtils;
+import com.blankj.utilcode.util.UriUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -37,6 +43,7 @@ abstract public class BaseGameGalleryActivity extends AppCompatActivity
     protected boolean reloading = false;
     private RomsFinder romsFinder = null;
     private DatabaseHelper dbHelper = null;
+    private SharedPreferences sharedPreferences;
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @Override
@@ -58,6 +65,7 @@ abstract public class BaseGameGalleryActivity extends AppCompatActivity
             NLog.i(TAG, "Reinit DB " + androidVersion);
         }
         reloadGames = true;
+        sharedPreferences = getSharedPreferences("user", MODE_PRIVATE);
     }
 
     @Override
@@ -76,13 +84,45 @@ abstract public class BaseGameGalleryActivity extends AppCompatActivity
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        if (resultCode == RESULT_OK && requestCode == 0) {
+            if (romsFinder == null) {
+                reloadGames = false;
+                DocumentFile dfile = DocumentFile.fromTreeUri(this, data.getData());
+                File file = UriUtils.uri2File(dfile.getUri());
+                editor.putString("path", file.getAbsolutePath());
+                editor.commit();
+                romsFinder = new RomsFinder(exts, inZipExts, this, this, reloading, file);
+                romsFinder.start();
+            }
+        }
+    }
+
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     protected void reloadGames(boolean searchNew, File selectedFolder) {
+        String path = sharedPreferences.getString("path", "");
+        if (!StringUtils.isEmpty(path)) {
+            if (romsFinder == null) {
+                reloadGames = false;
+                File file = new File(path);
+                romsFinder = new RomsFinder(exts, inZipExts, this, this, reloading, file);
+                romsFinder.start();
+            }
+            return;
+        }
+
+        if (selectedFolder == null) {
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+            intent.addCategory(Intent.CATEGORY_DEFAULT);
+            startActivityForResult(intent, 0);
+        }
+
         if (romsFinder == null) {
-            reloadGames = false;
             reloading = searchNew;
-            romsFinder = new RomsFinder(exts, inZipExts, this, this, searchNew, selectedFolder);
-            romsFinder.start();
         }
     }
 
