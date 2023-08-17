@@ -11,7 +11,6 @@ import android.widget.ImageView;
 import java.lang.ref.WeakReference;
 
 import nostalgia.framework.Emulator;
-import nostalgia.framework.EmulatorController;
 import nostalgia.framework.GfxProfile;
 import nostalgia.framework.R;
 import nostalgia.framework.base.EmulatorActivity;

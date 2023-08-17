@@ -7,8 +7,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import nostalgia.framework.BasicEmulatorInfo;
-import nostalgia.framework.EmulatorController;
-import nostalgia.framework.EmulatorInfo;
+import nostalgia.framework.controllers.EmulatorController;
+import nostalgia.framework.data.entity.EmulatorInfo;
 import nostalgia.framework.GfxProfile;
 import nostalgia.framework.SfxProfile;
 import nostalgia.framework.SfxProfile.SoundEncoding;

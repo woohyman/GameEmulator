@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import nostalgia.framework.GfxProfile;
 import nostalgia.framework.R;
-import nostalgia.framework.SlotInfo;
+import nostalgia.framework.data.entity.SlotInfo;
 import nostalgia.framework.base.EmulatorUtils;
 import nostalgia.framework.base.GameMenu;
 import nostalgia.framework.base.GameMenu.GameMenuItem;
@@ -50,7 +50,7 @@ public class ScreenViewPortSettingsActivity extends AppCompatActivity
         if (games != null) {
             SlotInfo info = SlotUtils.getSlot(EmulatorUtils.getBaseDir(this),
                     games.checksum, 0);
-            lastGameScreenshot = info.screenShot;
+            lastGameScreenshot = info.getScreenShot();
         }
 
         gfxProfile = PreferenceUtil.getLastGfxProfile(this);

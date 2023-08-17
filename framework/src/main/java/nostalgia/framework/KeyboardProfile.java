@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import nostalgia.framework.controllers.EmulatorController;
 import nostalgia.framework.controllers.KeyboardController;
 import nostalgia.framework.utils.NLog;
 

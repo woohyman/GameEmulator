@@ -36,7 +36,7 @@ import java.util.Map.Entry;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import nostalgia.framework.EmulatorController;
+import nostalgia.framework.controllers.EmulatorController;
 import nostalgia.framework.R;
 import nostalgia.framework.base.EmulatorHolder;
 import nostalgia.framework.base.ViewPort;

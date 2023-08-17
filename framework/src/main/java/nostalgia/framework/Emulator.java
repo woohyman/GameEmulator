@@ -4,6 +4,8 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 
 import nostalgia.framework.data.database.GameDescription;
+import nostalgia.framework.data.entity.EmulatorInfo;
+import nostalgia.framework.data.entity.GameInfo;
 
 public interface Emulator {
 

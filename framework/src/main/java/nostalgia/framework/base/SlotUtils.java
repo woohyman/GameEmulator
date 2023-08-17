@@ -11,7 +11,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import nostalgia.framework.SlotInfo;
+import nostalgia.framework.data.entity.SlotInfo;
 import nostalgia.framework.utils.NLog;
 
 public class SlotUtils {
@@ -59,12 +59,12 @@ public class SlotUtils {
         SlotInfo slot = new SlotInfo();
         String prefix = baseDir + "/" + md5 + ".";
         File file = new File(prefix + idx + SLOT_SUFFIX);
-        slot.isUsed = file.exists();
-        slot.lastModified = slot.isUsed ? file.lastModified() : -1;
-        slot.path = file.getAbsolutePath();
-        slot.id = idx;
+        slot.setUsed(file.exists());
+        slot.setLastModified(slot.isUsed() ? file.lastModified() : -1);
+        slot.setPath(file.getAbsolutePath());
+        slot.setId(idx);
 
-        if (slot.isUsed) {
+        if (slot.isUsed()) {
             File screenShot = new File(prefix + idx + SCREENSHOT_SUFFIX);
 
             if (screenShot.exists()) {
@@ -90,7 +90,7 @@ public class SlotUtils {
                                 new ColorMatrix(matrix)));
                         c.drawBitmap(bitmap, 0, 0, paint);
                         bitmap.recycle();
-                        slot.screenShot = newScreenshot;
+                        slot.setScreenShot(newScreenshot);
                     }
 
                 } catch (OutOfMemoryError e) {

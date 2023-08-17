@@ -34,7 +34,7 @@ import java.util.List;
 
 import nostalgia.framework.BaseApplication;
 import nostalgia.framework.Emulator;
-import nostalgia.framework.EmulatorController;
+import nostalgia.framework.controllers.EmulatorController;
 import nostalgia.framework.EmulatorException;
 import nostalgia.framework.EmulatorRunner;
 import nostalgia.framework.R;

@@ -2,7 +2,7 @@ package nostalgia.framework.base;
 
 import java.lang.reflect.Method;
 
-import nostalgia.framework.EmulatorInfo;
+import nostalgia.framework.data.entity.EmulatorInfo;
 
 public class EmulatorHolder {
 

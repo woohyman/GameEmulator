@@ -32,7 +32,7 @@ public class Manager extends EmulatorRunner {
             throw new EmulatorException("game not loaded");
         }
 
-        String md5 = emulator.getLoadedGame().md5;
+        String md5 = emulator.getLoadedGame().getMd5();
         String base = EmulatorUtils.getBaseDir(context);
         String source = SlotUtils.getSlotPath(base, md5, 0);
         String target = SlotUtils.getSlotPath(base, md5, slot);

@@ -22,7 +22,7 @@ import java.util.Date;
 import java.util.List;
 
 import nostalgia.framework.R;
-import nostalgia.framework.SlotInfo;
+import nostalgia.framework.data.entity.SlotInfo;
 import nostalgia.framework.base.SlotUtils;
 import nostalgia.framework.data.database.GameDescription;
 import nostalgia.framework.ui.widget.PopupMenu;
@@ -51,8 +51,8 @@ public class SlotSelectionActivity extends AppCompatActivity {
                           String messageS, final String dateS, final String timeS) {
 
         final View slotView = slots[idx];
-        final boolean isUsed = slotInfo.isUsed;
-        Bitmap screenshotBitmap = slotInfo.screenShot;
+        final boolean isUsed = slotInfo.isUsed();
+        Bitmap screenshotBitmap = slotInfo.getScreenShot();
         TextView label = slotView.findViewById(R.id.row_slot_label);
         TextView message = slotView.findViewById(R.id.row_slot_message);
         TextView date = slotView.findViewById(R.id.row_slot_date);
@@ -136,20 +136,20 @@ public class SlotSelectionActivity extends AppCompatActivity {
         for (int i = 0; i < SlotUtils.NUM_SLOTS; i++) {
             String message = "EMPTY";
             SlotInfo slotInfo = slotInfos.get(i);
-            if (slotInfo.isUsed) {
+            if (slotInfo.isUsed()) {
                 message = "USED";
             }
             String label = "SLOT  " + (i + 1);
-            Date time = new Date(slotInfo.lastModified);
-            String dateString = slotInfo.lastModified == -1 ? emptyDate : dateFormat.format(time);
-            String timeString = slotInfo.lastModified == -1 ? "--:--" : timeFormat.format(time);
+            Date time = new Date(slotInfo.getLastModified());
+            String dateString = slotInfo.getLastModified() == -1 ? emptyDate : dateFormat.format(time);
+            String timeString = slotInfo.getLastModified() == -1 ? "--:--" : timeFormat.format(time);
             initSlot(slotInfo, i, label, message, dateString, timeString);
 
-            if (focusTime < slotInfo.lastModified) {
+            if (focusTime < slotInfo.getLastModified()) {
                 loadFocusIdx = i;
-                focusTime = slotInfo.lastModified;
+                focusTime = slotInfo.getLastModified();
             }
-            if (!slotInfo.isUsed && saveFocusIdx == -1) {
+            if (!slotInfo.isUsed() && saveFocusIdx == -1) {
                 saveFocusIdx = i;
             }
         }

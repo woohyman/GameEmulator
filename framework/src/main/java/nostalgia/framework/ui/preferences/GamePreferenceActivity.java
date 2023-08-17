@@ -33,7 +33,7 @@ public class GamePreferenceActivity extends AppCompatPreferenceActivity {
 
         if (profiles.size() > 1) {
             CharSequence[] res =
-                    new CharSequence[EmulatorHolder.getInfo().getAvailableGfxProfiles().size() + 1];
+                    new CharSequence[EmulatorHolder.getInfo().getAvailableSfxProfiles().size() + 1];
             res[0] = "Auto";
             int i = 1;
             for (GfxProfile gfx : profiles) {

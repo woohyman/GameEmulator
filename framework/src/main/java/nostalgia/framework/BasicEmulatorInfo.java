@@ -1,6 +1,8 @@
 package nostalgia.framework;
 
+import nostalgia.framework.controllers.EmulatorController;
 import nostalgia.framework.controllers.KeyboardController;
+import nostalgia.framework.data.entity.EmulatorInfo;
 
 abstract public class BasicEmulatorInfo implements EmulatorInfo {
     public boolean hasZapper() {
