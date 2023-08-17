@@ -8,7 +8,7 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 
 import nostalgia.framework.R;
-import nostalgia.framework.ui.gamegallery.GameDescription;
+import nostalgia.framework.data.database.GameDescription;
 
 
 public class GamePreferenceFragment extends PreferenceFragment {

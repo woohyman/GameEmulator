@@ -16,8 +16,8 @@ import android.view.View;
 import nostalgia.framework.Emulator;
 import nostalgia.framework.EmulatorController;
 import nostalgia.framework.R;
-import nostalgia.framework.ui.gamegallery.GameDescription;
-import nostalgia.framework.ui.preferences.PreferenceUtil;
+import nostalgia.framework.data.database.GameDescription;
+import nostalgia.framework.utils.PreferenceUtil;
 
 public class DynamicDPad implements EmulatorController {
 

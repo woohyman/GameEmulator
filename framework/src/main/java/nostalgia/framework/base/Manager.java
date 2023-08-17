@@ -9,7 +9,7 @@ import nostalgia.framework.EmulatorException;
 import nostalgia.framework.EmulatorRunner;
 import nostalgia.framework.R;
 import nostalgia.framework.ui.cheats.Cheat;
-import nostalgia.framework.ui.gamegallery.GameDescription;
+import nostalgia.framework.data.database.GameDescription;
 import nostalgia.framework.utils.FileUtils;
 import nostalgia.framework.utils.NLog;
 

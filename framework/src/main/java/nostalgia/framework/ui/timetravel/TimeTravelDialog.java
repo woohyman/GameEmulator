@@ -17,7 +17,7 @@ import java.util.Locale;
 import nostalgia.framework.EmulatorException;
 import nostalgia.framework.R;
 import nostalgia.framework.base.Manager;
-import nostalgia.framework.ui.gamegallery.GameDescription;
+import nostalgia.framework.data.database.GameDescription;
 
 public class TimeTravelDialog extends Dialog implements OnSeekBarChangeListener {
 

@@ -3,9 +3,10 @@ package nostalgia.framework.ui.gamegallery;
 import java.io.File;
 import java.util.ArrayList;
 
-import nostalgia.framework.utils.annotations.Column;
-import nostalgia.framework.utils.annotations.ObjectFromOtherTable;
-import nostalgia.framework.utils.annotations.Table;
+import nostalgia.framework.data.database.GameDescription;
+import nostalgia.framework.annotations.Column;
+import nostalgia.framework.annotations.ObjectFromOtherTable;
+import nostalgia.framework.annotations.Table;
 
 @Table
 public class ZipRomFile {

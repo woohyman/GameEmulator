@@ -1,4 +1,4 @@
-package nostalgia.framework.ui.gamegallery;
+package nostalgia.framework.data.database;
 
 
 import androidx.annotation.NonNull;
@@ -7,8 +7,8 @@ import java.io.File;
 import java.io.Serializable;
 
 import nostalgia.framework.utils.EmuUtils;
-import nostalgia.framework.utils.annotations.Column;
-import nostalgia.framework.utils.annotations.Table;
+import nostalgia.framework.annotations.Column;
+import nostalgia.framework.annotations.Table;
 
 @Table
 public class GameDescription implements Serializable, Comparable<GameDescription> {
@@ -20,6 +20,9 @@ public class GameDescription implements Serializable, Comparable<GameDescription
 
     @Column
     public String path = "";
+
+    @Column
+    public String url = "";
 
     @Column(hasIndex = true)
     public String checksum = "";

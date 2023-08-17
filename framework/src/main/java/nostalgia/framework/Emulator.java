@@ -3,7 +3,7 @@ package nostalgia.framework;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 
-import nostalgia.framework.ui.gamegallery.GameDescription;
+import nostalgia.framework.data.database.GameDescription;
 
 public interface Emulator {
 

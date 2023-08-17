@@ -12,8 +12,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import nostalgia.framework.base.BatterySaveUtils;
 import nostalgia.framework.base.Benchmark;
 import nostalgia.framework.base.EmulatorUtils;
-import nostalgia.framework.ui.gamegallery.GameDescription;
-import nostalgia.framework.ui.preferences.PreferenceUtil;
+import nostalgia.framework.data.database.GameDescription;
+import nostalgia.framework.utils.PreferenceUtil;
 import nostalgia.framework.utils.FileUtils;
 import nostalgia.framework.utils.NLog;
 

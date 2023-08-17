@@ -14,10 +14,11 @@ import nostalgia.framework.base.GameMenu;
 import nostalgia.framework.base.GameMenu.GameMenuItem;
 import nostalgia.framework.base.GameMenu.OnGameMenuListener;
 import nostalgia.framework.base.SlotUtils;
-import nostalgia.framework.ui.gamegallery.GameDescription;
+import nostalgia.framework.data.database.GameDescription;
 import nostalgia.framework.ui.multitouchbutton.MultitouchLayer;
 import nostalgia.framework.ui.multitouchbutton.MultitouchLayer.EDIT_MODE;
 import nostalgia.framework.utils.DatabaseHelper;
+import nostalgia.framework.utils.PreferenceUtil;
 
 public class TouchControllerSettingsActivity extends AppCompatActivity implements
         OnGameMenuListener {

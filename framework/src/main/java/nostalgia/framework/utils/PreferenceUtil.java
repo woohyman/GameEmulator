@@ -1,4 +1,4 @@
-package nostalgia.framework.ui.preferences;
+package nostalgia.framework.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -19,7 +19,7 @@ import nostalgia.framework.Emulator;
 import nostalgia.framework.GfxProfile;
 import nostalgia.framework.base.EmulatorHolder;
 import nostalgia.framework.base.ViewPort;
-import nostalgia.framework.ui.gamegallery.GameDescription;
+import nostalgia.framework.data.database.GameDescription;
 
 public class PreferenceUtil {
 

@@ -9,8 +9,8 @@ import androidx.core.view.GestureDetectorCompat;
 import nostalgia.framework.Emulator;
 import nostalgia.framework.EmulatorController;
 import nostalgia.framework.base.EmulatorActivity;
-import nostalgia.framework.ui.gamegallery.GameDescription;
-import nostalgia.framework.ui.preferences.PreferenceUtil;
+import nostalgia.framework.data.database.GameDescription;
+import nostalgia.framework.utils.PreferenceUtil;
 
 public class QuickSaveController implements EmulatorController {
 

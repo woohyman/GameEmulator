@@ -41,7 +41,7 @@ import nostalgia.framework.R;
 import nostalgia.framework.base.EmulatorHolder;
 import nostalgia.framework.base.ViewPort;
 import nostalgia.framework.base.ViewUtils;
-import nostalgia.framework.ui.preferences.PreferenceUtil;
+import nostalgia.framework.utils.PreferenceUtil;
 import nostalgia.framework.utils.EmuUtils;
 import nostalgia.framework.utils.NLog;
 

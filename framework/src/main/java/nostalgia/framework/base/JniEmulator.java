@@ -24,7 +24,7 @@ import nostalgia.framework.GfxProfile;
 import nostalgia.framework.KeyboardProfile;
 import nostalgia.framework.R;
 import nostalgia.framework.SfxProfile;
-import nostalgia.framework.ui.gamegallery.GameDescription;
+import nostalgia.framework.data.database.GameDescription;
 import nostalgia.framework.utils.NLog;
 import nostalgia.framework.utils.EmuUtils;
 

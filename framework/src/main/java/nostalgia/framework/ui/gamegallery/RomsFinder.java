@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import nostalgia.framework.data.database.GameDescription;
 import nostalgia.framework.utils.DatabaseHelper;
 import nostalgia.framework.utils.EmuUtils;
 import nostalgia.framework.utils.NLog;

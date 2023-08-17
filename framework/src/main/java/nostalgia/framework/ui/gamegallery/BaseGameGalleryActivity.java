@@ -26,6 +26,7 @@ import java.util.Set;
 import nostalgia.framework.Emulator;
 import nostalgia.framework.R;
 import nostalgia.framework.base.EmulatorActivity;
+import nostalgia.framework.data.database.GameDescription;
 import nostalgia.framework.ui.gamegallery.RomsFinder.OnRomsFinderListener;
 import nostalgia.framework.utils.DatabaseHelper;
 import nostalgia.framework.utils.DialogUtils;

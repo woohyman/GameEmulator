@@ -1,4 +1,4 @@
-package nostalgia.framework.ui.gamegallery;
+package nostalgia.framework.ui.gamegallery.adapter;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -17,7 +17,9 @@ import com.blankj.utilcode.util.Utils;
 import java.util.ArrayList;
 
 import nostalgia.framework.R;
-import nostalgia.framework.ui.gamegallery.GalleryAdapter.RowItem;
+import nostalgia.framework.data.database.GameDescription;
+import nostalgia.framework.data.entity.RowItem;
+import nostalgia.framework.rom.DownloaderDelegate;
 import nostalgia.framework.utils.NLog;
 
 public class GalleryPagerAdapter extends PagerAdapter {
@@ -29,8 +31,8 @@ public class GalleryPagerAdapter extends PagerAdapter {
             GalleryAdapter.SORT_TYPES.SORT_BY_LAST_PLAYED,
     };
 
-    private int[] yOffsets = new int[tabTypes.length+1];
-    private final ListView[] lists = new ListView[tabTypes.length+1];
+    private int[] yOffsets = new int[tabTypes.length + 1];
+    private final ListView[] lists = new ListView[tabTypes.length + 1];
     private final GalleryAdapter[] listAdapters = new GalleryAdapter[tabTypes.length];
     private final Activity activity;
     private final OnItemClickListener listener;
@@ -52,7 +54,7 @@ public class GalleryPagerAdapter extends PagerAdapter {
     @Override
     public CharSequence getPageTitle(int position) {
         if (position == 0) {
-            return "应用商店";
+            return "游戏商店";
         } else {
             return tabTypes[position - 1].getTabName();
         }
@@ -73,12 +75,24 @@ public class GalleryPagerAdapter extends PagerAdapter {
         if (position == 0) {
             ListAdapter adapter = new AppStoreAdapter(Utils.getApp());
             list.setAdapter(adapter);
+            list.setOnItemClickListener((arg0, arg1, arg2, arg3) -> {
+                RowItem item = (RowItem) adapter.getItem(arg2);
+                if (item.getGame().path.isEmpty()) {
+                    new DownloaderDelegate(
+                            listener,
+                            arg1.findViewById(R.id.download_progressBar),
+                            item.getGame()).startDownload();
+                } else {
+                    listener.onItemClick(item.getGame());
+                }
+
+            });
         } else {
             ListAdapter adapter = listAdapters[position - 1];
             list.setAdapter(adapter);
             list.setOnItemClickListener((arg0, arg1, arg2, arg3) -> {
                 RowItem item = (RowItem) adapter.getItem(arg2);
-                listener.onItemClick(item.game);
+                listener.onItemClick(item.getGame());
             });
         }
         list.setOnScrollListener(new OnScrollListener() {

@@ -24,6 +24,7 @@ import java.util.List;
 import nostalgia.framework.R;
 import nostalgia.framework.SlotInfo;
 import nostalgia.framework.base.SlotUtils;
+import nostalgia.framework.data.database.GameDescription;
 import nostalgia.framework.ui.widget.PopupMenu;
 import nostalgia.framework.utils.NLog;
 

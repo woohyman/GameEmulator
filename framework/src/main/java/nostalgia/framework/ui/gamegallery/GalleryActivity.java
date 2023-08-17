@@ -22,10 +22,12 @@ import java.util.ArrayList;
 
 import nostalgia.framework.R;
 import nostalgia.framework.base.EmulatorActivity;
-import nostalgia.framework.ui.gamegallery.GalleryPagerAdapter.OnItemClickListener;
+import nostalgia.framework.data.database.GameDescription;
+import nostalgia.framework.ui.gamegallery.adapter.GalleryPagerAdapter;
+import nostalgia.framework.ui.gamegallery.adapter.GalleryPagerAdapter.OnItemClickListener;
 import nostalgia.framework.ui.preferences.GeneralPreferenceActivity;
 import nostalgia.framework.ui.preferences.GeneralPreferenceFragment;
-import nostalgia.framework.ui.preferences.PreferenceUtil;
+import nostalgia.framework.utils.PreferenceUtil;
 import nostalgia.framework.utils.DatabaseHelper;
 import nostalgia.framework.utils.DialogUtils;
 import nostalgia.framework.utils.EmuUtils;

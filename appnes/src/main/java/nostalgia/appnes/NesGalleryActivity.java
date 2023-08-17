@@ -12,7 +12,7 @@ import nostalgia.framework.Emulator;
 import nostalgia.framework.base.EmulatorActivity;
 import nostalgia.framework.base.OpenGLTestActivity;
 import nostalgia.framework.ui.gamegallery.GalleryActivity;
-import nostalgia.framework.ui.preferences.PreferenceUtil;
+import nostalgia.framework.utils.PreferenceUtil;
 import nostalgia.framework.utils.EmuUtils;
 import nostalgia.framework.utils.NLog;
 

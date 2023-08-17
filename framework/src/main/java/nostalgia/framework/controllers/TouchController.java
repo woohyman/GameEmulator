@@ -15,13 +15,13 @@ import nostalgia.framework.EmulatorController;
 import nostalgia.framework.GfxProfile;
 import nostalgia.framework.R;
 import nostalgia.framework.base.EmulatorActivity;
-import nostalgia.framework.ui.gamegallery.GameDescription;
+import nostalgia.framework.data.database.GameDescription;
 import nostalgia.framework.ui.multitouchbutton.MultitouchBtnInterface;
 import nostalgia.framework.ui.multitouchbutton.MultitouchButton;
 import nostalgia.framework.ui.multitouchbutton.MultitouchImageButton;
 import nostalgia.framework.ui.multitouchbutton.MultitouchLayer;
 import nostalgia.framework.ui.multitouchbutton.OnMultitouchEventListener;
-import nostalgia.framework.ui.preferences.PreferenceUtil;
+import nostalgia.framework.utils.PreferenceUtil;
 import nostalgia.framework.utils.EmuUtils;
 
 public class TouchController implements EmulatorController, OnMultitouchEventListener {

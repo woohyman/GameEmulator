@@ -6,7 +6,7 @@ import java.util.HashMap;
 
 import nostalgia.framework.Emulator;
 import nostalgia.framework.GfxProfile;
-import nostalgia.framework.ui.preferences.PreferenceUtil;
+import nostalgia.framework.utils.PreferenceUtil;
 
 public class ViewUtils {
     private ViewUtils() {

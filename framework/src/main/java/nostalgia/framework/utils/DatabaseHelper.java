@@ -17,11 +17,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
-import nostalgia.framework.ui.gamegallery.GameDescription;
+import nostalgia.framework.data.database.GameDescription;
 import nostalgia.framework.ui.gamegallery.ZipRomFile;
-import nostalgia.framework.utils.annotations.Column;
-import nostalgia.framework.utils.annotations.ObjectFromOtherTable;
-import nostalgia.framework.utils.annotations.Table;
+import nostalgia.framework.annotations.Column;
+import nostalgia.framework.annotations.ObjectFromOtherTable;
+import nostalgia.framework.annotations.Table;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 

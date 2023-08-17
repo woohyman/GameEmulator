@@ -16,7 +16,7 @@ import nostalgia.framework.SfxProfile.SoundEncoding;
 import nostalgia.framework.base.JniBridge;
 import nostalgia.framework.base.JniEmulator;
 import nostalgia.framework.controllers.KeyboardController;
-import nostalgia.framework.ui.gamegallery.GameDescription;
+import nostalgia.framework.data.database.GameDescription;
 
 public class GGEmulator extends JniEmulator {
 

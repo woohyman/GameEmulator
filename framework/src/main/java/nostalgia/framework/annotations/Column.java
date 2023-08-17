@@ -1,4 +1,4 @@
-package nostalgia.framework.utils.annotations;
+package nostalgia.framework.annotations;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -11,7 +11,14 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 @Inherited
-public @interface ObjectFromOtherTable {
-    String columnName();
+public @interface Column {
+    String columnName() default "";
 
+    boolean isPrimaryKey() default false;
+
+    boolean allowNull() default true;
+
+    boolean unique() default false;
+
+    boolean hasIndex() default false;
 }

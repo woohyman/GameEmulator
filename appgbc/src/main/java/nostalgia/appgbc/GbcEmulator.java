@@ -15,7 +15,7 @@ import nostalgia.framework.SfxProfile;
 import nostalgia.framework.SfxProfile.SoundEncoding;
 import nostalgia.framework.base.JniBridge;
 import nostalgia.framework.base.JniEmulator;
-import nostalgia.framework.ui.gamegallery.GameDescription;
+import nostalgia.framework.data.database.GameDescription;
 
 public class GbcEmulator extends JniEmulator {
 

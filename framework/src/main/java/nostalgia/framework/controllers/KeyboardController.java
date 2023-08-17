@@ -9,7 +9,7 @@ import nostalgia.framework.Emulator;
 import nostalgia.framework.EmulatorController;
 import nostalgia.framework.KeyboardProfile;
 import nostalgia.framework.base.EmulatorActivity;
-import nostalgia.framework.ui.gamegallery.GameDescription;
+import nostalgia.framework.data.database.GameDescription;
 import nostalgia.framework.utils.NLog;
 
 public class KeyboardController implements EmulatorController {

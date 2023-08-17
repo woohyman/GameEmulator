@@ -43,7 +43,7 @@ import javax.microedition.khronos.egl.EGLDisplay;
 
 import nostalgia.framework.base.EmulatorUtils;
 import nostalgia.framework.base.SlotUtils;
-import nostalgia.framework.ui.gamegallery.GameDescription;
+import nostalgia.framework.data.database.GameDescription;
 
 public class EmuUtils {
 
