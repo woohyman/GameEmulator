@@ -5,6 +5,7 @@
         <item>Latest</item>
         <item>Hottest</item>
         <item>History</item>
+        <item>AppStore</item>
     </string-array>
     <string-array name="general_pref_rotation_list">
         <item>Auto</item>

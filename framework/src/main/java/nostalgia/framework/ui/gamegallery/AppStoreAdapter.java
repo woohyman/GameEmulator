@@ -21,8 +21,9 @@ import java.util.HashMap;
 import java.util.Set;
 
 import nostalgia.framework.R;
+import nostalgia.framework.utils.NLog;
 
-public class GalleryAdapter extends BaseAdapter implements SectionIndexer {
+public class AppStoreAdapter extends BaseAdapter implements SectionIndexer {
 
     private static final String[] names = Utils.getApp().getResources().getStringArray(R.array.gallery_page_tab_names);
 
@@ -46,6 +47,11 @@ public class GalleryAdapter extends BaseAdapter implements SectionIndexer {
             public String getTabName() {
                 return names[3];
             }
+        },
+        DOWNLOAD_BY_REMOTE {
+            public String getTabName() {
+                return names[4];
+            }
         };
 
         public abstract String getTabName();
@@ -60,7 +66,7 @@ public class GalleryAdapter extends BaseAdapter implements SectionIndexer {
     private ArrayList<GameDescription> games = new ArrayList<>();
     private ArrayList<RowItem> filterGames = new ArrayList<>();
     private int sumRuns = 0;
-    private SORT_TYPES sortType = SORT_TYPES.SORT_BY_NAME_ALPHA;
+    private SORT_TYPES sortType = SORT_TYPES.DOWNLOAD_BY_REMOTE;
 
     private Comparator<GameDescription> nameComparator = (lhs, rhs) ->
             lhs.getSortName().compareTo(rhs.getSortName());
@@ -81,10 +87,22 @@ public class GalleryAdapter extends BaseAdapter implements SectionIndexer {
     private Comparator<GameDescription> playedCountComparator = (lhs, rhs) ->
             -lhs.runCount + rhs.runCount;
 
-    public GalleryAdapter(Context context) {
+    public AppStoreAdapter(Context context) {
         this.context = context;
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mainColor = context.getResources().getColor(R.color.main_color);
+        GameDescription gameDescription = new GameDescription();
+        gameDescription.name = "坦克";
+        games.add(gameDescription);
+
+        for (GameDescription game : games) {
+            sumRuns = game.runCount > sumRuns ? game.runCount : sumRuns;
+            String name = game.getCleanName().toLowerCase();
+            RowItem item = new RowItem();
+            item.game = game;
+            item.firstLetter = name.charAt(0);
+            filterGames.add(item);
+        }
     }
 
     @Override
@@ -121,77 +139,6 @@ public class GalleryAdapter extends BaseAdapter implements SectionIndexer {
         name.setGravity(Gravity.CENTER_VERTICAL);
         bck.setImageResource(R.drawable.game_item_small_bck);
         return convertView;
-    }
-
-    public void setFilter(String filter) {
-        this.filter = filter.toLowerCase();
-        filterGames();
-    }
-
-    public void setGames(ArrayList<GameDescription> games) {
-        this.games = new ArrayList<>(games);
-        filterGames();
-    }
-
-    public int addGames(ArrayList<GameDescription> newGames) {
-        for (GameDescription game : newGames) {
-            if (!games.contains(game)) {
-                games.add(game);
-            }
-        }
-        filterGames();
-        return games.size();
-    }
-
-    private void filterGames() {
-        filterGames.clear();
-        switch (sortType) {
-            case SORT_BY_NAME_ALPHA:
-                Collections.sort(games, nameComparator);
-                break;
-            case SORT_BY_INSERT_DATE:
-                Collections.sort(games, insertDateComparator);
-                break;
-            case SORT_BY_MOST_PLAYED:
-                Collections.sort(games, playedCountComparator);
-                break;
-            case SORT_BY_LAST_PLAYED:
-                Collections.sort(games, lastPlayedDateComparator);
-                break;
-        }
-        String containsFilter = " " + filter;
-        sumRuns = 0;
-        for (GameDescription game : games) {
-            sumRuns = game.runCount > sumRuns ? game.runCount : sumRuns;
-            String name = game.getCleanName().toLowerCase();
-            boolean secondCondition = true;
-            if (sortType == SORT_TYPES.SORT_BY_LAST_PLAYED || sortType == SORT_TYPES.SORT_BY_MOST_PLAYED) {
-                secondCondition = game.lastGameTime != 0;
-            }
-            if ((name.startsWith(filter) || name.contains(containsFilter)) & secondCondition) {
-                RowItem item = new RowItem();
-                item.game = game;
-                item.firstLetter = name.charAt(0);
-                filterGames.add(item);
-            }
-        }
-
-        alphaIndexer.clear();
-        if (sortType == SORT_TYPES.SORT_BY_NAME_ALPHA) {
-            for (int i = 0; i < filterGames.size(); i++) {
-                RowItem item = filterGames.get(i);
-                char ch = item.firstLetter;
-                if (!alphaIndexer.containsKey(ch)) {
-                    alphaIndexer.put(ch, i);
-                }
-            }
-        }
-        super.notifyDataSetChanged();
-    }
-
-    public void setSortType(SORT_TYPES sortType) {
-        this.sortType = sortType;
-        filterGames();
     }
 
     @Override
@@ -235,7 +182,7 @@ public class GalleryAdapter extends BaseAdapter implements SectionIndexer {
 
     @Override
     public void notifyDataSetChanged() {
-        filterGames();
+
     }
 
     public class RowItem {

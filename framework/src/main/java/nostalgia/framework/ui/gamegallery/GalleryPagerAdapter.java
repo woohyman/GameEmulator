@@ -6,9 +6,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 
+import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
+
+import com.blankj.utilcode.util.Utils;
 
 import java.util.ArrayList;
 
@@ -19,36 +23,39 @@ import nostalgia.framework.utils.NLog;
 public class GalleryPagerAdapter extends PagerAdapter {
 
     public static final String EXTRA_POSITIONS = "EXTRA_POSITIONS";
-    private final static int[] SORT_TYPES = new int[]{
-            GalleryAdapter.SORT_BY_NAME_ALPHA,
-            GalleryAdapter.SORT_BY_LAST_PLAYED,
-            GalleryAdapter.SORT_BY_MOST_PLAYED,
+
+    private final GalleryAdapter.SORT_TYPES[] tabTypes = {
+            GalleryAdapter.SORT_TYPES.SORT_BY_NAME_ALPHA,
+            GalleryAdapter.SORT_TYPES.SORT_BY_LAST_PLAYED,
     };
-    private final String[] mTabTitles;
-    private int[] yOffsets = new int[SORT_TYPES.length];
-    private ListView[] lists = new ListView[SORT_TYPES.length];
-    private GalleryAdapter[] listAdapters = new GalleryAdapter[SORT_TYPES.length];
-    private Activity activity;
-    private OnItemClickListener listener;
+
+    private int[] yOffsets = new int[tabTypes.length+1];
+    private final ListView[] lists = new ListView[tabTypes.length+1];
+    private final GalleryAdapter[] listAdapters = new GalleryAdapter[tabTypes.length];
+    private final Activity activity;
+    private final OnItemClickListener listener;
 
     public GalleryPagerAdapter(Activity activity, OnItemClickListener listener) {
         this.activity = activity;
         this.listener = listener;
-        mTabTitles = activity.getResources().getStringArray(R.array.gallery_page_tab_names);
-        for (int i = 0; i < SORT_TYPES.length; i++) {
+        for (int i = 0; i < tabTypes.length; i++) {
             GalleryAdapter adapter = listAdapters[i] = new GalleryAdapter(activity);
-            adapter.setSortType(SORT_TYPES[i]);
+            adapter.setSortType(tabTypes[i]);
         }
     }
 
     @Override
     public int getCount() {
-        return SORT_TYPES.length;
+        return tabTypes.length + 1;
     }
 
     @Override
     public CharSequence getPageTitle(int position) {
-        return mTabTitles[SORT_TYPES[position]];
+        if (position == 0) {
+            return "应用商店";
+        } else {
+            return tabTypes[position - 1].getTabName();
+        }
     }
 
     @Override
@@ -56,17 +63,24 @@ public class GalleryPagerAdapter extends PagerAdapter {
         return arg0.equals(arg1);
     }
 
+    @NonNull
     @Override
     public Object instantiateItem(ViewGroup container, final int position) {
         final ListView list = new ListView(activity);
         list.setCacheColorHint(0x00000000);
         list.setFastScrollEnabled(true);
         list.setSelector(R.drawable.row_game_item_list_selector);
-        list.setAdapter(listAdapters[position]);
-        list.setOnItemClickListener((arg0, arg1, arg2, arg3) -> {
-            RowItem item = (RowItem) listAdapters[position].getItem(arg2);
-            listener.onItemClick(item.game);
-        });
+        if (position == 0) {
+            ListAdapter adapter = new AppStoreAdapter(Utils.getApp());
+            list.setAdapter(adapter);
+        } else {
+            ListAdapter adapter = listAdapters[position - 1];
+            list.setAdapter(adapter);
+            list.setOnItemClickListener((arg0, arg1, arg2, arg3) -> {
+                RowItem item = (RowItem) adapter.getItem(arg2);
+                listener.onItemClick(item.game);
+            });
+        }
         list.setOnScrollListener(new OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
@@ -115,7 +129,7 @@ public class GalleryPagerAdapter extends PagerAdapter {
 
     @Override
     public void notifyDataSetChanged() {
-        for (int i = 0; i < SORT_TYPES.length; i++) {
+        for (int i = 0; i < tabTypes.length; i++) {
             GalleryAdapter adapter = listAdapters[i];
             adapter.notifyDataSetChanged();
             if (lists[i] != null)
@@ -132,7 +146,7 @@ public class GalleryPagerAdapter extends PagerAdapter {
         if (inState != null) {
             yOffsets = inState.getIntArray(EXTRA_POSITIONS);
             if (yOffsets == null)
-                yOffsets = new int[mTabTitles.length];
+                yOffsets = new int[listAdapters.length];
         }
     }
 

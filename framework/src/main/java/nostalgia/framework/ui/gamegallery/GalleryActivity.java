@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager.widget.ViewPager;
@@ -42,7 +41,7 @@ public abstract class GalleryActivity extends BaseGameGalleryActivity
     private ViewPager pager = null;
     private DatabaseHelper dbHelper;
     private GalleryPagerAdapter adapter;
-    private boolean importing = false;
+    private final boolean importing = false;
     private boolean rotateAnim = false;
     private TabLayout mTabLayout;
 
@@ -169,14 +168,12 @@ public abstract class GalleryActivity extends BaseGameGalleryActivity
     @Override
     public void setLastGames(ArrayList<GameDescription> games) {
         adapter.setGames(games);
-        pager.setVisibility(games.isEmpty() ? View.INVISIBLE : View.VISIBLE);
 
     }
 
     @Override
     public void setNewGames(ArrayList<GameDescription> games) {
-        boolean isListEmpty = adapter.addGames(games) == 0;
-        pager.setVisibility(isListEmpty ? View.INVISIBLE : View.VISIBLE);
+        adapter.addGames(games);
     }
 
     private void showSearchProgressDialog(boolean zipMode) {
@@ -191,9 +188,7 @@ public abstract class GalleryActivity extends BaseGameGalleryActivity
             searchDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.cancel),
                     (dialog, which) -> stopRomsFinding());
         }
-        searchDialog.setMessage(getString(zipMode ?
-                R.string.gallery_zip_search_label
-                : R.string.gallery_sdcard_search_label));
+        searchDialog.setMessage(getString(zipMode ? R.string.gallery_zip_search_label : R.string.gallery_sdcard_search_label));
         DialogUtils.show(searchDialog, false);
 
     }

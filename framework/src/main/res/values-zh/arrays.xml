@@ -5,6 +5,7 @@
         <item>最近导入</item>
         <item>最热门的</item>
         <item>最近玩的</item>
+        <item>应用商店</item>
     </string-array>
     <string-array name="general_pref_rotation_list">
         <item>自动</item>
