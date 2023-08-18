@@ -6,12 +6,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import nostalgia.framework.BasicEmulatorInfo;
+import nostalgia.framework.keyboard.BasicEmulatorInfo;
 import nostalgia.framework.controllers.EmulatorController;
 import nostalgia.framework.data.entity.EmulatorInfo;
-import nostalgia.framework.GfxProfile;
-import nostalgia.framework.SfxProfile;
-import nostalgia.framework.SfxProfile.SoundEncoding;
+import nostalgia.framework.data.entity.GfxProfile;
+import nostalgia.framework.data.entity.SfxProfile;
+import nostalgia.framework.data.entity.SfxProfile.SoundEncoding;
 import nostalgia.framework.base.JniBridge;
 import nostalgia.framework.base.JniEmulator;
 import nostalgia.framework.data.database.GameDescription;
@@ -118,44 +118,44 @@ public class NesEmulator extends JniEmulator {
 
         static {
             ntsc = new NesGfxProfile();
-            ntsc.fps = 60;
-            ntsc.name = "NTSC";
-            ntsc.originalScreenWidth = 256;
-            ntsc.originalScreenHeight = 224;
+            ntsc.setFps(60);
+            ntsc.setName("NTSC");
+            ntsc.setOriginalScreenWidth(256);
+            ntsc.setOriginalScreenHeight(224);
             gfxProfiles.add(ntsc);
 
             pal = new NesGfxProfile();
-            pal.fps = 50;
-            pal.name = "PAL";
-            pal.originalScreenWidth = 256;
-            pal.originalScreenHeight = 240;
+            pal.setFps(50);
+            pal.setName("PAL");
+            pal.setOriginalScreenWidth(256);
+            pal.setOriginalScreenHeight(240);
             gfxProfiles.add(pal);
 
             SfxProfile low = new NesSfxProfile();
-            low.name = "low";
-            low.bufferSize = 2048 * 8 * 2;
-            low.encoding = SoundEncoding.PCM16;
-            low.isStereo = true;
-            low.rate = 11025;
-            low.quality = 0;
+            low.setName("low");
+            low.setBufferSize(2048 * 8 * 2);
+            low.setEncoding(SoundEncoding.PCM16);
+            low.setStereo(true);
+            low.setRate(11025);
+            low.setQuality(0);
             sfxProfiles.add(low);
 
             SfxProfile medium = new NesSfxProfile();
-            medium.name = "medium";
-            medium.bufferSize = 2048 * 8 * 2;
-            medium.encoding = SoundEncoding.PCM16;
-            medium.isStereo = true;
-            medium.rate = 22050;
-            medium.quality = 1;
+            medium.setName("medium");
+            medium.setBufferSize(2048 * 8 * 2);
+            medium.setEncoding(SoundEncoding.PCM16);
+            medium.setStereo(true);
+            medium.setRate(22050);
+            medium.setQuality(1);
             sfxProfiles.add(medium);
 
             SfxProfile high = new NesSfxProfile();
-            high.name = "high";
-            high.bufferSize = 2048 * 8 * 2;
-            high.encoding = SoundEncoding.PCM16;
-            high.isStereo = true;
-            high.rate = 44100;
-            high.quality = 2;
+            high.setName("high");
+            high.setBufferSize(2048 * 8 * 2);
+            high.setEncoding(SoundEncoding.PCM16);
+            high.setStereo(true);
+            high.setRate(44100);
+            high.setQuality(2);
             sfxProfiles.add(high);
         }
 
@@ -216,15 +216,15 @@ public class NesEmulator extends JniEmulator {
         private static class NesGfxProfile extends GfxProfile {
             @Override
             public int toInt() {
-                return fps == 50 ? 1 : 0;
+                return getFps() == 50 ? 1 : 0;
             }
         }
 
         private static class NesSfxProfile extends SfxProfile {
             @Override
             public int toInt() {
-                int x = rate / 11025;
-                x += quality * 100;
+                int x = getRate() / 11025;
+                x += getQuality() * 100;
                 return x;
             }
         }

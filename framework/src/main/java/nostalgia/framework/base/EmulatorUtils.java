@@ -5,7 +5,7 @@ import android.os.Environment;
 
 import java.io.File;
 
-import nostalgia.framework.EmulatorException;
+import nostalgia.framework.emulator.EmulatorException;
 
 public class EmulatorUtils {
 

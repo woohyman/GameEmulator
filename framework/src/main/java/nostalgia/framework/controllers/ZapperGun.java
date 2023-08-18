@@ -4,7 +4,7 @@ import android.content.Context;
 import android.view.MotionEvent;
 import android.view.View;
 
-import nostalgia.framework.Emulator;
+import nostalgia.framework.emulator.Emulator;
 import nostalgia.framework.base.EmulatorActivity;
 import nostalgia.framework.base.ViewPort;
 import nostalgia.framework.data.database.GameDescription;

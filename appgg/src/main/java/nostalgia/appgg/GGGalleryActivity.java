@@ -3,7 +3,7 @@ package nostalgia.appgg;
 import java.util.HashSet;
 import java.util.Set;
 
-import nostalgia.framework.Emulator;
+import nostalgia.framework.emulator.Emulator;
 import nostalgia.framework.base.EmulatorActivity;
 import nostalgia.framework.ui.gamegallery.GalleryActivity;
 

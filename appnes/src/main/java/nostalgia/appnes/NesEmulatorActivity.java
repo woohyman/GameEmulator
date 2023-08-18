@@ -6,7 +6,7 @@ import android.os.Bundle;
 
 import java.util.List;
 
-import nostalgia.framework.Emulator;
+import nostalgia.framework.emulator.Emulator;
 import nostalgia.framework.base.EmulatorActivity;
 import nostalgia.framework.utils.PreferenceUtil;
 

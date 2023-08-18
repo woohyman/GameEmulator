@@ -4,8 +4,8 @@ import android.content.Context
 import android.util.SparseIntArray
 import android.view.KeyEvent
 import android.view.View
-import nostalgia.framework.Emulator
-import nostalgia.framework.KeyboardProfile
+import nostalgia.framework.emulator.Emulator
+import nostalgia.framework.keyboard.KeyboardProfile
 import nostalgia.framework.base.EmulatorActivity
 import nostalgia.framework.data.database.GameDescription
 import nostalgia.framework.utils.NLog
@@ -22,11 +22,11 @@ class KeyboardController(
     private val keyMapping: SparseIntArray?
 
     init {
-        keyMapping = emulator.info.keyMapping
+        keyMapping = emulator.info?.keyMapping
     }
 
     override fun onResume() {
-        profile = KeyboardProfile.getSelectedProfile(gameHash, context)
+        profile = KeyboardProfile.getSelectedProfile(gameHash, context!!)
         emulator.resetKeys()
         for (i in loadingOrSaving.indices) {
             loadingOrSaving[i] = false

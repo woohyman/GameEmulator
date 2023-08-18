@@ -1,9 +1,7 @@
 package nostalgia.framework.data.entity
 
 import android.util.SparseIntArray
-import nostalgia.framework.GfxProfile
-import nostalgia.framework.KeyboardProfile
-import nostalgia.framework.SfxProfile
+import nostalgia.framework.keyboard.KeyboardProfile
 
 interface EmulatorInfo {
     val name: String?
@@ -18,7 +16,7 @@ interface EmulatorInfo {
     val keyMapping: SparseIntArray?
     val numQualityLevels: Int
     val deviceKeyboardCodes: IntArray?
-    val deviceKeyboardNames: Array<String?>?
-    val deviceKeyboardDescriptions: Array<String?>?
+    val deviceKeyboardNames: Array<String>?
+    val deviceKeyboardDescriptions: Array<String>?
     val isMultiPlayerSupported: Boolean
 }

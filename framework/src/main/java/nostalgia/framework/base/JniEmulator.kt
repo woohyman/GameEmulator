@@ -5,15 +5,15 @@ import android.graphics.Canvas
 import android.media.AudioFormat
 import android.media.AudioManager
 import android.media.AudioTrack
-import nostalgia.framework.Emulator
-import nostalgia.framework.EmulatorException
-import nostalgia.framework.EmulatorSettings
-import nostalgia.framework.GfxProfile
-import nostalgia.framework.KeyboardProfile
+import nostalgia.framework.emulator.Emulator
+import nostalgia.framework.emulator.EmulatorException
+import nostalgia.framework.emulator.EmulatorSettings
+import nostalgia.framework.keyboard.KeyboardProfile
 import nostalgia.framework.R
-import nostalgia.framework.SfxProfile
 import nostalgia.framework.data.database.GameDescription
 import nostalgia.framework.data.entity.GameInfo
+import nostalgia.framework.data.entity.GfxProfile
+import nostalgia.framework.data.entity.SfxProfile
 import nostalgia.framework.utils.EmuUtils
 import nostalgia.framework.utils.NLog
 import okhttp3.internal.notifyAll
@@ -53,18 +53,18 @@ abstract class JniEmulator : Emulator {
 
     init {
         val info = info
-        KeyboardProfile.BUTTON_NAMES = info.deviceKeyboardNames
-        KeyboardProfile.BUTTON_KEY_EVENT_CODES = info.deviceKeyboardCodes
-        KeyboardProfile.BUTTON_DESCRIPTIONS = info.deviceKeyboardDescriptions
+        KeyboardProfile.BUTTON_NAMES = info?.deviceKeyboardNames
+        KeyboardProfile.BUTTON_KEY_EVENT_CODES = info?.deviceKeyboardCodes
+        KeyboardProfile.BUTTON_DESCRIPTIONS = info?.deviceKeyboardDescriptions
         jni = bridge
     }
 
     abstract val bridge: JniBridge
     abstract override fun autoDetectGfx(game: GameDescription): GfxProfile
     abstract override fun autoDetectSfx(game: GameDescription): SfxProfile
-    override fun getHistoryItemCount(): Int {
-        return jni.historyItemCount
-    }
+
+    override val historyItemCount: Int
+        get() = jni.historyItemCount
 
     override fun setFastForwardFrameCount(frames: Int) {
         numFastForwardFrames = frames
@@ -82,13 +82,11 @@ abstract class JniEmulator : Emulator {
         }
     }
 
-    override fun isGameLoaded(): Boolean {
-        synchronized(loadLock) { return gameInfo != null }
-    }
+    override val isGameLoaded: Boolean
+        get() = synchronized(loadLock) { return gameInfo != null }
 
-    override fun getLoadedGame(): GameInfo {
-        synchronized(loadLock) { return gameInfo!! }
-    }
+    override val loadedGame: GameInfo?
+        get() = synchronized(loadLock) { return gameInfo!! }
 
     override fun start(gfx: GfxProfile, sfx: SfxProfile, settings: EmulatorSettings) {
         synchronized(readyLock) {
@@ -108,13 +106,11 @@ abstract class JniEmulator : Emulator {
         }
     }
 
-    override fun getActiveGfxProfile(): GfxProfile {
-        return gfx!!
-    }
+    override val activeGfxProfile
+        get() = gfx!!
 
-    override fun getActiveSfxProfile(): SfxProfile {
-        return sfx!!
-    }
+    override val activeSfxProfile
+        get() = sfx!!
 
     override fun reset() {
         synchronized(readyLock) {
@@ -283,9 +279,8 @@ abstract class JniEmulator : Emulator {
         }
     }
 
-    override fun isReady(): Boolean {
-        return ready.get()
-    }
+    override val isReady: Boolean
+        get() = ready.get()
 
     override fun fireZapper(x: Float, y: Float) {
         val emuX: Int
@@ -439,7 +434,7 @@ abstract class JniEmulator : Emulator {
     private fun getMD5(path: String?): String? {
         var path = path
         if (path == null) {
-            path = loadedGame.path
+            path = loadedGame?.path
         }
         if (!md5s.containsKey(path)) {
             val md5 = EmuUtils.getMD5Checksum(File(path))

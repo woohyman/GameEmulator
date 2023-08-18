@@ -1016,7 +1016,7 @@ public class MultitouchLayer extends RelativeLayout implements OnTouchListener {
                 20, getResources().getDisplayMetrics());
         viewPort.top -= cacheRotation == 0 ? topOffset : 0;
         viewPort.bottom -= cacheRotation == 0 ? topOffset : 0;
-        NLog.i(TAG, "init screenlayout " + EmulatorHolder.getInfo().getDefaultGfxProfile().name
+        NLog.i(TAG, "init screenlayout " + EmulatorHolder.getInfo().getDefaultGfxProfile().getName()
                 + " vp:" + viewPort.left + "," + viewPort.top + "," + viewPort.width()
                 + "," + viewPort.height());
         screenElement = new EditElement(viewPort);
@@ -1075,7 +1075,7 @@ public class MultitouchLayer extends RelativeLayout implements OnTouchListener {
     public void saveScreenElement() {
         endMovementCheck();
         RectF bb = screenElement.boundingbox;
-        RectF env = viewPortsEnvelops.get(EmulatorHolder.getInfo().getDefaultGfxProfile().name);
+        RectF env = viewPortsEnvelops.get(EmulatorHolder.getInfo().getDefaultGfxProfile().getName());
         Rect rect = new Rect();
         rect.left = Math.round(bb.left + env.left * bb.width());
         rect.top = Math.round(bb.top + env.top * bb.height());
@@ -1088,7 +1088,7 @@ public class MultitouchLayer extends RelativeLayout implements OnTouchListener {
         vp.y = rect.top + (cacheRotation == 0 ? topOffset : 0);
         vp.width = rect.width();
         vp.height = rect.height();
-        NLog.i(TAG, "save screenlayout " + EmulatorHolder.getInfo().getDefaultGfxProfile().name
+        NLog.i(TAG, "save screenlayout " + EmulatorHolder.getInfo().getDefaultGfxProfile().getName()
                 + " vp:" + vp.x + "," + vp.y + "," + vp.width + "," + vp.height);
         PreferenceUtil.setViewPort(getContext(), vp, cacheW, cacheH);
     }

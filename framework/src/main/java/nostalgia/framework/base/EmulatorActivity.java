@@ -33,10 +33,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nostalgia.framework.BaseApplication;
-import nostalgia.framework.Emulator;
+import nostalgia.framework.emulator.Emulator;
 import nostalgia.framework.controllers.EmulatorController;
-import nostalgia.framework.EmulatorException;
-import nostalgia.framework.EmulatorRunner;
+import nostalgia.framework.emulator.EmulatorException;
+import nostalgia.framework.emulator.EmulatorRunner;
 import nostalgia.framework.R;
 import nostalgia.framework.base.Benchmark.BenchmarkCallback;
 import nostalgia.framework.base.GameMenu.GameMenuItem;

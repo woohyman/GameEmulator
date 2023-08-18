@@ -1,6 +1,6 @@
 package nostalgia.appgg;
 
-import nostalgia.framework.Emulator;
+import nostalgia.framework.emulator.Emulator;
 import nostalgia.framework.base.EmulatorActivity;
 
 public class GGEmulatorActivity extends EmulatorActivity {

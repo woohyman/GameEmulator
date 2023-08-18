@@ -19,7 +19,7 @@ import androidx.appcompat.app.ActionBar;
 import java.util.ArrayList;
 import java.util.List;
 
-import nostalgia.framework.KeyboardProfile;
+import nostalgia.framework.keyboard.KeyboardProfile;
 import nostalgia.framework.R;
 import nostalgia.framework.base.EmulatorHolder;
 

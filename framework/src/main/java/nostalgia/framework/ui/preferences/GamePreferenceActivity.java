@@ -11,7 +11,7 @@ import androidx.appcompat.app.ActionBar;
 
 import java.util.List;
 
-import nostalgia.framework.GfxProfile;
+import nostalgia.framework.data.entity.GfxProfile;
 import nostalgia.framework.R;
 import nostalgia.framework.base.EmulatorHolder;
 import nostalgia.framework.data.database.GameDescription;
@@ -37,7 +37,7 @@ public class GamePreferenceActivity extends AppCompatPreferenceActivity {
             res[0] = "Auto";
             int i = 1;
             for (GfxProfile gfx : profiles) {
-                res[i] = gfx.name;
+                res[i] = gfx.getName();
                 i++;
             }
             preference.setEntries(res);

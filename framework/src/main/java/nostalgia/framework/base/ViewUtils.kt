@@ -1,8 +1,8 @@
 package nostalgia.framework.base
 
 import android.content.Context
-import nostalgia.framework.Emulator
-import nostalgia.framework.GfxProfile
+import nostalgia.framework.emulator.Emulator
+import nostalgia.framework.data.entity.GfxProfile
 import nostalgia.framework.utils.PreferenceUtil
 
 object ViewUtils {
@@ -14,7 +14,7 @@ object ViewUtils {
         gfx = if (emulator != null) {
             emulator.activeGfxProfile
         } else {
-            EmulatorHolder.getInfo().defaultGfxProfile
+            EmulatorHolder.info?.defaultGfxProfile
         }
         return computeViewPort(
             gfx, screenWidth, screenHeight, paddingLeft,
@@ -27,7 +27,7 @@ object ViewUtils {
         context: Context?, w: Int, h: Int,
         paddingLeft: Int, paddingTop: Int
     ): ViewPort {
-        val gfx = EmulatorHolder.getInfo().defaultGfxProfile
+        val gfx = EmulatorHolder.info?.defaultGfxProfile
         return computeViewPort(gfx, w, h, paddingLeft, paddingTop)
     }
 
@@ -36,12 +36,12 @@ object ViewUtils {
         context: Context?, w: Int, h: Int, paddingLeft: Int, paddingTop: Int
     ): HashMap<String, ViewPort> {
         val res = HashMap<String, ViewPort>()
-        for (profile in EmulatorHolder.getInfo().availableGfxProfiles!!) {
+        for (profile in EmulatorHolder.info?.availableGfxProfiles!!) {
             val vp = computeViewPort(
                 profile, w, h, paddingLeft,
                 paddingTop
             )
-            res[profile!!.name] = vp
+            res[profile!!.name!!] = vp
         }
         return res
     }
@@ -54,10 +54,10 @@ object ViewUtils {
             context, w, h,
             paddingLeft, paddingTop
         )
-        for (profile in EmulatorHolder.getInfo().availableGfxProfiles!!) {
+        for (profile in EmulatorHolder.info?.availableGfxProfiles!!) {
             val vp = loadViewPort(context, w, h, profile)
             if (vp != null) {
-                res[profile!!.name] = vp
+                res[profile!!.name!!] = vp
             }
         }
         return res
@@ -74,7 +74,7 @@ object ViewUtils {
         profile = if (emulator != null) {
             emulator.activeGfxProfile
         } else {
-            EmulatorHolder.getInfo().defaultGfxProfile
+            EmulatorHolder.info?.defaultGfxProfile
         }
         if (!ignoreFullscreenSettings
             && PreferenceUtil.isFullScreenEnabled(context)
@@ -100,7 +100,7 @@ object ViewUtils {
         profile: GfxProfile?
     ): ViewPort? {
         val vp = PreferenceUtil.getViewPort(context, w, h)
-        val defaultProfile = EmulatorHolder.getInfo().defaultGfxProfile
+        val defaultProfile = EmulatorHolder.info?.defaultGfxProfile
         if (vp != null && profile !== defaultProfile) {
             var vpw = vp.width
             var vph = vp.height
@@ -127,7 +127,7 @@ object ViewUtils {
     ): ViewPort {
         var gfx = gfx
         if (gfx == null) {
-            gfx = EmulatorHolder.getInfo().defaultGfxProfile
+            gfx = EmulatorHolder.info?.defaultGfxProfile
         }
         val w = screenWidth - paddingLeft
         val h = screenHeight - paddingTop

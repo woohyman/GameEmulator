@@ -2,7 +2,7 @@ package nostalgia.framework.controllers;
 
 import android.view.View;
 
-import nostalgia.framework.Emulator;
+import nostalgia.framework.emulator.Emulator;
 import nostalgia.framework.data.database.GameDescription;
 
 public interface EmulatorController {

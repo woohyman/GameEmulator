@@ -1,6 +1,6 @@
 package nostalgia.appgbc;
 
-import nostalgia.framework.Emulator;
+import nostalgia.framework.emulator.Emulator;
 import nostalgia.framework.base.EmulatorActivity;
 
 public class GbcEmulatorActivity extends EmulatorActivity {

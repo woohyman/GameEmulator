@@ -1,4 +1,4 @@
-package nostalgia.framework;
+package nostalgia.framework.keyboard;
 
 import nostalgia.framework.controllers.EmulatorController;
 import nostalgia.framework.controllers.KeyboardController;

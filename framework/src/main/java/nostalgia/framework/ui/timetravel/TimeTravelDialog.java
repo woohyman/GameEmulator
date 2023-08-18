@@ -14,7 +14,7 @@ import android.widget.TextView;
 
 import java.util.Locale;
 
-import nostalgia.framework.EmulatorException;
+import nostalgia.framework.emulator.EmulatorException;
 import nostalgia.framework.R;
 import nostalgia.framework.base.Manager;
 import nostalgia.framework.data.database.GameDescription;

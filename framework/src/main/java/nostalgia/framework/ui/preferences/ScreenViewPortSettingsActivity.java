@@ -6,7 +6,7 @@ import android.view.KeyEvent;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import nostalgia.framework.GfxProfile;
+import nostalgia.framework.data.entity.GfxProfile;
 import nostalgia.framework.R;
 import nostalgia.framework.data.entity.SlotInfo;
 import nostalgia.framework.base.EmulatorUtils;
@@ -55,7 +55,7 @@ public class ScreenViewPortSettingsActivity extends AppCompatActivity
 
         gfxProfile = PreferenceUtil.getLastGfxProfile(this);
         mtLayer.setLastgameScreenshot(lastGameScreenshot,
-                gfxProfile == null ? null : gfxProfile.name);
+                gfxProfile == null ? null : gfxProfile.getName());
     }
 
     @Override

@@ -6,7 +6,7 @@ import android.graphics.Canvas;
 import android.view.SurfaceView;
 import android.view.View;
 
-import nostalgia.framework.Emulator;
+import nostalgia.framework.emulator.Emulator;
 
 class UnacceleratedView extends SurfaceView implements EmulatorView {
 

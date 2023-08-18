@@ -24,7 +24,7 @@ import android.widget.EditText
 import android.widget.ListView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import nostalgia.framework.KeyboardProfile
+import nostalgia.framework.keyboard.KeyboardProfile
 import nostalgia.framework.R
 import nostalgia.framework.base.EmulatorHolder
 import nostalgia.framework.controllers.KeyboardController
@@ -50,7 +50,7 @@ class KeyboardSettingsActivity : AppCompatActivity(), AdapterView.OnItemClickLis
         profile = KeyboardProfile.load(this, intent.getStringExtra(EXTRA_PROFILE_NAME))
         inverseMap.clear()
         val keyMap = profile?.keyMap
-        for (code in KeyboardProfile.BUTTON_KEY_EVENT_CODES) {
+        for (code in KeyboardProfile.BUTTON_KEY_EVENT_CODES!!) {
             inverseMap.append(code, 0)
         }
         for (i in 0 until keyMap!!.size()) {
@@ -69,7 +69,7 @@ class KeyboardSettingsActivity : AppCompatActivity(), AdapterView.OnItemClickLis
         list?.setAdapter(adapter)
         list?.setOnItemClickListener(this)
         val plv = findViewById<PlayersLabelView>(R.id.act_keyboard_settings_plv)
-        if (EmulatorHolder.getInfo().isMultiPlayerSupported) {
+        if (EmulatorHolder.info!!.isMultiPlayerSupported) {
             plv.setPlayersOffsets(adapter?.playersOffset)
             list?.setOnScrollListener(object : AbsListView.OnScrollListener {
                 override fun onScrollStateChanged(view: AbsListView, scrollState: Int) {}
@@ -160,9 +160,9 @@ class KeyboardSettingsActivity : AppCompatActivity(), AdapterView.OnItemClickLis
     }
 
     override fun onItemClick(arg0: AdapterView<*>?, arg1: View, position: Int, arg3: Long) {
-        if (position == KeyboardProfile.BUTTON_NAMES.size) {
-            if (KeyboardProfile.isDefaultProfile(profile!!.name)) {
-                KeyboardProfile.restoreDefaultProfile(profile!!.name, this)
+        if (position == KeyboardProfile.BUTTON_NAMES!!.size) {
+            if (KeyboardProfile.isDefaultProfile(profile!!.name!!)) {
+                KeyboardProfile.restoreDefaultProfile(profile!!.name!!, this)
             } else {
                 profile!!.delete(this)
             }
@@ -173,7 +173,7 @@ class KeyboardSettingsActivity : AppCompatActivity(), AdapterView.OnItemClickLis
             builder.setTitle(
                 String.format(
                     resources.getString(R.string.press_key),
-                    KeyboardProfile.BUTTON_NAMES[position]
+                    KeyboardProfile.BUTTON_NAMES!![position]
                 )
             )
             builder.setNegativeButton("Cancel", null)
@@ -226,10 +226,10 @@ class KeyboardSettingsActivity : AppCompatActivity(), AdapterView.OnItemClickLis
             if (idx >= 0) {
                 inverseMap.put(inverseMap.keyAt(idx), 0)
             }
-            inverseMap.append(KeyboardProfile.BUTTON_KEY_EVENT_CODES[position], keyCode)
+            inverseMap.append(KeyboardProfile.BUTTON_KEY_EVENT_CODES!![position], keyCode)
             NLog.i(
                 TAG,
-                "isert " + KeyboardProfile.BUTTON_NAMES[position] + " :" + keyCode
+                "isert " + KeyboardProfile.BUTTON_NAMES!![position] + " :" + keyCode
             )
             adapter!!.notifyDataSetInvalidated()
             dialog.dismiss()
@@ -267,15 +267,15 @@ class KeyboardSettingsActivity : AppCompatActivity(), AdapterView.OnItemClickLis
             val desc = convertView.findViewById<TextView>(R.id.row_keyboard_desc)
             val keyName = convertView.findViewById<TextView>(R.id.row_keyboard_key_name)
             convertView.isEnabled = true
-            if (position < KeyboardProfile.BUTTON_NAMES.size) {
-                name.text = KeyboardProfile.BUTTON_NAMES[position]
-                val keyCode = inverseMap[KeyboardProfile.BUTTON_KEY_EVENT_CODES[position]]
+            if (position < KeyboardProfile.BUTTON_NAMES!!.size) {
+                name.text = KeyboardProfile.BUTTON_NAMES!![position]
+                val keyCode = inverseMap[KeyboardProfile.BUTTON_KEY_EVENT_CODES!![position]]
                 val label = getKeyLabel(keyCode)
                 keyName.text = label
                 keyName.visibility = View.VISIBLE
             } else {
                 name.text =
-                    if (KeyboardProfile.isDefaultProfile(profile!!.name)) getText(R.string.pref_keyboard_settings_restore_def) else getText(
+                    if (KeyboardProfile.isDefaultProfile(profile!!.name!!)) getText(R.string.pref_keyboard_settings_restore_def) else getText(
                         R.string.pref_keyboard_settings_delete_prof
                     )
                 desc.visibility = View.GONE
@@ -293,7 +293,7 @@ class KeyboardSettingsActivity : AppCompatActivity(), AdapterView.OnItemClickLis
         }
 
         override fun getCount(): Int {
-            return KeyboardProfile.BUTTON_NAMES.size + if (newProfile) 0 else 1
+            return KeyboardProfile.BUTTON_NAMES!!.size + if (newProfile) 0 else 1
         }
 
         val rowHeight: Int
@@ -313,11 +313,11 @@ class KeyboardSettingsActivity : AppCompatActivity(), AdapterView.OnItemClickLis
                 val result = ArrayList<Int>()
                 var lastDesc = ""
                 val h: Int = rowHeight
-                for (i in KeyboardProfile.BUTTON_NAMES.indices) {
-                    val desc = KeyboardProfile.BUTTON_DESCRIPTIONS[i]
+                for (i in KeyboardProfile.BUTTON_NAMES?.indices!!) {
+                    val desc = KeyboardProfile.BUTTON_DESCRIPTIONS?.get(i)
                     if (lastDesc != desc) {
                         result.add(i * h)
-                        lastDesc = desc
+                        lastDesc = desc!!
                     }
                 }
                 val res = IntArray(result.size)

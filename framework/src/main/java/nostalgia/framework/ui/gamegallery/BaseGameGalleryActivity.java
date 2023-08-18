@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import nostalgia.framework.Emulator;
+import nostalgia.framework.emulator.Emulator;
 import nostalgia.framework.R;
 import nostalgia.framework.base.EmulatorActivity;
 import nostalgia.framework.data.database.GameDescription;
