@@ -1,1 +1,7 @@
-include ':framework', ':appnes', ':appgbc', ':appgg'
+//include ':framework', ':appnes', ':appgbc', ':appgg'
+include ':data'
+include ':domain:keyboard'
+include ':data:nes'
+include ':data:pgg'
+include ':data:gbc'
+include ':gui'
