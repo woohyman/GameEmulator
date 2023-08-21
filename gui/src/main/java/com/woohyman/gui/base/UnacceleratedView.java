@@ -6,8 +6,10 @@ import android.graphics.Canvas;
 import android.view.SurfaceView;
 import android.view.View;
 
-import nostalgia.framework.base.ViewUtils;
-import nostalgia.framework.emulator.Emulator;
+import com.woohyman.keyboard.base.ViewPort;
+import com.woohyman.keyboard.base.ViewUtils;
+
+import com.woohyman.keyboard.emulator.Emulator;
 
 class UnacceleratedView extends SurfaceView implements EmulatorView {
 

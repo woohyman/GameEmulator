@@ -5,9 +5,7 @@ import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
-import nostalgia.framework.R;
-import nostalgia.framework.ui.multitouchbutton.MultitouchBtnInterface;
-import nostalgia.framework.ui.multitouchbutton.MultitouchImageButton;
+import com.woohyman.gui.R;
 
 public class MultitouchTwoButton extends MultitouchImageButton {
 

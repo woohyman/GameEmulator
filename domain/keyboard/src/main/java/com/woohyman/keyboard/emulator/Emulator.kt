@@ -1,12 +1,12 @@
-package nostalgia.framework.emulator
+package com.woohyman.keyboard.emulator
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import nostalgia.framework.data.database.GameDescription
-import nostalgia.framework.data.entity.EmulatorInfo
-import nostalgia.framework.data.entity.GameInfo
-import nostalgia.framework.data.entity.GfxProfile
-import nostalgia.framework.data.entity.SfxProfile
+import com.woohyman.keyboard.data.database.GameDescription
+import com.woohyman.keyboard.data.entity.EmulatorInfo
+import com.woohyman.keyboard.data.entity.GameInfo
+import com.woohyman.keyboard.data.entity.GfxProfile
+import com.woohyman.keyboard.data.entity.SfxProfile
 
 interface Emulator {
     val info: EmulatorInfo?

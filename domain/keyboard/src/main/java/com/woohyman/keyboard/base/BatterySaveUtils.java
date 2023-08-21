@@ -3,13 +3,14 @@ package com.woohyman.keyboard.base;
 import android.content.Context;
 import android.util.Log;
 
+import com.woohyman.keyboard.utils.EmuUtils;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 
-import nostalgia.framework.utils.EmuUtils;
-import nostalgia.framework.utils.FileUtils;
+import com.woohyman.keyboard.utils.FileUtils;
 
 
 public class BatterySaveUtils {

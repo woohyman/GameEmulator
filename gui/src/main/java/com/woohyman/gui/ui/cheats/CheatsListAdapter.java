@@ -10,6 +10,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.woohyman.gui.R;
+import com.woohyman.keyboard.cheats.Cheat;
 
 import java.util.List;
 

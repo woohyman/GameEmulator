@@ -1,13 +1,14 @@
 package com.woohyman.keyboard.base
 
 import android.content.Context
+import com.woohyman.keyboard.cheats.Cheat
 import com.woohyman.keyboard.data.database.GameDescription
-import nostalgia.framework.emulator.Emulator
-import nostalgia.framework.emulator.EmulatorException
+import com.woohyman.keyboard.emulator.Emulator
+import com.woohyman.keyboard.emulator.EmulatorException
 import com.woohyman.keyboard.emulator.EmulatorRunner
 import com.woohyman.mylibrary.R
-import nostalgia.framework.utils.FileUtils
-import nostalgia.framework.utils.NLog
+import com.woohyman.keyboard.utils.FileUtils
+import com.woohyman.keyboard.utils.NLog
 import java.io.File
 import java.util.Locale
 

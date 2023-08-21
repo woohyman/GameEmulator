@@ -9,8 +9,8 @@ import android.opengl.GLUtils
 import android.opengl.Matrix
 import android.view.View
 import com.woohyman.keyboard.base.ViewUtils.loadOrComputeViewPort
-import nostalgia.framework.emulator.Emulator
-import nostalgia.framework.utils.NLog
+import com.woohyman.keyboard.emulator.Emulator
+import com.woohyman.keyboard.utils.NLog
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer

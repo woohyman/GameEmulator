@@ -18,7 +18,7 @@ import com.woohyman.keyboard.data.database.GameDescription;
 
 import java.util.Locale;
 
-import nostalgia.framework.emulator.EmulatorException;
+import com.woohyman.keyboard.emulator.EmulatorException;
 
 public class TimeTravelDialog extends Dialog implements OnSeekBarChangeListener {
 

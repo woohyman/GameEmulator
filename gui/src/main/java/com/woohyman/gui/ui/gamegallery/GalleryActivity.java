@@ -14,28 +14,26 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
+import com.woohyman.gui.R;
+import com.woohyman.gui.base.EmulatorActivity;
+import com.woohyman.gui.ui.gamegallery.adapter.GalleryPagerAdapter;
+import com.woohyman.gui.ui.preferences.GeneralPreferenceActivity;
+import com.woohyman.gui.ui.preferences.GeneralPreferenceFragment;
+import com.woohyman.keyboard.data.database.GameDescription;
+import com.woohyman.keyboard.utils.DatabaseHelper;
+import com.woohyman.keyboard.utils.DialogUtils;
+import com.woohyman.keyboard.utils.EmuUtils;
+import com.woohyman.keyboard.utils.NLog;
+import com.woohyman.keyboard.utils.PreferenceUtil;
+import com.woohyman.keyboard.utils.ZipRomFile;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 
-import nostalgia.framework.R;
-import nostalgia.framework.base.EmulatorActivity;
-import nostalgia.framework.data.database.GameDescription;
-import nostalgia.framework.ui.gamegallery.BaseGameGalleryActivity;
-import nostalgia.framework.ui.gamegallery.adapter.GalleryPagerAdapter;
-import nostalgia.framework.ui.gamegallery.adapter.GalleryPagerAdapter.OnItemClickListener;
-import nostalgia.framework.ui.preferences.GeneralPreferenceActivity;
-import nostalgia.framework.ui.preferences.GeneralPreferenceFragment;
-import nostalgia.framework.utils.PreferenceUtil;
-import nostalgia.framework.utils.DatabaseHelper;
-import nostalgia.framework.utils.DialogUtils;
-import nostalgia.framework.utils.EmuUtils;
-import nostalgia.framework.utils.NLog;
-
 public abstract class GalleryActivity extends BaseGameGalleryActivity
-        implements OnItemClickListener {
+        implements GalleryPagerAdapter.OnItemClickListener {
 
     public static final String EXTRA_TABS_IDX = "EXTRA_TABS_IDX";
     private static final String TAG = GalleryActivity.class.getSimpleName();

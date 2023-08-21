@@ -6,7 +6,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
-import nostalgia.framework.R;
+import com.woohyman.gui.R;
 
 public class MultitouchTwoButtonArea extends MultitouchImageButton {
 

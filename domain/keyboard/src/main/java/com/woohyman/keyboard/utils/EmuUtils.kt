@@ -1,4 +1,4 @@
-package nostalgia.framework.utils
+package com.woohyman.keyboard.utils
 
 import android.content.Context
 import android.content.Intent
@@ -13,11 +13,11 @@ import android.graphics.Rect
 import android.net.ConnectivityManager
 import android.net.wifi.WifiManager
 import android.view.Display
-import nostalgia.framework.base.EmulatorUtils
-import nostalgia.framework.base.SlotUtils
-import nostalgia.framework.data.database.GameDescription
-import nostalgia.framework.utils.NLog.e
-import nostalgia.framework.utils.NLog.i
+import com.woohyman.keyboard.base.EmulatorUtils
+import com.woohyman.keyboard.base.SlotUtils
+import com.woohyman.keyboard.data.database.GameDescription
+import com.woohyman.keyboard.utils.NLog.e
+import com.woohyman.keyboard.utils.NLog.i
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream

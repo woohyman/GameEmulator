@@ -13,9 +13,10 @@ import android.view.Display
 import android.view.MotionEvent
 import android.view.View
 import com.woohyman.gui.R
+import com.woohyman.keyboard.controllers.EmulatorController
 import com.woohyman.keyboard.data.database.GameDescription
-import nostalgia.framework.emulator.Emulator
-import nostalgia.framework.utils.PreferenceUtil
+import com.woohyman.keyboard.emulator.Emulator
+import com.woohyman.keyboard.utils.PreferenceUtil
 
 class DynamicDPad(
     private var context: Context?,

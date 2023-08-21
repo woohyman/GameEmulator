@@ -27,6 +27,12 @@ import com.blankj.utilcode.constant.PermissionConstants;
 import com.blankj.utilcode.util.PermissionUtils;
 import com.woohyman.gui.BaseApplication;
 import com.woohyman.gui.R;
+import com.woohyman.gui.controllers.DynamicDPad;
+import com.woohyman.keyboard.controllers.EmulatorController;
+import com.woohyman.gui.controllers.KeyboardController;
+import com.woohyman.gui.controllers.QuickSaveController;
+import com.woohyman.gui.controllers.TouchController;
+import com.woohyman.gui.controllers.ZapperGun;
 import com.woohyman.gui.ui.cheats.CheatsActivity;
 import com.woohyman.gui.ui.gamegallery.SlotSelectionActivity;
 import com.woohyman.gui.ui.preferences.GamePreferenceActivity;
@@ -40,10 +46,8 @@ import com.woohyman.keyboard.base.EmulatorUtils;
 import com.woohyman.keyboard.base.Manager;
 import com.woohyman.keyboard.base.SlotUtils;
 import com.woohyman.keyboard.base.ViewPort;
-import com.woohyman.gui.controllers.EmulatorController;
-import com.woohyman.gui.controllers.QuickSaveController;
-import com.woohyman.gui.controllers.ZapperGun;
 import com.woohyman.keyboard.data.database.GameDescription;
+import com.woohyman.keyboard.emulator.EmulatorRunner;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -51,16 +55,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.woohyman.gui.controllers.DynamicDPad;
-import com.woohyman.gui.controllers.KeyboardController;
-import com.woohyman.gui.controllers.TouchController;
-import nostalgia.framework.emulator.Emulator;
-import nostalgia.framework.emulator.EmulatorException;
-import com.woohyman.keyboard.emulator.EmulatorRunner;
-import nostalgia.framework.utils.DialogUtils;
-import nostalgia.framework.utils.EmuUtils;
-import nostalgia.framework.utils.NLog;
-import nostalgia.framework.utils.PreferenceUtil;
+import com.woohyman.keyboard.emulator.Emulator;
+import com.woohyman.keyboard.emulator.EmulatorException;
+import com.woohyman.keyboard.utils.DialogUtils;
+import com.woohyman.keyboard.utils.EmuUtils;
+import com.woohyman.keyboard.utils.NLog;
+import com.woohyman.keyboard.utils.PreferenceUtil;
 
 
 public abstract class EmulatorActivity extends Activity
@@ -589,7 +589,7 @@ public abstract class EmulatorActivity extends Activity
 
     @Override
     public void onGameMenuPrepare(GameMenu menu) {
-        GameMenuItem backToPast = menu.getItem(R.string.game_menu_back_to_past);
+        GameMenu.GameMenuItem backToPast = menu.getItem(R.string.game_menu_back_to_past);
         backToPast.enable = PreferenceUtil.isTimeshiftEnabled(this);
         NLog.i(TAG, "prepare menu");
     }

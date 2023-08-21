@@ -13,16 +13,14 @@ import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 
 import com.blankj.utilcode.util.Utils;
+import com.woohyman.gui.DownloaderDelegate;
+import com.woohyman.gui.R;
+import com.woohyman.keyboard.data.database.GameDescription;
+import com.woohyman.keyboard.data.entity.RowItem;
 
 import java.util.ArrayList;
 
-import nostalgia.framework.R;
-import nostalgia.framework.data.database.GameDescription;
-import nostalgia.framework.data.entity.RowItem;
-import nostalgia.framework.rom.DownloaderDelegate;
-import nostalgia.framework.ui.gamegallery.adapter.AppStoreAdapter;
-import nostalgia.framework.ui.gamegallery.adapter.GalleryAdapter;
-import nostalgia.framework.utils.NLog;
+import com.woohyman.keyboard.utils.NLog;
 
 public class GalleryPagerAdapter extends PagerAdapter {
 

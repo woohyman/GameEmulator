@@ -1,6 +1,6 @@
-package com.woohyman.nes;
+package com.woohyman.keyboard;
 
-import nostalgia.framework.base.JniBridge;
+import com.woohyman.keyboard.base.JniBridge;
 
 public class Core extends JniBridge {
     private static Core instance = new Core();

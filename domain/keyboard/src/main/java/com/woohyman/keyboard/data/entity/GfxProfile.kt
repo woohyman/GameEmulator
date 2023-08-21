@@ -1,4 +1,4 @@
-package nostalgia.framework.data.entity
+package com.woohyman.keyboard.data.entity
 
 /**
  * 图形效果

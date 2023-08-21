@@ -17,16 +17,17 @@ import android.widget.TextView;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.woohyman.gui.R;
+import com.woohyman.gui.ui.widget.PopupMenu;
+import com.woohyman.keyboard.base.SlotUtils;
+import com.woohyman.keyboard.data.database.GameDescription;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import nostalgia.framework.R;
-import nostalgia.framework.data.entity.SlotInfo;
-import nostalgia.framework.base.SlotUtils;
-import nostalgia.framework.data.database.GameDescription;
-import nostalgia.framework.ui.widget.PopupMenu;
-import nostalgia.framework.utils.NLog;
+import com.woohyman.keyboard.data.entity.SlotInfo;
+import com.woohyman.keyboard.utils.NLog;
 
 public class SlotSelectionActivity extends AppCompatActivity {
 

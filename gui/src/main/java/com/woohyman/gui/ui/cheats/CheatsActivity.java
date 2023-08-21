@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.woohyman.gui.R;
 import com.woohyman.keyboard.base.EmulatorHolder;
+import com.woohyman.keyboard.cheats.Cheat;
 
 import java.util.ArrayList;
 import java.util.Locale;

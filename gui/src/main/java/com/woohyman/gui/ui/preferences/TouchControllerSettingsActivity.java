@@ -14,9 +14,9 @@ import com.woohyman.keyboard.base.SlotUtils;
 import com.woohyman.keyboard.data.database.GameDescription;
 import com.woohyman.keyboard.utils.DatabaseHelper;
 
-import nostalgia.framework.data.entity.GfxProfile;
-import nostalgia.framework.data.entity.SlotInfo;
-import nostalgia.framework.utils.PreferenceUtil;
+import com.woohyman.keyboard.data.entity.GfxProfile;
+import com.woohyman.keyboard.data.entity.SlotInfo;
+import com.woohyman.keyboard.utils.PreferenceUtil;
 
 public class TouchControllerSettingsActivity extends AppCompatActivity implements
         GameMenu.OnGameMenuListener {
@@ -39,7 +39,7 @@ public class TouchControllerSettingsActivity extends AppCompatActivity implement
     @Override
     protected void onResume() {
         super.onResume();
-        mtLayer.setEditMode(EDIT_MODE.TOUCH);
+        mtLayer.setEditMode(MultitouchLayer.EDIT_MODE.TOUCH);
         GameDescription games = dbHelper.selectObjFromDb(GameDescription.class,
                 "where lastGameTime!=0 ORDER BY lastGameTime DESC LIMIT 1");
         GfxProfile gfxProfile;
@@ -87,7 +87,7 @@ public class TouchControllerSettingsActivity extends AppCompatActivity implement
     }
 
     @Override
-    public void onGameMenuItemSelected(GameMenu menu, GameMenuItem item) {
+    public void onGameMenuItemSelected(GameMenu menu, GameMenu.GameMenuItem item) {
         runOnUiThread(() -> mtLayer.resetEditElement(gameHash));
     }
 

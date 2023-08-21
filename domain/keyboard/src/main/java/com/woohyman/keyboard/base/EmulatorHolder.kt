@@ -1,6 +1,6 @@
 package com.woohyman.keyboard.base
 
-import nostalgia.framework.data.entity.EmulatorInfo
+import com.woohyman.keyboard.data.entity.EmulatorInfo
 
 object EmulatorHolder {
     private var emulatorClass: Class<out JniEmulator>? = null

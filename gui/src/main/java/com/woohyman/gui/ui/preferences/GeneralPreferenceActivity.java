@@ -22,7 +22,7 @@ import com.woohyman.keyboard.base.EmulatorHolder;
 import java.util.ArrayList;
 import java.util.List;
 
-import nostalgia.framework.keyboard.KeyboardProfile;
+import com.woohyman.keyboard.keyboard.KeyboardProfile;
 
 public class GeneralPreferenceActivity extends AppCompatPreferenceActivity {
 

@@ -28,6 +28,12 @@ import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import com.woohyman.gui.R;
+import com.woohyman.keyboard.base.EmulatorHolder;
+import com.woohyman.keyboard.base.ViewPort;
+import com.woohyman.keyboard.base.ViewUtils;
+import com.woohyman.keyboard.controllers.EmulatorController;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -36,17 +42,9 @@ import java.util.Map.Entry;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import nostalgia.framework.controllers.EmulatorController;
-import nostalgia.framework.R;
-import nostalgia.framework.base.EmulatorHolder;
-import nostalgia.framework.base.ViewPort;
-import nostalgia.framework.base.ViewUtils;
-import nostalgia.framework.ui.multitouchbutton.MultitouchBtnInterface;
-import nostalgia.framework.ui.multitouchbutton.MultitouchTwoButton;
-import nostalgia.framework.ui.multitouchbutton.MultitouchTwoButtonArea;
-import nostalgia.framework.utils.PreferenceUtil;
-import nostalgia.framework.utils.EmuUtils;
-import nostalgia.framework.utils.NLog;
+import com.woohyman.keyboard.utils.EmuUtils;
+import com.woohyman.keyboard.utils.NLog;
+import com.woohyman.keyboard.utils.PreferenceUtil;
 
 public class MultitouchLayer extends RelativeLayout implements OnTouchListener {
 

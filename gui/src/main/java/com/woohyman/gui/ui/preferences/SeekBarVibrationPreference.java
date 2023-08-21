@@ -6,7 +6,7 @@ import android.os.Vibrator;
 import android.util.AttributeSet;
 import android.widget.SeekBar;
 
-import nostalgia.framework.ui.widget.SeekBarPreference;
+import com.woohyman.gui.ui.widget.SeekBarPreference;
 
 public class SeekBarVibrationPreference extends SeekBarPreference {
 

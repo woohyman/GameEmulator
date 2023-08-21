@@ -17,24 +17,23 @@ import androidx.documentfile.provider.DocumentFile;
 
 import com.blankj.utilcode.util.StringUtils;
 import com.blankj.utilcode.util.UriUtils;
+import com.woohyman.gui.R;
+import com.woohyman.gui.base.EmulatorActivity;
+import com.woohyman.keyboard.data.database.GameDescription;
+import com.woohyman.keyboard.emulator.Emulator;
+import com.woohyman.keyboard.utils.DatabaseHelper;
+import com.woohyman.keyboard.utils.DialogUtils;
+import com.woohyman.keyboard.utils.NLog;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import nostalgia.framework.emulator.Emulator;
-import nostalgia.framework.R;
-import nostalgia.framework.base.EmulatorActivity;
-import nostalgia.framework.data.database.GameDescription;
-import nostalgia.framework.ui.gamegallery.RomsFinder.OnRomsFinderListener;
-import nostalgia.framework.utils.DatabaseHelper;
-import nostalgia.framework.utils.DialogUtils;
-import nostalgia.framework.utils.FileUtils;
-import nostalgia.framework.utils.NLog;
+import com.woohyman.keyboard.utils.FileUtils;
 
 abstract public class BaseGameGalleryActivity extends AppCompatActivity
-        implements OnRomsFinderListener {
+        implements RomsFinder.OnRomsFinderListener {
 
     private static final String TAG = "BaseGameGalleryActivity";
 

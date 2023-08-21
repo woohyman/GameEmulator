@@ -1,9 +1,10 @@
-package com.woohyman.gui.controllers;
+package com.woohyman.keyboard.controllers;
 
 import android.view.View;
 
-import nostalgia.framework.emulator.Emulator;
-import nostalgia.framework.data.database.GameDescription;
+import com.woohyman.keyboard.data.database.GameDescription;
+
+import com.woohyman.keyboard.emulator.Emulator;
 
 public interface EmulatorController {
 

@@ -1,13 +1,12 @@
-package nostalgia.framework.keyboard
+package com.woohyman.keyboard.keyboard
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.preference.PreferenceManager
 import android.util.SparseIntArray
 import android.view.KeyEvent
-import nostalgia.framework.controllers.EmulatorController
-import nostalgia.framework.controllers.KeyboardController
-import nostalgia.framework.utils.NLog
+import com.woohyman.keyboard.controllers.EmulatorController
+import com.woohyman.keyboard.utils.NLog
 import java.io.Serializable
 
 class KeyboardProfile : Serializable {
@@ -61,6 +60,7 @@ class KeyboardProfile : Serializable {
         var BUTTON_NAMES: Array<String>? = null
         var BUTTON_DESCRIPTIONS: Array<String>? = null
         var BUTTON_KEY_EVENT_CODES: IntArray? = null
+
         @JvmStatic
         fun createDefaultProfile(): KeyboardProfile {
             val profile = KeyboardProfile()
@@ -92,9 +92,9 @@ class KeyboardProfile : Serializable {
             profile.keyMap.put(KeyEvent.KEYCODE_BUTTON_Y, EmulatorController.KEY_B)
             profile.keyMap.put(KeyEvent.KEYCODE_BUTTON_A, EmulatorController.KEY_A_TURBO)
             profile.keyMap.put(KeyEvent.KEYCODE_BUTTON_X, EmulatorController.KEY_B_TURBO)
-            profile.keyMap.put(KeyEvent.KEYCODE_BUTTON_R2, KeyboardController.KEY_MENU)
-            profile.keyMap.put(KeyEvent.KEYCODE_BUTTON_L2, KeyboardController.KEY_BACK)
-            profile.keyMap.put(KeyEvent.KEYCODE_BUTTON_L1, KeyboardController.KEY_FAST_FORWARD)
+            profile.keyMap.put(KeyEvent.KEYCODE_BUTTON_R2, KeyboardControllerKeys.KEY_MENU)
+            profile.keyMap.put(KeyEvent.KEYCODE_BUTTON_L2, KeyboardControllerKeys.KEY_BACK)
+            profile.keyMap.put(KeyEvent.KEYCODE_BUTTON_L1, KeyboardControllerKeys.KEY_FAST_FORWARD)
             return profile
         }
 
@@ -109,39 +109,39 @@ class KeyboardProfile : Serializable {
             profile.keyMap.put(KeyEvent.KEYCODE_M, EmulatorController.KEY_SELECT)
             profile.keyMap.put(KeyEvent.KEYCODE_1, EmulatorController.KEY_B)
             profile.keyMap.put(KeyEvent.KEYCODE_2, EmulatorController.KEY_A)
-            profile.keyMap.put(KeyEvent.KEYCODE_DPAD_CENTER, KeyboardController.KEY_MENU)
-            profile.keyMap.put(KeyEvent.KEYCODE_H, KeyboardController.KEY_BACK)
+            profile.keyMap.put(KeyEvent.KEYCODE_DPAD_CENTER, KeyboardControllerKeys.KEY_MENU)
+            profile.keyMap.put(KeyEvent.KEYCODE_H, KeyboardControllerKeys.KEY_BACK)
             profile.keyMap.put(
                 KeyEvent.KEYCODE_O,
-                EmulatorController.KEY_LEFT + KeyboardController.PLAYER2_OFFSET
+                EmulatorController.KEY_LEFT + KeyboardControllerKeys.PLAYER2_OFFSET
             )
             profile.keyMap.put(
                 KeyEvent.KEYCODE_J,
-                EmulatorController.KEY_RIGHT + KeyboardController.PLAYER2_OFFSET
+                EmulatorController.KEY_RIGHT + KeyboardControllerKeys.PLAYER2_OFFSET
             )
             profile.keyMap.put(
                 KeyEvent.KEYCODE_I,
-                EmulatorController.KEY_UP + KeyboardController.PLAYER2_OFFSET
+                EmulatorController.KEY_UP + KeyboardControllerKeys.PLAYER2_OFFSET
             )
             profile.keyMap.put(
                 KeyEvent.KEYCODE_K,
-                EmulatorController.KEY_DOWN + KeyboardController.PLAYER2_OFFSET
+                EmulatorController.KEY_DOWN + KeyboardControllerKeys.PLAYER2_OFFSET
             )
             profile.keyMap.put(
                 KeyEvent.KEYCODE_PLUS,
-                EmulatorController.KEY_START + KeyboardController.PLAYER2_OFFSET
+                EmulatorController.KEY_START + KeyboardControllerKeys.PLAYER2_OFFSET
             )
             profile.keyMap.put(
                 KeyEvent.KEYCODE_MINUS,
-                EmulatorController.KEY_SELECT + KeyboardController.PLAYER2_OFFSET
+                EmulatorController.KEY_SELECT + KeyboardControllerKeys.PLAYER2_OFFSET
             )
             profile.keyMap.put(
                 KeyEvent.KEYCODE_COMMA,
-                EmulatorController.KEY_B + KeyboardController.PLAYER2_OFFSET
+                EmulatorController.KEY_B + KeyboardControllerKeys.PLAYER2_OFFSET
             )
             profile.keyMap.put(
                 KeyEvent.KEYCODE_PERIOD,
-                EmulatorController.KEY_A + KeyboardController.PLAYER2_OFFSET
+                EmulatorController.KEY_A + KeyboardControllerKeys.PLAYER2_OFFSET
             )
             return profile
         }

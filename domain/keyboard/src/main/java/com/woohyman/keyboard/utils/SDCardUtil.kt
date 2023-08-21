@@ -2,7 +2,7 @@
  * Based on post in http://stackoverflow.com/questions/5694933/find-an-external-sd-card-location
  * author: http://stackoverflow.com/users/565319/richard
  */
-package nostalgia.framework.utils
+package com.woohyman.keyboard.utils
 
 import android.os.Environment
 import java.io.BufferedReader

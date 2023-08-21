@@ -1,4 +1,4 @@
-package nostalgia.framework.emulator
+package com.woohyman.keyboard.emulator
 
 class EmulatorSettings {
     var zapperEnabled = false

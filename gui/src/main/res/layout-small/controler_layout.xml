@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:multitouch="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:ignore="MissingDefaultResource">
 
-    <nostalgia.framework.ui.multitouchbutton.MultitouchLayer
+    <com.woohyman.gui.ui.multitouchbutton.MultitouchLayer
         android:id="@+id/touch_layer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -21,7 +23,7 @@
                 android:orientation="vertical"
                 android:padding="4dp">
 
-                <nostalgia.framework.ui.multitouchbutton.MultitouchButton
+                <com.woohyman.gui.ui.multitouchbutton.MultitouchButton
                     android:id="@+id/button_select"
                     android:layout_width="fill_parent"
                     android:layout_height="30dp"
@@ -32,7 +34,7 @@
                     android:textColor="@color/main_color"
                     android:textSize="14sp" />
 
-                <nostalgia.framework.ui.multitouchbutton.MultitouchButton
+                <com.woohyman.gui.ui.multitouchbutton.MultitouchButton
                     android:id="@+id/button_start"
                     android:layout_width="fill_parent"
                     android:layout_height="30dp"
@@ -44,7 +46,7 @@
                     android:textSize="14sp" />
             </LinearLayout>
 
-            <nostalgia.framework.ui.multitouchbutton.MultitouchImageButton
+            <com.woohyman.gui.ui.multitouchbutton.MultitouchImageButton
                 android:id="@+id/button_menu"
                 android:layout_width="40dp"
                 android:layout_height="30dp"
@@ -57,7 +59,7 @@
                 android:textColor="@color/main_color"
                 android:textSize="14sp" />
 
-            <nostalgia.framework.ui.multitouchbutton.MultitouchImageButton
+            <com.woohyman.gui.ui.multitouchbutton.MultitouchImageButton
                 android:id="@+id/button_fast_forward"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -85,7 +87,7 @@
             android:orientation="vertical"
             android:padding="5dp">
 
-            <nostalgia.framework.ui.multitouchbutton.MultitouchImageButton
+            <com.woohyman.gui.ui.multitouchbutton.MultitouchImageButton
                 android:id="@+id/button_a_turbo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -93,7 +95,7 @@
                 android:background="#0000"
                 android:src="@drawable/button_a_turbo_selector" />
 
-            <nostalgia.framework.ui.multitouchbutton.MultitouchImageButton
+            <com.woohyman.gui.ui.multitouchbutton.MultitouchImageButton
                 android:id="@+id/button_a"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -103,7 +105,7 @@
                 android:background="#0000"
                 android:src="@drawable/button_a_selector" />
 
-            <nostalgia.framework.ui.multitouchbutton.MultitouchImageButton
+            <com.woohyman.gui.ui.multitouchbutton.MultitouchImageButton
                 android:id="@+id/button_b"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -117,7 +119,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
-                <nostalgia.framework.ui.multitouchbutton.MultitouchTwoButton
+                <com.woohyman.gui.ui.multitouchbutton.MultitouchTwoButton
                     android:id="@+id/button_ab"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -128,7 +130,7 @@
                     multitouch:first_button="@id/button_a"
                     multitouch:second_button="@id/button_b" />
 
-                <nostalgia.framework.ui.multitouchbutton.MultitouchImageButton
+                <com.woohyman.gui.ui.multitouchbutton.MultitouchImageButton
                     android:id="@+id/button_b_turbo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -137,7 +139,7 @@
                     android:src="@drawable/button_b_turbo_selector" />
             </LinearLayout>
         </LinearLayout>
-    </nostalgia.framework.ui.multitouchbutton.MultitouchLayer>
+    </com.woohyman.gui.ui.multitouchbutton.MultitouchLayer>
 
     <LinearLayout
         android:layout_width="20dp"

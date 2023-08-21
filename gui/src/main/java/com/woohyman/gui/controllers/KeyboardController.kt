@@ -4,10 +4,24 @@ import android.content.Context
 import android.util.SparseIntArray
 import android.view.KeyEvent
 import android.view.View
-import nostalgia.framework.controllers.EmulatorController
-import nostalgia.framework.emulator.Emulator
-import nostalgia.framework.keyboard.KeyboardProfile
-import nostalgia.framework.utils.NLog
+import com.woohyman.gui.base.EmulatorActivity
+import com.woohyman.keyboard.controllers.EmulatorController
+import com.woohyman.keyboard.data.database.GameDescription
+import com.woohyman.keyboard.keyboard.KeyboardControllerKeys
+import com.woohyman.keyboard.keyboard.KeyboardControllerKeys.Companion.KEY_BACK
+import com.woohyman.keyboard.keyboard.KeyboardControllerKeys.Companion.KEY_FAST_FORWARD
+import com.woohyman.keyboard.keyboard.KeyboardControllerKeys.Companion.KEY_LOAD_SLOT_0
+import com.woohyman.keyboard.keyboard.KeyboardControllerKeys.Companion.KEY_LOAD_SLOT_1
+import com.woohyman.keyboard.keyboard.KeyboardControllerKeys.Companion.KEY_LOAD_SLOT_2
+import com.woohyman.keyboard.keyboard.KeyboardControllerKeys.Companion.KEY_MENU
+import com.woohyman.keyboard.keyboard.KeyboardControllerKeys.Companion.KEY_SAVE_SLOT_0
+import com.woohyman.keyboard.keyboard.KeyboardControllerKeys.Companion.KEY_SAVE_SLOT_1
+import com.woohyman.keyboard.keyboard.KeyboardControllerKeys.Companion.KEY_SAVE_SLOT_2
+import com.woohyman.keyboard.keyboard.KeyboardControllerKeys.Companion.KEY_XPERIA_CIRCLE
+import com.woohyman.keyboard.keyboard.KeyboardControllerKeys.Companion.PLAYER2_OFFSET
+import com.woohyman.keyboard.keyboard.KeyboardProfile
+import com.woohyman.keyboard.emulator.Emulator
+import com.woohyman.keyboard.utils.NLog
 
 class KeyboardController(
     private val emulator: Emulator,
@@ -125,7 +139,7 @@ class KeyboardController(
             if (pressed) {
                 emulatorActivity!!.openGameMenu()
             }
-        } else if (isMulti(mapValue)) {
+        } else if (KeyboardControllerKeys.isMulti(mapValue)) {
             multiToKeys(mapValue, tmpKeys)
             emulator.setKeyPressed(port, keyMapping!![tmpKeys[0]], pressed)
             emulator.setKeyPressed(port, keyMapping[tmpKeys[1]], pressed)
@@ -161,43 +175,7 @@ class KeyboardController(
         emulatorActivity = null
     }
 
-    companion object {
-        const val PLAYER2_OFFSET = 100000
-        const val KEY_XPERIA_CIRCLE = 2068987562
-        const val KEY_MENU = 902
-        const val KEY_BACK = 900
-        const val KEY_RESET = 901
-        const val KEY_FAST_FORWARD = 903
-        const val KEY_SAVE_SLOT_0 = 904
-        const val KEY_LOAD_SLOT_0 = 905
-        const val KEY_SAVE_SLOT_1 = 906
-        const val KEY_LOAD_SLOT_1 = 907
-        const val KEY_SAVE_SLOT_2 = 908
-        const val KEY_LOAD_SLOT_2 = 909
+    companion object{
         private const val TAG = "controller.KeyboardController"
-
-        @JvmField
-        var KEYS_RIGHT_AND_UP =
-            keysToMultiCode(EmulatorController.KEY_RIGHT, EmulatorController.KEY_UP)
-
-        @JvmField
-        var KEYS_RIGHT_AND_DOWN =
-            keysToMultiCode(EmulatorController.KEY_RIGHT, EmulatorController.KEY_DOWN)
-
-        @JvmField
-        var KEYS_LEFT_AND_DOWN =
-            keysToMultiCode(EmulatorController.KEY_LEFT, EmulatorController.KEY_DOWN)
-
-        @JvmField
-        var KEYS_LEFT_AND_UP =
-            keysToMultiCode(EmulatorController.KEY_LEFT, EmulatorController.KEY_UP)
-
-        private fun keysToMultiCode(key1: Int, key2: Int): Int {
-            return key1 * 1000 + key2 + 10000
-        }
-
-        private fun isMulti(mapValue: Int): Boolean {
-            return mapValue >= 10000
-        }
     }
 }

@@ -18,8 +18,8 @@ import com.woohyman.gui.R;
 
 import java.util.ArrayList;
 
-import nostalgia.framework.utils.DialogUtils;
-import nostalgia.framework.utils.EmuUtils;
+import com.woohyman.keyboard.utils.DialogUtils;
+import com.woohyman.keyboard.utils.EmuUtils;
 
 public class GameMenu {
 

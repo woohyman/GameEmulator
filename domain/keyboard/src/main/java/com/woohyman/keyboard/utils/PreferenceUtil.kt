@@ -1,4 +1,4 @@
-package nostalgia.framework.utils
+package com.woohyman.keyboard.utils
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -6,8 +6,8 @@ import android.preference.PreferenceManager
 import com.woohyman.keyboard.base.EmulatorHolder.info
 import com.woohyman.keyboard.base.ViewPort
 import com.woohyman.keyboard.data.database.GameDescription
-import nostalgia.framework.data.entity.GfxProfile
-import nostalgia.framework.emulator.Emulator
+import com.woohyman.keyboard.data.entity.GfxProfile
+import com.woohyman.keyboard.emulator.Emulator
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileNotFoundException

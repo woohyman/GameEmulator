@@ -14,9 +14,9 @@ import com.woohyman.keyboard.base.SlotUtils;
 import com.woohyman.keyboard.data.database.GameDescription;
 import com.woohyman.keyboard.utils.DatabaseHelper;
 
-import nostalgia.framework.data.entity.GfxProfile;
-import nostalgia.framework.data.entity.SlotInfo;
-import nostalgia.framework.utils.PreferenceUtil;
+import com.woohyman.keyboard.data.entity.GfxProfile;
+import com.woohyman.keyboard.data.entity.SlotInfo;
+import com.woohyman.keyboard.utils.PreferenceUtil;
 
 public class ScreenViewPortSettingsActivity extends AppCompatActivity
         implements GameMenu.OnGameMenuListener {
@@ -87,7 +87,7 @@ public class ScreenViewPortSettingsActivity extends AppCompatActivity
     }
 
     @Override
-    public void onGameMenuItemSelected(GameMenu menu, GameMenuItem item) {
+    public void onGameMenuItemSelected(GameMenu menu, GameMenu.GameMenuItem item) {
         runOnUiThread(() -> mtLayer.resetScreenElement());
     }
 

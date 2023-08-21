@@ -3,12 +3,13 @@ package com.woohyman.keyboard.data.database;
 
 import androidx.annotation.NonNull;
 
+import com.woohyman.keyboard.annotations.Column;
+import com.woohyman.keyboard.annotations.Table;
+
 import java.io.File;
 import java.io.Serializable;
 
-import nostalgia.framework.utils.EmuUtils;
-import nostalgia.framework.annotations.Column;
-import nostalgia.framework.annotations.Table;
+import com.woohyman.keyboard.utils.EmuUtils;
 
 @Table
 public class GameDescription implements Serializable, Comparable<GameDescription> {

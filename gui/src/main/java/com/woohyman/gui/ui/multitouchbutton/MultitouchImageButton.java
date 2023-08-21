@@ -6,9 +6,6 @@ import android.view.MotionEvent;
 
 import androidx.appcompat.widget.AppCompatImageButton;
 
-import nostalgia.framework.ui.multitouchbutton.MultitouchBtnInterface;
-import nostalgia.framework.ui.multitouchbutton.OnMultitouchEventListener;
-
 public class MultitouchImageButton extends AppCompatImageButton
         implements MultitouchBtnInterface {
 

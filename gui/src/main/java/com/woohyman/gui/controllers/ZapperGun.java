@@ -4,11 +4,13 @@ import android.content.Context;
 import android.view.MotionEvent;
 import android.view.View;
 
-import nostalgia.framework.emulator.Emulator;
-import nostalgia.framework.base.EmulatorActivity;
-import nostalgia.framework.base.ViewPort;
-import nostalgia.framework.data.database.GameDescription;
-import nostalgia.framework.utils.PreferenceUtil;
+import com.woohyman.gui.base.EmulatorActivity;
+import com.woohyman.keyboard.base.ViewPort;
+import com.woohyman.keyboard.controllers.EmulatorController;
+import com.woohyman.keyboard.data.database.GameDescription;
+
+import com.woohyman.keyboard.emulator.Emulator;
+import com.woohyman.keyboard.utils.PreferenceUtil;
 
 public class ZapperGun implements EmulatorController {
 

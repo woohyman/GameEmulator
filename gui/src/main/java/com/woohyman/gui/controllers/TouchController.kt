@@ -7,18 +7,18 @@ import android.util.SparseIntArray
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
-import nostalgia.framework.emulator.Emulator
-import nostalgia.framework.R
-import nostalgia.framework.base.EmulatorActivity
-import nostalgia.framework.controllers.EmulatorController
-import nostalgia.framework.data.database.GameDescription
-import nostalgia.framework.ui.multitouchbutton.MultitouchBtnInterface
-import nostalgia.framework.ui.multitouchbutton.MultitouchButton
-import nostalgia.framework.ui.multitouchbutton.MultitouchImageButton
-import nostalgia.framework.ui.multitouchbutton.MultitouchLayer
-import nostalgia.framework.ui.multitouchbutton.OnMultitouchEventListener
-import nostalgia.framework.utils.EmuUtils
-import nostalgia.framework.utils.PreferenceUtil
+import com.woohyman.gui.R
+import com.woohyman.gui.base.EmulatorActivity
+import com.woohyman.gui.ui.multitouchbutton.MultitouchBtnInterface
+import com.woohyman.gui.ui.multitouchbutton.MultitouchButton
+import com.woohyman.gui.ui.multitouchbutton.MultitouchImageButton
+import com.woohyman.gui.ui.multitouchbutton.MultitouchLayer
+import com.woohyman.gui.ui.multitouchbutton.OnMultitouchEventListener
+import com.woohyman.keyboard.controllers.EmulatorController
+import com.woohyman.keyboard.data.database.GameDescription
+import com.woohyman.keyboard.emulator.Emulator
+import com.woohyman.keyboard.utils.EmuUtils
+import com.woohyman.keyboard.utils.PreferenceUtil
 import java.lang.ref.WeakReference
 
 class TouchController(private var emulatorActivity: EmulatorActivity?) : EmulatorController,

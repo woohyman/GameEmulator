@@ -11,8 +11,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import nostalgia.framework.data.entity.SlotInfo;
-import nostalgia.framework.utils.NLog;
+import com.woohyman.keyboard.data.entity.SlotInfo;
+import com.woohyman.keyboard.utils.NLog;
 
 public class SlotUtils {
     public static final int NUM_SLOTS = 8;

@@ -1,12 +1,12 @@
-package com.woohyman.gui.ui.gamegallery;
+package com.woohyman.keyboard.utils;
+
+import com.woohyman.keyboard.annotations.Column;
+import com.woohyman.keyboard.annotations.ObjectFromOtherTable;
+import com.woohyman.keyboard.annotations.Table;
+import com.woohyman.keyboard.data.database.GameDescription;
 
 import java.io.File;
 import java.util.ArrayList;
-
-import nostalgia.framework.data.database.GameDescription;
-import nostalgia.framework.annotations.Column;
-import nostalgia.framework.annotations.ObjectFromOtherTable;
-import nostalgia.framework.annotations.Table;
 
 @Table
 public class ZipRomFile {

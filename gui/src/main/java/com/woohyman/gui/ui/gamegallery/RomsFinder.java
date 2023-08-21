@@ -2,6 +2,12 @@ package com.woohyman.gui.ui.gamegallery;
 
 import android.os.Environment;
 
+import com.woohyman.keyboard.data.database.GameDescription;
+import com.woohyman.keyboard.utils.DatabaseHelper;
+import com.woohyman.keyboard.utils.EmuUtils;
+import com.woohyman.keyboard.utils.NLog;
+import com.woohyman.keyboard.utils.ZipRomFile;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,14 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import nostalgia.framework.data.database.GameDescription;
-import nostalgia.framework.ui.gamegallery.BaseGameGalleryActivity;
-import nostalgia.framework.ui.gamegallery.FilenameExtFilter;
-import nostalgia.framework.ui.gamegallery.ZipRomFile;
-import nostalgia.framework.utils.DatabaseHelper;
-import nostalgia.framework.utils.EmuUtils;
-import nostalgia.framework.utils.NLog;
-import nostalgia.framework.utils.SDCardUtil;
+import com.woohyman.keyboard.utils.SDCardUtil;
 
 public class RomsFinder extends Thread {
     private static final String TAG = "RomsFinder";

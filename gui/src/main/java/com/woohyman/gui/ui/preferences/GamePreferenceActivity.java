@@ -15,7 +15,7 @@ import com.woohyman.keyboard.data.database.GameDescription;
 
 import java.util.List;
 
-import nostalgia.framework.data.entity.GfxProfile;
+import com.woohyman.keyboard.data.entity.GfxProfile;
 
 public class GamePreferenceActivity extends AppCompatPreferenceActivity {
 

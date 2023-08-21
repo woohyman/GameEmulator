@@ -20,7 +20,7 @@ import java.nio.ShortBuffer;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import nostalgia.framework.utils.NLog;
+import com.woohyman.keyboard.utils.NLog;
 
 @SuppressLint("ViewConstructor")
 public class OpenGLTestView extends GLSurfaceView {

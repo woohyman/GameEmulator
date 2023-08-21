@@ -6,10 +6,12 @@ import android.view.View;
 
 import androidx.core.view.GestureDetectorCompat;
 
-import nostalgia.framework.emulator.Emulator;
-import nostalgia.framework.base.EmulatorActivity;
-import nostalgia.framework.data.database.GameDescription;
-import nostalgia.framework.utils.PreferenceUtil;
+import com.woohyman.gui.base.EmulatorActivity;
+import com.woohyman.keyboard.controllers.EmulatorController;
+import com.woohyman.keyboard.data.database.GameDescription;
+import com.woohyman.keyboard.utils.PreferenceUtil;
+
+import com.woohyman.keyboard.emulator.Emulator;
 
 public class QuickSaveController implements EmulatorController {
 

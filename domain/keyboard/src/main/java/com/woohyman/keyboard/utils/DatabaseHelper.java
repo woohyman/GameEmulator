@@ -7,6 +7,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Pair;
 
+import com.woohyman.keyboard.annotations.Column;
+import com.woohyman.keyboard.annotations.ObjectFromOtherTable;
+import com.woohyman.keyboard.annotations.Table;
+import com.woohyman.keyboard.data.database.GameDescription;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -16,13 +21,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-
-import nostalgia.framework.data.database.GameDescription;
-import nostalgia.framework.ui.gamegallery.ZipRomFile;
-import nostalgia.framework.annotations.Column;
-import nostalgia.framework.annotations.ObjectFromOtherTable;
-import nostalgia.framework.annotations.Table;
-import nostalgia.framework.utils.NLog;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 

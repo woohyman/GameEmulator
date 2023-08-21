@@ -1,4 +1,4 @@
-package com.woohyman.gui.ui.cheats;
+package com.woohyman.keyboard.cheats;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -8,13 +8,13 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import nostalgia.framework.utils.NLog;
+import com.woohyman.keyboard.utils.NLog;
 
 public class Cheat {
     public static final String CHEAT_PREF_SUFFIX = ".cheats";
-    String chars = "";
-    String desc = "";
-    boolean enable = false;
+    public String chars = "";
+    public String desc = "";
+    public boolean enable = false;
 
     public Cheat(String chars, String desc, boolean enable) {
         this.chars = chars;

@@ -1,9 +1,8 @@
 package com.woohyman.keyboard.keyboard;
 
-import nostalgia.framework.controllers.EmulatorController;
-import nostalgia.framework.controllers.KeyboardController;
-import nostalgia.framework.data.entity.EmulatorInfo;
-import nostalgia.framework.keyboard.KeyboardProfile;
+import com.woohyman.keyboard.controllers.EmulatorController;
+
+import com.woohyman.keyboard.data.entity.EmulatorInfo;
 
 abstract public class BasicEmulatorInfo implements EmulatorInfo {
     public boolean hasZapper() {
@@ -28,31 +27,31 @@ abstract public class BasicEmulatorInfo implements EmulatorInfo {
                 EmulatorController.KEY_B, EmulatorController.KEY_A_TURBO,
                 EmulatorController.KEY_B_TURBO,
 
-                KeyboardController.KEYS_LEFT_AND_UP,
-                KeyboardController.KEYS_RIGHT_AND_UP,
+                KeyboardControllerKeys.KEYS_LEFT_AND_UP,
+                KeyboardControllerKeys.KEYS_RIGHT_AND_UP,
 
-                KeyboardController.KEYS_RIGHT_AND_DOWN,
-                KeyboardController.KEYS_LEFT_AND_DOWN,
+                KeyboardControllerKeys.KEYS_RIGHT_AND_DOWN,
+                KeyboardControllerKeys.KEYS_LEFT_AND_DOWN,
 
-                KeyboardController.KEY_SAVE_SLOT_0,
-                KeyboardController.KEY_LOAD_SLOT_0,
+                KeyboardControllerKeys.KEY_SAVE_SLOT_0,
+                KeyboardControllerKeys.KEY_LOAD_SLOT_0,
 
-                KeyboardController.KEY_SAVE_SLOT_1,
-                KeyboardController.KEY_LOAD_SLOT_1,
+                KeyboardControllerKeys.KEY_SAVE_SLOT_1,
+                KeyboardControllerKeys.KEY_LOAD_SLOT_1,
 
-                KeyboardController.KEY_SAVE_SLOT_2,
-                KeyboardController.KEY_LOAD_SLOT_2,
+                KeyboardControllerKeys.KEY_SAVE_SLOT_2,
+                KeyboardControllerKeys.KEY_LOAD_SLOT_2,
 
-                KeyboardController.KEY_MENU,
-                KeyboardController.KEY_FAST_FORWARD,
-                KeyboardController.KEY_BACK
+                KeyboardControllerKeys.KEY_MENU,
+                KeyboardControllerKeys.KEY_FAST_FORWARD,
+                KeyboardControllerKeys.KEY_BACK
         };
 
         if (isMultiPlayerSupported()) {
             int[] res = new int[base.length * 2];
             System.arraycopy(base, 0, res, 0, base.length);
             for (int i = 0; i < base.length; i++) {
-                res[i + base.length] = base[i] + KeyboardController.PLAYER2_OFFSET;
+                res[i + base.length] = base[i] + KeyboardControllerKeys.PLAYER2_OFFSET;
             }
             return res;
         } else {

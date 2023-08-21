@@ -11,9 +11,9 @@ import android.widget.ProgressBar
 import android.widget.SectionIndexer
 import android.widget.TextView
 import com.blankj.utilcode.util.Utils
-import nostalgia.framework.R
-import nostalgia.framework.data.database.GameDescription
-import nostalgia.framework.data.entity.RowItem
+import com.woohyman.gui.R
+import com.woohyman.keyboard.data.database.GameDescription
+import com.woohyman.keyboard.data.entity.RowItem
 import java.util.Arrays
 import java.util.Collections
 import java.util.Locale

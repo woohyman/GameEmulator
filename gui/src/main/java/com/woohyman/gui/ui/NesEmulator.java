@@ -1,4 +1,4 @@
-package com.woohyman.nes;
+package com.woohyman.gui.ui;
 
 import android.util.SparseIntArray;
 
@@ -7,15 +7,16 @@ import com.woohyman.keyboard.base.JniBridge;
 import com.woohyman.keyboard.base.JniEmulator;
 import com.woohyman.keyboard.controllers.EmulatorController;
 import com.woohyman.keyboard.data.database.GameDescription;
-import com.woohyman.keyboard.data.entity.EmulatorInfo;
-import com.woohyman.keyboard.data.entity.GfxProfile;
-import com.woohyman.keyboard.data.entity.SfxProfile;
-import com.woohyman.keyboard.data.entity.SfxProfile.SoundEncoding;
 import com.woohyman.keyboard.keyboard.BasicEmulatorInfo;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import com.woohyman.keyboard.data.entity.EmulatorInfo;
+import com.woohyman.keyboard.data.entity.GfxProfile;
+import com.woohyman.keyboard.data.entity.SfxProfile;
+import com.woohyman.keyboard.data.entity.SfxProfile.SoundEncoding;
 
 public class NesEmulator extends JniEmulator {
 

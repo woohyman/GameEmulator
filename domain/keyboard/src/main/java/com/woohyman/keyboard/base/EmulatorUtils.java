@@ -5,7 +5,7 @@ import android.os.Environment;
 
 import java.io.File;
 
-import nostalgia.framework.emulator.EmulatorException;
+import com.woohyman.keyboard.emulator.EmulatorException;
 
 public class EmulatorUtils {
 

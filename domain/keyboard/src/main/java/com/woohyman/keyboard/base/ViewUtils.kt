@@ -1,9 +1,9 @@
 package com.woohyman.keyboard.base
 
 import android.content.Context
-import nostalgia.framework.emulator.Emulator
-import nostalgia.framework.data.entity.GfxProfile
-import nostalgia.framework.utils.PreferenceUtil
+import com.woohyman.keyboard.emulator.Emulator
+import com.woohyman.keyboard.data.entity.GfxProfile
+import com.woohyman.keyboard.utils.PreferenceUtil
 
 object ViewUtils {
     fun computeViewPort(

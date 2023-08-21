@@ -1,16 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.woohyman.emulator">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission
+        android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="com.android.vending.CHECK_LICENSE" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+
     <application
-        android:name=".NesApplication"
+        android:name="com.woohyman.gui.ui.NesApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme">
+        android:requestLegacyExternalStorage="true"
+        android:theme="@style/AppTheme"
+        tools:ignore="UnusedAttribute">
 
         <activity
-            android:name=".NesGalleryActivity"
+            android:name="com.woohyman.gui.ui.NesGalleryActivity"
             android:exported="true"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -22,11 +41,11 @@
         </activity>
 
         <activity
-            android:name=".NesEmulatorActivity"
+            android:name="com.woohyman.gui.ui.NesEmulatorActivity"
             android:theme="@style/AppTheme.FullScreen" />
 
         <activity
-            android:name="nostalgia.framework.ui.preferences.GeneralPreferenceActivity"
+            android:name="com.woohyman.gui.ui.preferences.GeneralPreferenceActivity"
             android:exported="true"
             android:label="@string/general_pref"
             android:theme="@style/PrefTheme">
@@ -38,7 +57,7 @@
         </activity>
 
         <activity
-            android:name="nostalgia.framework.ui.preferences.KeyboardSettingsActivity"
+            android:name="com.woohyman.gui.ui.preferences.KeyboardSettingsActivity"
             android:exported="true"
             android:label="@string/key_pref"
             android:theme="@style/PrefTheme">
@@ -50,7 +69,7 @@
         </activity>
 
         <activity
-            android:name="nostalgia.framework.ui.preferences.TouchControllerSettingsActivity"
+            android:name="com.woohyman.gui.ui.preferences.TouchControllerSettingsActivity"
             android:exported="true"
             android:label="@string/game_pref"
             android:theme="@style/AppTheme.FullScreen">
@@ -62,7 +81,7 @@
         </activity>
 
         <activity
-            android:name="nostalgia.framework.ui.preferences.ScreenViewPortSettingsActivity"
+            android:name="com.woohyman.gui.ui.preferences.ScreenViewPortSettingsActivity"
             android:exported="true"
             android:label="@string/game_pref"
             android:theme="@style/AppTheme.FullScreen">
@@ -72,6 +91,50 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name="com.woohyman.gui.ui.SplashActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name="com.woohyman.gui.ui.gamegallery.SlotSelectionActivity" />
+
+        <activity
+            android:name="com.woohyman.gui.ui.preferences.GamePreferenceActivity"
+            android:label="@string/game_pref"
+            android:theme="@style/PrefTheme" />
+
+        <activity
+            android:name="com.woohyman.gui.ui.cheats.CheatsActivity"
+            android:label="Cheats" />
+
+        <activity android:name="com.woohyman.gui.base.OpenGLTestActivity" />
+
+        <activity
+            android:name="com.woohyman.gui.ui.preferences.AboutActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
+            android:name="com.woohyman.gui.base.RestarterActivity"
+            android:configChanges="orientation|screenSize"
+            android:process=":restarter" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
     </application>
 
 </manifest>

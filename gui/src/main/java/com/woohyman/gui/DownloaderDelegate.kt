@@ -1,4 +1,4 @@
-package nostalgia.framework.rom
+package com.woohyman.gui
 
 import android.view.View
 import android.widget.ProgressBar
@@ -9,9 +9,9 @@ import com.liulishuo.okdownload.DownloadTask
 import com.liulishuo.okdownload.core.breakpoint.BreakpointInfo
 import com.liulishuo.okdownload.core.cause.EndCause
 import com.liulishuo.okdownload.core.cause.ResumeFailedCause
-import nostalgia.framework.data.database.GameDescription
-import nostalgia.framework.ui.gamegallery.adapter.GalleryPagerAdapter
-import nostalgia.framework.utils.NLog
+import com.woohyman.gui.ui.gamegallery.adapter.GalleryPagerAdapter
+import com.woohyman.keyboard.data.database.GameDescription
+import com.woohyman.keyboard.utils.NLog
 
 class DownloaderDelegate(
     private val listener: GalleryPagerAdapter.OnItemClickListener,

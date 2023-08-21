@@ -1,7 +1,7 @@
-package nostalgia.framework.data.entity
+package com.woohyman.keyboard.data.entity
 
 import android.util.SparseIntArray
-import nostalgia.framework.keyboard.KeyboardProfile
+import com.woohyman.keyboard.keyboard.KeyboardProfile
 
 interface EmulatorInfo {
     val name: String?

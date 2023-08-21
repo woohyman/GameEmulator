@@ -24,11 +24,11 @@ import android.widget.EditText
 import android.widget.ListView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import nostalgia.framework.keyboard.KeyboardProfile
-import nostalgia.framework.R
-import nostalgia.framework.base.EmulatorHolder
-import com.woohyman.gui.controllers.KeyboardController
-import nostalgia.framework.utils.NLog
+import com.woohyman.gui.R
+import com.woohyman.keyboard.keyboard.KeyboardProfile
+import com.woohyman.keyboard.base.EmulatorHolder
+import com.woohyman.keyboard.keyboard.KeyboardControllerKeys
+import com.woohyman.keyboard.utils.NLog
 import java.util.regex.Pattern
 
 class KeyboardSettingsActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
@@ -200,7 +200,7 @@ class KeyboardSettingsActivity : AppCompatActivity(), AdapterView.OnItemClickLis
                 var keyCode = keyCode
                 if (keyCode == KeyEvent.KEYCODE_BACK) {
                     if (event.isAltPressed) {
-                        keyCode = KeyboardController.KEY_XPERIA_CIRCLE
+                        keyCode = KeyboardControllerKeys.KEY_XPERIA_CIRCLE
                     }
                 }
                 val txt = getKeyLabel(keyCode)
@@ -345,7 +345,7 @@ class KeyboardSettingsActivity : AppCompatActivity(), AdapterView.OnItemClickLis
             NON_PRINTABLE_KEY_LABELS.put(KeyEvent.KEYCODE_DPAD_RIGHT, "Right")
             NON_PRINTABLE_KEY_LABELS.put(KeyEvent.KEYCODE_DPAD_UP, "Up")
             NON_PRINTABLE_KEY_LABELS.put(KeyEvent.KEYCODE_DPAD_DOWN, "Down")
-            NON_PRINTABLE_KEY_LABELS.put(KeyboardController.KEY_XPERIA_CIRCLE, "Circle")
+            NON_PRINTABLE_KEY_LABELS.put(KeyboardControllerKeys.KEY_XPERIA_CIRCLE, "Circle")
             NON_PRINTABLE_KEY_LABELS.put(KeyEvent.KEYCODE_BUTTON_A, "A")
             NON_PRINTABLE_KEY_LABELS.put(KeyEvent.KEYCODE_BUTTON_B, "B")
             NON_PRINTABLE_KEY_LABELS.put(KeyEvent.KEYCODE_BUTTON_C, "C")

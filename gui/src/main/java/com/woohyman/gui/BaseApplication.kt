@@ -2,8 +2,8 @@ package com.woohyman.gui
 
 import android.app.Application
 import com.blankj.utilcode.util.Utils
-import nostalgia.framework.utils.EmuUtils
-import nostalgia.framework.utils.NLog
+import com.woohyman.keyboard.utils.EmuUtils
+import com.woohyman.keyboard.utils.NLog
 
 abstract class BaseApplication : Application() {
 
