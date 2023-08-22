@@ -2,7 +2,6 @@ package com.woohyman.nes;
 
 import android.util.SparseIntArray;
 
-import com.woohyman.keyboard.Core;
 import com.woohyman.keyboard.base.JniBridge;
 import com.woohyman.keyboard.base.JniEmulator;
 import com.woohyman.keyboard.controllers.EmulatorController;
@@ -17,11 +16,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class NesEmulator extends JniEmulator {
+public class NesEmulatorImpl extends JniEmulator {
 
     public static final String PACK_SUFFIX = "nness";
     private static EmulatorInfo info;
-    private static NesEmulator instance;
     public String[] palExclusiveKeywords = new String[]{".beauty|beast",
             ".hammerin|harry", ".noah|ark", ".rockets|rivals",
             ".formula|sensation", ".trolls|crazyland", "asterix", "elite",
@@ -44,14 +42,7 @@ public class NesEmulator extends JniEmulator {
             "d91a5f3e924916eb16bb6a3255f532bc",
     };
 
-    private NesEmulator() {
-    }
-
-    public static JniEmulator getInstance() {
-        if (instance == null) {
-            instance = new NesEmulator();
-        }
-        return instance;
+    private NesEmulatorImpl() {
     }
 
     @Override

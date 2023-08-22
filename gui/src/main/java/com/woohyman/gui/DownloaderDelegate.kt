@@ -91,6 +91,7 @@ class DownloaderDelegate(
             if (cause != EndCause.COMPLETED) {
                 ToastUtils.showLong("错误信息 EndCause：" + cause + "，Exception：" + realCause?.message)
             }
+            NLog.e("test111", "错误信息 EndCause：" + cause + "，Exception：" + realCause?.message)
             progressBar.visibility = View.INVISIBLE
         }
     }

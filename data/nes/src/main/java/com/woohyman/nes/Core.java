@@ -1,4 +1,4 @@
-package com.woohyman.keyboard;
+package com.woohyman.nes;
 
 import com.woohyman.keyboard.base.JniBridge;
 
