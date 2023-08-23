@@ -45,7 +45,6 @@ abstract class JniEmulator : Emulator {
     private var gfx: GfxProfile? = null
     private var track: AudioTrack? = null
     private var sfxBuffer: ShortArray? = null
-    private val jni: JniBridge
     private var keys = 0
     private var turbos = 0.inv()
     private var viewPortWidth = 0
@@ -56,7 +55,6 @@ abstract class JniEmulator : Emulator {
         KeyboardProfile.BUTTON_NAMES = info?.deviceKeyboardNames
         KeyboardProfile.BUTTON_KEY_EVENT_CODES = info?.deviceKeyboardCodes
         KeyboardProfile.BUTTON_DESCRIPTIONS = info?.deviceKeyboardDescriptions
-        jni = bridge
     }
 
     abstract val bridge: JniBridge
@@ -64,20 +62,20 @@ abstract class JniEmulator : Emulator {
     abstract override fun autoDetectSfx(game: GameDescription): SfxProfile
 
     override val historyItemCount: Int
-        get() = jni.historyItemCount
+        get() = bridge.historyItemCount
 
     override fun setFastForwardFrameCount(frames: Int) {
         numFastForwardFrames = frames
     }
 
     override fun loadHistoryState(pos: Int) {
-        if (!jni.loadHistoryState(pos)) {
+        if (!bridge.loadHistoryState(pos)) {
             throw EmulatorException("load history state failed")
         }
     }
 
     override fun renderHistoryScreenshot(bmp: Bitmap, pos: Int) {
-        if (!jni.renderHistory(bmp, pos, bmp.width, bmp.height)) {
+        if (!bridge.renderHistory(bmp, pos, bmp.width, bmp.height)) {
             throw EmulatorException("render history failed")
         }
     }
@@ -98,7 +96,7 @@ abstract class JniEmulator : Emulator {
             }
             this.sfx = sfx
             this.gfx = gfx
-            if (!jni.start(gfx.toInt(), sfx?.toInt() ?: -1, settings.toInt())) {
+            if (!bridge.start(gfx.toInt(), sfx?.toInt() ?: -1, settings.toInt())) {
                 throw EmulatorException("init failed")
             }
             synchronized(loadLock) { gameInfo = null }
@@ -122,7 +120,7 @@ abstract class JniEmulator : Emulator {
                 lenX[0] = 0
                 lenX[1] = 0
             }
-            if (!jni.reset()) {
+            if (!bridge.reset()) {
                 throw EmulatorException("reset failed")
             }
             ready.set(true)
@@ -131,7 +129,7 @@ abstract class JniEmulator : Emulator {
 
     override fun setBaseDir(path: String) {
         baseDir = path
-        if (!jni.setBaseDir(path)) {
+        if (!bridge.setBaseDir(path)) {
             throw EmulatorException("could not set base dir")
         }
     }
@@ -148,11 +146,11 @@ abstract class JniEmulator : Emulator {
         } catch (ignored: OutOfMemoryError) {
         }
         if (screen != null) {
-            if (!jni.renderVP(screen, gfx!!.originalScreenWidth, gfx!!.originalScreenHeight)) {
+            if (!bridge.renderVP(screen, gfx!!.originalScreenWidth, gfx!!.originalScreenHeight)) {
                 throw EmulatorException(R.string.act_game_screenshot_failed)
             }
         }
-        if (!jni.saveState(fileName, slot)) {
+        if (!bridge.saveState(fileName, slot)) {
             throw EmulatorException(R.string.act_emulator_save_state_failed)
         }
         if (screen != null) {
@@ -185,13 +183,13 @@ abstract class JniEmulator : Emulator {
         if (!File(fileName).exists()) {
             return
         }
-        if (!jni.loadState(fileName, slot)) {
+        if (!bridge.loadState(fileName, slot)) {
             throw EmulatorException(R.string.act_emulator_load_state_failed)
         }
     }
 
     override fun loadGame(fileName: String, batteryDir: String, batterySaveFullPath: String) {
-        if (!jni.loadGame(fileName, batteryDir, batterySaveFullPath)) {
+        if (!bridge.loadGame(fileName, batteryDir, batterySaveFullPath)) {
             synchronized(loadLock) {
                 loadFailed = true
                 loadLock.notifyAll()
@@ -244,14 +242,14 @@ abstract class JniEmulator : Emulator {
         }
         requireNotNull(result)
         if (gameInfo != null) {
-            if (!jni.readPalette(result)) {
+            if (!bridge.readPalette(result)) {
                 throw EmulatorException("error reading palette")
             }
         }
     }
 
     override fun setViewPortSize(w: Int, h: Int) {
-        if (!jni.setViewPortSize(w, h)) {
+        if (!bridge.setViewPortSize(w, h)) {
             throw EmulatorException("set view port size failed")
         }
         synchronized(viewPortLock) {
@@ -273,7 +271,7 @@ abstract class JniEmulator : Emulator {
                 track!!.release()
                 track = null
             }
-            jni.stop()
+            bridge.stop()
             gameInfo = null
             bitmap = null
         }
@@ -292,7 +290,7 @@ abstract class JniEmulator : Emulator {
             emuX = (activeGfxProfile.originalScreenWidth * x).toInt()
             emuY = (activeGfxProfile.originalScreenHeight * y).toInt()
         }
-        if (!jni.fireZapper(emuX, emuY)) {
+        if (!bridge.fireZapper(emuX, emuY)) {
             throw EmulatorException("firezapper failed")
         }
     }
@@ -306,22 +304,22 @@ abstract class JniEmulator : Emulator {
         if (fastForward && numFramesToSkip > -1) {
             numFramesToSkip = numFastForwardFrames
         }
-        if (!jni.emulate(keys, turbos, numFramesToSkip)) {
+        if (!bridge.emulate(keys, turbos, numFramesToSkip)) {
             throw EmulatorException("emulateframe failed")
         }
     }
 
     override fun renderGfx() {
-        if (!jni.render(bitmap)) {
+        if (!bridge.render(bitmap)) {
             createBitmap(viewPortWidth, viewPortHeight)
-            if (!jni.render(bitmap)) {
+            if (!bridge.render(bitmap)) {
                 throw EmulatorException("render failed")
             }
         }
     }
 
     override fun renderGfxGL() {
-        if (!jni.renderGL()) {
+        if (!bridge.renderGL()) {
             throw EmulatorException("render failed")
         }
     }
@@ -335,13 +333,13 @@ abstract class JniEmulator : Emulator {
     }
 
     override fun enableCheat(gg: String) {
-        if (!jni.enableCheat(gg, 0)) {
+        if (!bridge.enableCheat(gg, 0)) {
             throw EmulatorException(R.string.act_emulator_invalid_cheat, gg)
         }
     }
 
     override fun enableRawCheat(addr: Int, `val`: Int, comp: Int) {
-        if (!jni.enableRawCheat(addr, `val`, comp)) {
+        if (!bridge.enableRawCheat(addr, `val`, comp)) {
             throw EmulatorException(
                 R.string.act_emulator_invalid_cheat, Integer.toHexString(addr)
                         + ":" + Integer.toHexString(`val`)
@@ -350,7 +348,7 @@ abstract class JniEmulator : Emulator {
     }
 
     override fun readSfxData() {
-        val length = jni.readSfxBuffer(sfxBuffer)
+        val length = bridge.readSfxBuffer(sfxBuffer)
         var slen: Int
         var back: Int
         synchronized(testX) {

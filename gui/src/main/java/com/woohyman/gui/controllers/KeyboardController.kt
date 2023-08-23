@@ -32,10 +32,10 @@ class KeyboardController(
     private val tmpKeys = IntArray(2)
     private val loadingOrSaving = BooleanArray(4)
     private var profile: KeyboardProfile? = null
-    private val keyMapping: SparseIntArray?
+    private val keyMapping: Map<Int,Int>
 
     init {
-        keyMapping = emulator.info?.keyMapping
+        keyMapping = emulator.info.keyMapping
     }
 
     override fun onResume() {
@@ -141,11 +141,11 @@ class KeyboardController(
             }
         } else if (KeyboardControllerKeys.isMulti(mapValue)) {
             multiToKeys(mapValue, tmpKeys)
-            emulator.setKeyPressed(port, keyMapping!![tmpKeys[0]], pressed)
-            emulator.setKeyPressed(port, keyMapping[tmpKeys[1]], pressed)
+            emulator.setKeyPressed(port, keyMapping[tmpKeys[0]]!!, pressed)
+            emulator.setKeyPressed(port, keyMapping[tmpKeys[1]]!!, pressed)
         } else {
             NLog.i(TAG, "process key $mapValue $keyMapping")
-            val value = keyMapping!![mapValue]
+            val value = keyMapping[mapValue]!!
             emulator.setKeyPressed(port, value, pressed)
         }
     }

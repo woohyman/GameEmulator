@@ -9,7 +9,7 @@ import com.woohyman.keyboard.data.entity.GfxProfile
 import com.woohyman.keyboard.data.entity.SfxProfile
 
 interface Emulator {
-    val info: EmulatorInfo?
+    val info: EmulatorInfo
     fun start(cfg: GfxProfile, sfx: SfxProfile, settings: EmulatorSettings)
     val activeGfxProfile: GfxProfile?
     val activeSfxProfile: SfxProfile?

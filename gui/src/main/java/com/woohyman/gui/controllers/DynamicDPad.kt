@@ -8,7 +8,6 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.os.Vibrator
 import android.util.DisplayMetrics
-import android.util.SparseIntArray
 import android.view.Display
 import android.view.MotionEvent
 import android.view.View
@@ -27,7 +26,7 @@ class DynamicDPad(
     private var rightMapped = 0
     private var upMapped = 0
     private var downMapped = 0
-    private var mapping: SparseIntArray? = null
+    private var mapping: Map<Int, Int> = emptyMap()
     private var port = 0
     private var emulator: Emulator? = null
     private var view: View? = null
@@ -62,18 +61,15 @@ class DynamicDPad(
     override fun connectToEmulator(port: Int, emulator: Emulator) {
         this.emulator = emulator
         this.port = port
-        mapping = emulator.info?.keyMapping
-        leftMapped = mapping!![EmulatorController.KEY_LEFT]
-        rightMapped = mapping!![EmulatorController.KEY_RIGHT]
-        downMapped = mapping!![EmulatorController.KEY_DOWN]
-        upMapped = mapping!![EmulatorController.KEY_UP]
+        mapping = emulator.info.keyMapping
+        leftMapped = mapping[EmulatorController.KEY_LEFT]!!
+        rightMapped = mapping[EmulatorController.KEY_RIGHT]!!
+        downMapped = mapping[EmulatorController.KEY_DOWN]!!
+        upMapped = mapping[EmulatorController.KEY_UP]!!
     }
 
     override fun getView(): View {
-        if (view == null) {
-            view = DPadView(context)
-        }
-        return view!!
+        return view ?: DPadView(context)
     }
 
     override fun onDestroy() {

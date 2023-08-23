@@ -3,10 +3,11 @@ package com.woohyman.keyboard.data.entity
 /**
  * 图形效果
  */
-abstract class GfxProfile {
-    var name: String? = null
-    var originalScreenWidth = 0
-    var originalScreenHeight = 0
-    var fps = 0
+abstract class GfxProfile(
+    var name: String,
+    var originalScreenWidth: Int,
+    var originalScreenHeight: Int,
+    var fps: Int,
+) {
     abstract fun toInt(): Int
 }

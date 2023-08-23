@@ -8,12 +8,12 @@ interface EmulatorInfo {
     fun hasZapper(): Boolean
     fun supportsRawCheats(): Boolean
     val cheatInvalidCharsRegex: String?
-    val defaultGfxProfile: GfxProfile?
-    val defaultSfxProfile: SfxProfile?
+    val defaultGfxProfile: GfxProfile
+    val defaultSfxProfile: SfxProfile
     val defaultKeyboardProfile: KeyboardProfile?
     val availableGfxProfiles: List<GfxProfile?>?
     val availableSfxProfiles: List<SfxProfile?>?
-    val keyMapping: SparseIntArray?
+    val keyMapping: Map<Int, Int>
     val numQualityLevels: Int
     val deviceKeyboardCodes: IntArray?
     val deviceKeyboardNames: Array<String>?

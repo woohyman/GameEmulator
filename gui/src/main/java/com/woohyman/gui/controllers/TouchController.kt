@@ -25,7 +25,7 @@ class TouchController(private var emulatorActivity: EmulatorActivity?) : Emulato
     OnMultitouchEventListener {
     private var emulator: Emulator? = null
     private var port = 0
-    private var mapping: SparseIntArray? = null
+    private var mapping: Map<Int,Int> = emptyMap()
     private val resIdMapping = SparseIntArray()
     private var multitouchLayer: MultitouchLayer? = null
     private var remoteIc: ImageView? = null
@@ -64,7 +64,7 @@ class TouchController(private var emulatorActivity: EmulatorActivity?) : Emulato
     override fun connectToEmulator(port: Int, emulator: Emulator) {
         this.emulator = emulator
         this.port = port
-        mapping = emulator.info?.keyMapping
+        mapping = emulator.info.keyMapping
     }
 
     fun isPointerHandled(pointerId: Int): Boolean {
@@ -78,28 +78,28 @@ class TouchController(private var emulatorActivity: EmulatorActivity?) : Emulato
         multitouchLayer = layout.findViewById(R.id.touch_layer)
         val up = multitouchLayer?.findViewById<MultitouchImageButton>(R.id.button_up)
         up?.setOnMultitouchEventlistener(this)
-        resIdMapping.put(R.id.button_up, mapping!![EmulatorController.KEY_UP])
+        resIdMapping.put(R.id.button_up, mapping[EmulatorController.KEY_UP]!!)
         val down = multitouchLayer?.findViewById<MultitouchImageButton>(R.id.button_down)
         down?.setOnMultitouchEventlistener(this)
-        resIdMapping.put(R.id.button_down, mapping!![EmulatorController.KEY_DOWN])
+        resIdMapping.put(R.id.button_down, mapping!![EmulatorController.KEY_DOWN]!!)
         val left = multitouchLayer?.findViewById<MultitouchImageButton>(R.id.button_left)
         left?.setOnMultitouchEventlistener(this)
-        resIdMapping.put(R.id.button_left, mapping!![EmulatorController.KEY_LEFT])
+        resIdMapping.put(R.id.button_left, mapping!![EmulatorController.KEY_LEFT]!!)
         val right = multitouchLayer?.findViewById<MultitouchImageButton>(R.id.button_right)
         right?.setOnMultitouchEventlistener(this)
-        resIdMapping.put(R.id.button_right, mapping!![EmulatorController.KEY_RIGHT])
+        resIdMapping.put(R.id.button_right, mapping!![EmulatorController.KEY_RIGHT]!!)
         val a = multitouchLayer?.findViewById<MultitouchImageButton>(R.id.button_a)
         a?.setOnMultitouchEventlistener(this)
-        resIdMapping.put(R.id.button_a, mapping!![EmulatorController.KEY_A])
+        resIdMapping.put(R.id.button_a, mapping!![EmulatorController.KEY_A]!!)
         val b = multitouchLayer?.findViewById<MultitouchImageButton>(R.id.button_b)
         b?.setOnMultitouchEventlistener(this)
-        resIdMapping.put(R.id.button_b, mapping!![EmulatorController.KEY_B])
+        resIdMapping.put(R.id.button_b, mapping!![EmulatorController.KEY_B]!!)
         aTurbo = multitouchLayer?.findViewById(R.id.button_a_turbo)
         aTurbo?.setOnMultitouchEventlistener(this)
-        resIdMapping.put(R.id.button_a_turbo, mapping!![EmulatorController.KEY_A_TURBO])
+        resIdMapping.put(R.id.button_a_turbo, mapping!![EmulatorController.KEY_A_TURBO]!!)
         bTurbo = multitouchLayer?.findViewById(R.id.button_b_turbo)
         bTurbo?.setOnMultitouchEventlistener(this)
-        resIdMapping.put(R.id.button_b_turbo, mapping!![EmulatorController.KEY_B_TURBO])
+        resIdMapping.put(R.id.button_b_turbo, mapping!![EmulatorController.KEY_B_TURBO]!!)
         abButton = multitouchLayer?.findViewById(R.id.button_ab)
         fastForward = multitouchLayer?.findViewById(R.id.button_fast_forward)
         fastForward?.setOnMultitouchEventlistener(object : OnMultitouchEventListener {
@@ -161,7 +161,7 @@ class TouchController(private var emulatorActivity: EmulatorActivity?) : Emulato
     }
 
     private fun sendKey(code: Int) {
-        val cc = mapping!![code]
+        val cc = mapping!![code]!!
         emulator!!.setKeyPressed(port, cc, true)
         keyHandler.sendEmptyMessageDelayed(cc, 200)
     }

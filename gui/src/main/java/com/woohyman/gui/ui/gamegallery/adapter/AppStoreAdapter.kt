@@ -77,7 +77,7 @@ class AppStoreAdapter(private val context: Context) : BaseAdapter(), SectionInde
         val gameDescription = GameDescription()
         gameDescription.url =
             "https://gitee.com/popvan/nes-repo/raw/master/roms/Super%20Mario%20Bros.%203.nes"
-        gameDescription.name = "坦克"
+        gameDescription.name = "超级马里奥兄弟3"
         games.add(gameDescription)
         for (game in games) {
             sumRuns = if (game.runCount > sumRuns) game.runCount else sumRuns
