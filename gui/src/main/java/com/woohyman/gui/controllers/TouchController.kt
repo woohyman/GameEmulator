@@ -25,7 +25,7 @@ class TouchController(private var emulatorActivity: EmulatorActivity?) : Emulato
     OnMultitouchEventListener {
     private var emulator: Emulator? = null
     private var port = 0
-    private var mapping: Map<Int,Int> = emptyMap()
+    private var mapping: Map<Int, Int> = emptyMap()
     private val resIdMapping = SparseIntArray()
     private var multitouchLayer: MultitouchLayer? = null
     private var remoteIc: ImageView? = null
@@ -103,33 +103,45 @@ class TouchController(private var emulatorActivity: EmulatorActivity?) : Emulato
         abButton = multitouchLayer?.findViewById(R.id.button_ab)
         fastForward = multitouchLayer?.findViewById(R.id.button_fast_forward)
         fastForward?.setOnMultitouchEventlistener(object : OnMultitouchEventListener {
-            override fun onMultitouchExit(btn: MultitouchBtnInterface) {
-                emulatorActivity!!.onFastForwardUp()
+
+            override fun onMultitouchEnter(btn: MultitouchBtnInterface?) {
+                emulatorActivity!!.onFastForwardDown()
             }
 
-            override fun onMultitouchEnter(btn: MultitouchBtnInterface) {
-                emulatorActivity!!.onFastForwardDown()
+            override fun onMultitouchExit(btn: MultitouchBtnInterface?) {
+                emulatorActivity!!.onFastForwardUp()
             }
         })
         val select = layout.findViewById<MultitouchButton>(R.id.button_select)
         select?.setOnMultitouchEventlistener(object : OnMultitouchEventListener {
-            override fun onMultitouchExit(btn: MultitouchBtnInterface) {}
-            override fun onMultitouchEnter(btn: MultitouchBtnInterface) {
+
+            override fun onMultitouchEnter(btn: MultitouchBtnInterface?) {
                 sendKey(EmulatorController.KEY_SELECT)
+            }
+
+            override fun onMultitouchExit(btn: MultitouchBtnInterface?) {
+
             }
         })
         val start = layout.findViewById<MultitouchButton>(R.id.button_start)
         start.setOnMultitouchEventlistener(object : OnMultitouchEventListener {
-            override fun onMultitouchExit(btn: MultitouchBtnInterface) {}
-            override fun onMultitouchEnter(btn: MultitouchBtnInterface) {
+
+            override fun onMultitouchEnter(btn: MultitouchBtnInterface?) {
                 sendKey(EmulatorController.KEY_START)
+            }
+
+            override fun onMultitouchExit(btn: MultitouchBtnInterface?) {
+
             }
         })
         val menu = layout.findViewById<MultitouchImageButton>(R.id.button_menu)
         menu.setOnMultitouchEventlistener(object : OnMultitouchEventListener {
-            override fun onMultitouchExit(btn: MultitouchBtnInterface) {}
-            override fun onMultitouchEnter(btn: MultitouchBtnInterface) {
+            override fun onMultitouchEnter(btn: MultitouchBtnInterface?) {
                 emulatorActivity!!.openGameMenu()
+            }
+
+            override fun onMultitouchExit(btn: MultitouchBtnInterface?) {
+
             }
         })
         val center = layout.findViewById<View>(R.id.button_center)
@@ -168,14 +180,6 @@ class TouchController(private var emulatorActivity: EmulatorActivity?) : Emulato
 
     fun handleKey(cc: Int) {
         emulator!!.setKeyPressed(port, cc, false)
-    }
-
-    override fun onMultitouchEnter(btn: MultitouchBtnInterface) {
-        emulator!!.setKeyPressed(port, resIdMapping[btn.id], true)
-    }
-
-    override fun onMultitouchExit(btn: MultitouchBtnInterface) {
-        emulator!!.setKeyPressed(port, resIdMapping[btn.id], false)
     }
 
     override fun onGameStarted(game: GameDescription) {
@@ -250,4 +254,13 @@ class TouchController(private var emulatorActivity: EmulatorActivity?) : Emulato
     companion object {
         private const val TAG = "controllers.TouchController"
     }
+
+    override fun onMultitouchEnter(btn: MultitouchBtnInterface?) {
+        emulator!!.setKeyPressed(port, resIdMapping[btn!!.getId()], true)
+    }
+
+    override fun onMultitouchExit(btn: MultitouchBtnInterface?) {
+        emulator!!.setKeyPressed(port, resIdMapping[btn!!.getId()], false)
+    }
+
 }

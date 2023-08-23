@@ -8,6 +8,7 @@ import android.opengl.GLSurfaceView
 import android.opengl.GLUtils
 import android.opengl.Matrix
 import android.view.View
+import com.woohyman.keyboard.base.ViewPort
 import com.woohyman.keyboard.base.ViewUtils.loadOrComputeViewPort
 import com.woohyman.keyboard.emulator.Emulator
 import com.woohyman.keyboard.utils.NLog
@@ -28,17 +29,13 @@ internal class OpenGLView(
     init {
         setEGLContextClientVersion(2)
         renderer = Renderer(context, emulator, paddingLeft, paddingTop, shader)
-        renderer.textureSize = context.glTextureSize
+        renderer.textureSize = context.gLTextureSize
         setRenderer(renderer)
         renderMode = RENDERMODE_CONTINUOUSLY
     }
 
     override fun asView(): View {
         return this
-    }
-
-    override fun getViewPort(): com.woohyman.keyboard.base.ViewPort {
-        return renderer.viewPort!!
     }
 
     fun setBenchmark(benchmark: com.woohyman.keyboard.base.Benchmark?) {
@@ -55,6 +52,9 @@ internal class OpenGLView(
     override fun setQuality(quality: Int) {
         renderer.setQuality(quality)
     }
+
+    override val viewPort: ViewPort?
+        get() = renderer.viewPort!!
 
     internal class Renderer(
         context: EmulatorActivity, private val emulator: Emulator, private val paddingLeft: Int,

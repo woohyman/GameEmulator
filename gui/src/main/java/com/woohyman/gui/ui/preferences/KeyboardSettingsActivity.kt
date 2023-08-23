@@ -70,7 +70,7 @@ class KeyboardSettingsActivity : AppCompatActivity(), AdapterView.OnItemClickLis
         list?.setOnItemClickListener(this)
         val plv = findViewById<PlayersLabelView>(R.id.act_keyboard_settings_plv)
         if (EmulatorHolder.info!!.isMultiPlayerSupported) {
-            plv.setPlayersOffsets(adapter?.playersOffset)
+            plv.offsets = adapter?.playersOffset!!
             list?.setOnScrollListener(object : AbsListView.OnScrollListener {
                 override fun onScrollStateChanged(view: AbsListView, scrollState: Int) {}
                 override fun onScroll(
@@ -84,7 +84,7 @@ class KeyboardSettingsActivity : AppCompatActivity(), AdapterView.OnItemClickLis
                             currentY += adapter!!.rowHeight
                         }
                         val scrollY = -list?.getChildAt(0)?.top!! + currentY
-                        plv.setOffset(scrollY)
+                        plv.offset = scrollY
                     }
                 }
             })

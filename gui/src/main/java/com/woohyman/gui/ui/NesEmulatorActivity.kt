@@ -17,6 +17,7 @@ class NesEmulatorActivity : EmulatorActivity() {
     lateinit var nesEmulator: NesEmulator
 
     private var isLastOfStack = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         isLastOfStack = checkLastStack()
@@ -46,16 +47,16 @@ class NesEmulatorActivity : EmulatorActivity() {
             + "      gl_FragColor.rgb = texture2D(s_palette, curPt).rgb;"
             + "}")
 
-    override fun getEmulatorInstance(): Emulator {
-        return nesEmulator
-    }
+    override val emulatorInstance: Emulator
+        get() = nesEmulator
 
-    override fun getFragmentShader(): String {
-        val shaderIdx = getFragmentShader(this)
-        return if (shaderIdx == 1) {
-            shader2
-        } else shader1
-    }
+    override val fragmentShader: String
+        get() = kotlin.run {
+            val shaderIdx = getFragmentShader(this)
+            return if (shaderIdx == 1) {
+                shader2
+            } else shader1
+        }
 
     override fun onBackPressed() {
         super.onBackPressed()

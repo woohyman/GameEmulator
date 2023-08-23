@@ -12,7 +12,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager.widget.PagerAdapter
 import com.blankj.utilcode.util.FileUtils
-import com.blankj.utilcode.util.Utils
 import com.woohyman.gui.R
 import com.woohyman.gui.ui.videwmodels.DownLoadViewModel
 import com.woohyman.keyboard.data.database.GameDescription
@@ -85,17 +84,15 @@ class GalleryPagerAdapter(
                 AdapterView.OnItemClickListener { parent: AdapterView<*>?, view: View, position: Int, id: Long ->
                     val (game) = adapter.getItem(position) as RowItem
                     val path = downLoaderViewModel.getFilePath(game!!)
-//                    val isFileExist = FileUtils.isFileExists(path)
-//                    if (game.path.isEmpty() && isFileExist) {
-//                        game.path = path
-//                    }
-//                    if (game.path.isEmpty()) {
-//                        downLoaderViewModel.startDownload(game)
-//                    } else {
-//                        listener.onItemClick(game)
-//                    }
-
-                    downLoaderViewModel.startDownload(game)
+                    val isFileExist = FileUtils.isFileExists(path)
+                    if (game.path.isEmpty() && isFileExist) {
+                        game.path = path
+                    }
+                    if (game.path.isEmpty()) {
+                        downLoaderViewModel.startDownload(game)
+                    } else {
+                        listener.onItemClick(game)
+                    }
                 }
         } else {
             val adapter: ListAdapter? = listAdapters[position - 1]

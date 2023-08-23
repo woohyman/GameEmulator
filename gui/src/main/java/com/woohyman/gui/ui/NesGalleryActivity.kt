@@ -20,20 +20,19 @@ class NesGalleryActivity : GalleryActivity() {
     @Inject
     lateinit var nesEmulator: NesEmulator
 
-    override fun getEmulatorInstance(): Emulator {
-        return nesEmulator
-    }
+    override val emulatorActivityClass: Class<out EmulatorActivity?>?
+        get() = NesEmulatorActivity::class.java
 
-    override fun getEmulatorActivityClass(): Class<out EmulatorActivity?> {
-        return NesEmulatorActivity::class.java
-    }
+    override val romExtensions: Set<String>?
+        get() = kotlin.run {
+            val set = HashSet<String>()
+            set.add("nes")
+            set.add("fds")
+            return set
+        }
 
-    override fun getRomExtensions(): Set<String> {
-        val set = HashSet<String>()
-        set.add("nes")
-        set.add("fds")
-        return set
-    }
+    override val emulatorInstance: Emulator?
+        get() = nesEmulator
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
