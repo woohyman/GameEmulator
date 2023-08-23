@@ -81,26 +81,25 @@ abstract class BaseGameGalleryActivity : AppCompatActivity(), OnRomsFinderListen
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     protected fun reloadGames(searchNew: Boolean, selectedFolder: File?) {
-        val path = sharedPreferences!!.getString("path", "")
-        if (!StringUtils.isEmpty(path)) {
-            if (romsFinder == null) {
-                reloadGames = false
-                val file = File(path)
-                romsFinder = RomsFinder(exts, inZipExts, this, this, reloading, file)
-                romsFinder!!.start()
-            }
-            return
-        }
-        if (selectedFolder == null) {
-            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
-            intent.addCategory(Intent.CATEGORY_DEFAULT)
-            startActivityForResult(intent, 0)
-        }
-        if (romsFinder == null) {
-            reloading = searchNew
-        }
+//        val path = sharedPreferences!!.getString("path", "")
+//        if (!StringUtils.isEmpty(path)) {
+//            if (romsFinder == null) {
+//                reloadGames = false
+//                val file = File(path)
+//                romsFinder = RomsFinder(exts, inZipExts, this, this, reloading, file)
+//                romsFinder!!.start()
+//            }
+//            return
+//        }
+//        if (selectedFolder == null) {
+//            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+//            intent.addCategory(Intent.CATEGORY_DEFAULT)
+//            startActivityForResult(intent, 0)
+//        }
+//        if (romsFinder == null) {
+//            reloading = searchNew
+//        }
     }
 
     override fun onRomsFinderFoundGamesInCache(oldRoms: ArrayList<GameDescription>?) {

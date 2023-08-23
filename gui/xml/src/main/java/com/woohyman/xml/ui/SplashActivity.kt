@@ -19,25 +19,29 @@ class SplashActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            if (Environment.isExternalStorageManager()) {
-                val intent = Intent()
-                intent.action = getString(R.string.action_gallery_page)
-                startActivity(intent)
-                finish()
-            } else {
-                val intent = Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                startActivityForResult(intent, GET_ALL_FILE_ACCESS)
-            }
-        } else {
-            val timer = Timer()
-            timer.schedule(object : TimerTask() {
-                override fun run() {
-                    startWithPermission()
-                }
-            }, 800L)
-        }
+        val intent = Intent()
+        intent.action = getString(R.string.action_gallery_page)
+        startActivity(intent)
+
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+//            if (Environment.isExternalStorageManager()) {
+//                val intent = Intent()
+//                intent.action = getString(R.string.action_gallery_page)
+//                startActivity(intent)
+//                finish()
+//            } else {
+//                val intent = Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)
+//                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+//                startActivityForResult(intent, GET_ALL_FILE_ACCESS)
+//            }
+//        } else {
+//            val timer = Timer()
+//            timer.schedule(object : TimerTask() {
+//                override fun run() {
+//                    startWithPermission()
+//                }
+//            }, 800L)
+//        }
     }
 
     override fun onStart() {
