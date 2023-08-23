@@ -42,11 +42,15 @@ kapt {
 }
 
 dependencies {
-
+    val lifecycle_version = "2.5.1"
+    
     implementation(project(":domain:keyboard"))
     implementation(project(":data:nes"))
     api("com.google.dagger:hilt-android:2.44")
     kapt("com.google.dagger:hilt-android-compiler:2.44")
+
+    // Lifecycles only (without ViewModel or LiveData)
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version")
 
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.8.0")

@@ -56,8 +56,6 @@ dependencies {
     api("me.laoyuyu.aria:core:3.8.16")
     api("androidx.core:core-ktx:1.10.1")
     annotationProcessor("me.laoyuyu.aria:compiler:3.8.16")
-    api("com.liulishuo.okdownload:okdownload:1.0.5") //核心库
-    api("com.liulishuo.okdownload:sqlite:1.0.5") //存储断点信息的数据库
-    api("com.liulishuo.okdownload:okhttp:1.0.5") //提供okhttp连接，如果使用的话，需要引入okhttp网络请求库
-    api("com.squareup.okhttp3:okhttp:4.11.0")
+
+    implementation("com.liulishuo.filedownloader:library:1.7.7")
 }

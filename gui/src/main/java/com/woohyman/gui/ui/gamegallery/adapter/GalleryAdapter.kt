@@ -10,15 +10,22 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.SectionIndexer
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.blankj.utilcode.util.Utils
 import com.woohyman.gui.R
+import com.woohyman.gui.ui.videwmodels.DownLoadViewModel
 import com.woohyman.keyboard.data.database.GameDescription
 import com.woohyman.keyboard.data.entity.RowItem
+import com.woohyman.keyboard.download.RomDownloader
+import com.woohyman.keyboard.utils.NLog
 import java.util.Arrays
 import java.util.Collections
 import java.util.Locale
 
-class GalleryAdapter(private val context: Context) : BaseAdapter(), SectionIndexer {
+class GalleryAdapter(activity: AppCompatActivity) : BaseAdapter(), SectionIndexer {
     enum class SORT_TYPES {
         SORT_BY_NAME_ALPHA {
             override val tabName: String
@@ -39,7 +46,6 @@ class GalleryAdapter(private val context: Context) : BaseAdapter(), SectionIndex
 
         abstract val tabName: String
     }
-
     private val alphaIndexer = HashMap<Char, Int>()
     private var filter = ""
     private var sections: Array<Char?> = emptyArray()
@@ -70,8 +76,8 @@ class GalleryAdapter(private val context: Context) : BaseAdapter(), SectionIndex
         java.util.Comparator { lhs: GameDescription, rhs: GameDescription -> -lhs.runCount + rhs.runCount }
 
     init {
-        inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        mainColor = context.resources.getColor(R.color.main_color)
+        inflater = activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        mainColor = activity.resources.getColor(R.color.main_color)
     }
 
     override fun getCount(): Int {
@@ -87,6 +93,8 @@ class GalleryAdapter(private val context: Context) : BaseAdapter(), SectionIndex
     }
 
     override fun getView(position: Int, convertView: View, parent: ViewGroup): View {
+        NLog.e("RomDownloader", "state3 =========> getView")
+
         var convertView = convertView
         val (game) = filterGames[position]
         if (convertView == null) {
@@ -103,6 +111,7 @@ class GalleryAdapter(private val context: Context) : BaseAdapter(), SectionIndex
         name.setTextColor(mainColor)
         name.gravity = Gravity.CENTER_VERTICAL
         bck.setImageResource(R.drawable.game_item_small_bck)
+
         return convertView
     }
 

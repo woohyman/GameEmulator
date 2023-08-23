@@ -7,16 +7,24 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.SectionIndexer
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.blankj.utilcode.util.Utils
 import com.woohyman.gui.R
+import com.woohyman.gui.ui.videwmodels.DownLoadViewModel
 import com.woohyman.keyboard.data.database.GameDescription
 import com.woohyman.keyboard.data.entity.RowItem
+import com.woohyman.keyboard.download.RomDownloader
+import com.woohyman.keyboard.utils.NLog
 import java.util.Arrays
 import java.util.Locale
 
-class AppStoreAdapter(private val context: Context) : BaseAdapter(), SectionIndexer {
+class AppStoreAdapter(activity: AppCompatActivity) : BaseAdapter(), SectionIndexer {
     internal enum class SORT_TYPES {
         SORT_BY_NAME_ALPHA {
             override val tabName: String
@@ -40,6 +48,20 @@ class AppStoreAdapter(private val context: Context) : BaseAdapter(), SectionInde
         };
 
         abstract val tabName: String
+    }
+
+    private val downLoaderViewModel by lazy {
+        ViewModelProvider(activity)[DownLoadViewModel::class.java]
+    }
+
+    init {
+        activity.lifecycleScope.launchWhenCreated {
+//            val position = downLoaderViewModel.getGamePosition(filterGames)
+            downLoaderViewModel.downLoadState.collect {
+                NLog.e("RomDownloader", "state3 =========> $it")
+                notifyDataSetChanged()
+            }
+        }
     }
 
     private val alphaIndexer = HashMap<Char, Int>()
@@ -72,8 +94,8 @@ class AppStoreAdapter(private val context: Context) : BaseAdapter(), SectionInde
         java.util.Comparator { lhs: GameDescription, rhs: GameDescription -> -lhs.runCount + rhs.runCount }
 
     init {
-        inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        mainColor = context.resources.getColor(R.color.main_color)
+        inflater = activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        mainColor = activity.resources.getColor(R.color.main_color)
         val gameDescription = GameDescription()
         gameDescription.url =
             "https://gitee.com/popvan/nes-repo/raw/master/roms/Super%20Mario%20Bros.%203.nes"
@@ -102,7 +124,9 @@ class AppStoreAdapter(private val context: Context) : BaseAdapter(), SectionInde
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        return convertView ?: inflater.inflate(R.layout.row_game_list, null).also {
+        NLog.e("RomDownloader", "state3 =========> getView")
+
+        return (convertView ?: inflater.inflate(R.layout.row_game_list, null)).also {
             val (game) = filterGames[position]
             val name = it.findViewById<TextView>(R.id.row_game_item_name)
             val arrowIcon = it.findViewById<ImageView>(R.id.game_item_arrow)
@@ -113,6 +137,15 @@ class AppStoreAdapter(private val context: Context) : BaseAdapter(), SectionInde
             name.setTextColor(mainColor)
             name.gravity = Gravity.CENTER_VERTICAL
             bck.setImageResource(R.drawable.game_item_small_bck)
+
+            val downLoadProgress = it.findViewById<ProgressBar>(R.id.download_progressBar)
+            val state = downLoaderViewModel.downLoadState.value
+            if (downLoaderViewModel.isGameDownLoading(game) && state is RomDownloader.DownLoadResult.DownLoading) {
+                downLoadProgress.progress = state.progress
+                NLog.e("RomDownloader", "state3 progress =========> $state.progress")
+            }
+            downLoadProgress.isVisible = downLoaderViewModel.isGameDownLoading(game)
+            NLog.e("RomDownloader", "state3 =========> $downLoadProgress.isVisible")
         }
     }
 
@@ -151,7 +184,9 @@ class AppStoreAdapter(private val context: Context) : BaseAdapter(), SectionInde
         return sections
     }
 
-    override fun notifyDataSetChanged() {}
+    override fun notifyDataSetChanged() {
+        super.notifyDataSetChanged()
+    }
 
     companion object {
         private val names = Utils.getApp().resources.getStringArray(R.array.gallery_page_tab_names)
