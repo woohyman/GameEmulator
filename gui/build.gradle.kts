@@ -1,4 +1,6 @@
 plugins {
+    kotlin("kapt")
+    id("com.google.dagger.hilt.android")
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
 }
@@ -35,10 +37,17 @@ android {
     }
 }
 
-dependencies {
-    implementation(project(":domain:keyboard"))
+kapt {
+    correctErrorTypes = true
+}
 
-    implementation("androidx.core:core-ktx:1.10.1")
+dependencies {
+
+    implementation(project(":domain:keyboard"))
+    implementation(project(":data:nes"))
+    api("com.google.dagger:hilt-android:2.44")
+    kapt("com.google.dagger:hilt-android-compiler:2.44")
+
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.8.0")
     testImplementation("junit:junit:4.13.2")

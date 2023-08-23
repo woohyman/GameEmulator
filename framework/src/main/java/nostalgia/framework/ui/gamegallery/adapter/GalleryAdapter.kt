@@ -86,7 +86,7 @@ class GalleryAdapter(private val context: Context) : BaseAdapter(), SectionIndex
         return position.toLong()
     }
 
-    override fun getView(position: Int, convertView: View, parent: ViewGroup): View {
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var convertView = convertView
         val (game) = filterGames[position]
         if (convertView == null) {

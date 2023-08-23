@@ -10,16 +10,20 @@ import com.woohyman.keyboard.data.entity.EmulatorInfo;
 import com.woohyman.keyboard.data.entity.GfxProfile;
 import com.woohyman.keyboard.data.entity.SfxProfile;
 import com.woohyman.keyboard.data.entity.SfxProfile.SoundEncoding;
+import com.woohyman.keyboard.emulator.NesEmulator;
 import com.woohyman.keyboard.keyboard.BasicEmulatorInfo;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class NesEmulatorImpl extends JniEmulator {
+import javax.inject.Inject;
+
+public class NesEmulatorImpl extends NesEmulator {
 
     public static final String PACK_SUFFIX = "nness";
     private static EmulatorInfo info;
+    private static NesEmulatorImpl instance;
     public String[] palExclusiveKeywords = new String[]{".beauty|beast",
             ".hammerin|harry", ".noah|ark", ".rockets|rivals",
             ".formula|sensation", ".trolls|crazyland", "asterix", "elite",
@@ -42,7 +46,15 @@ public class NesEmulatorImpl extends JniEmulator {
             "d91a5f3e924916eb16bb6a3255f532bc",
     };
 
-    private NesEmulatorImpl() {
+    @Inject
+    public NesEmulatorImpl() {
+    }
+
+    public static JniEmulator getInstance() {
+        if (instance == null) {
+            instance = new NesEmulatorImpl();
+        }
+        return instance;
     }
 
     @Override

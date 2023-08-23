@@ -76,7 +76,7 @@ class AppStoreAdapter(private val context: Context) : BaseAdapter(), SectionInde
         mainColor = context.resources.getColor(R.color.main_color)
         val gameDescription = GameDescription()
         gameDescription.url =
-            "https://github.com/lucaschungzsj/fcgame/raw/master/roms/TaoJinZhe.nes"
+            "https://gitee.com/popvan/nes-repo/raw/master/roms/Super%20Mario%20Bros.%203.nes"
         gameDescription.name = "坦克"
         games.add(gameDescription)
         for (game in games) {

@@ -4,13 +4,14 @@ import com.liulishuo.filedownloader.FileDownloader
 import com.woohyman.gui.BaseApplication
 import com.woohyman.keyboard.base.EmulatorHolder.setEmulatorClass
 import com.woohyman.keyboard.emulator.NesEmulator
+import com.woohyman.nes.NesEmulatorImpl
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
 class NesApplication : BaseApplication() {
     override fun onCreate() {
         super.onCreate()
-        setEmulatorClass(NesEmulator::class.java)
+        setEmulatorClass(NesEmulatorImpl::class.java)
         FileDownloader.setupOnApplicationOnCreate(this)
     }
 

@@ -6,7 +6,6 @@ import com.woohyman.keyboard.utils.EmuUtils
 import com.woohyman.keyboard.utils.NLog
 import dagger.hilt.android.HiltAndroidApp
 
-@HiltAndroidApp
 abstract class BaseApplication : Application() {
 
     override fun onCreate() {

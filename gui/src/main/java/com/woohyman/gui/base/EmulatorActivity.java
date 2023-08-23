@@ -23,6 +23,8 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.blankj.utilcode.constant.PermissionConstants;
 import com.blankj.utilcode.util.PermissionUtils;
 import com.woohyman.gui.BaseApplication;
@@ -63,7 +65,7 @@ import com.woohyman.keyboard.utils.NLog;
 import com.woohyman.keyboard.utils.PreferenceUtil;
 
 
-public abstract class EmulatorActivity extends Activity
+public abstract class EmulatorActivity extends AppCompatActivity
         implements GameMenu.OnGameMenuListener, EmulatorRunner.OnNotRespondingListener {
 
     public static final String EXTRA_GAME = "game";
