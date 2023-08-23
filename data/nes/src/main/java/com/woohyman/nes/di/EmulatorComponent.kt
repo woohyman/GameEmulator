@@ -2,6 +2,7 @@ package com.woohyman.nes.di
 
 import com.woohyman.keyboard.emulator.NesEmulator
 import com.woohyman.nes.NesEmulatorImpl
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -10,17 +11,11 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object EmulatorComponent {
+abstract class EmulatorComponent {
 
-//    @Binds
-//    abstract fun bindNesEmulator(
-//        nesEmulatorImpl: NesEmulatorImpl,
-//    ): NesEmulator
-
-
-    @Provides
+    @Binds
     @Singleton
-    fun provideNesEmulator(): NesEmulator {
-        return NesEmulatorImpl()
-    }
+    abstract fun bindNesEmulator(
+        nesEmulatorImpl: NesEmulatorImpl,
+    ): NesEmulator
 }
