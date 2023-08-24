@@ -1,6 +1,7 @@
 package com.woohyman.xml.ui.videwmodels
 
 import androidx.lifecycle.ViewModel
+import com.blankj.utilcode.util.FileUtils
 import com.blankj.utilcode.util.Utils
 import com.woohyman.keyboard.data.database.GameDescription
 import com.woohyman.keyboard.data.entity.RowItem
@@ -17,9 +18,9 @@ class DownLoadViewModel @Inject constructor(
 
     private var curDownLoadGame: GameDescription? = null
 
-    fun getGamePosition(list:ArrayList<RowItem>): Int {
+    fun getGamePosition(list: ArrayList<RowItem>): Int {
         list.forEachIndexed { index, rowItem ->
-            if(rowItem.game == curDownLoadGame){
+            if (rowItem.game == curDownLoadGame) {
                 return index
             }
         }
@@ -39,7 +40,14 @@ class DownLoadViewModel @Inject constructor(
         downLoader.startDownload(gameDescription)
     }
 
-    fun getFilePath(gameDescription: GameDescription): String {
-        return Utils.getApp().filesDir.absolutePath + File.separator + gameDescription.name + ".nes"
+    //坚持Rom文件是否存在
+    fun checkRomExistAndSync(gameDescription: GameDescription): Boolean {
+        val filePath =
+            Utils.getApp().filesDir.absolutePath + File.separator + gameDescription.name + ".nes"
+        val isFileExist = FileUtils.isFileExists(filePath)
+        if (gameDescription.path.isEmpty() && isFileExist) {
+            gameDescription.path = filePath
+        }
+        return isFileExist
     }
 }

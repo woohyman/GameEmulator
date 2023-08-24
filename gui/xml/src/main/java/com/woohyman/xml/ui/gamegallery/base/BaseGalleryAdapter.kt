@@ -12,7 +12,8 @@ import com.woohyman.keyboard.data.database.GameDescription
 import com.woohyman.keyboard.data.entity.RowItem
 import com.woohyman.xml.R
 import com.woohyman.xml.databinding.RowGameListBinding
-import com.woohyman.xml.ui.gamegallery.SORT_TYPES
+import com.woohyman.xml.ui.gamegallery.model.SortType
+import com.woohyman.xml.ui.gamegallery.model.TabInfo
 import java.util.Locale
 
 open class BaseGalleryAdapter(activity: AppCompatActivity) : BaseAdapter(), SectionIndexer {
@@ -28,7 +29,7 @@ open class BaseGalleryAdapter(activity: AppCompatActivity) : BaseAdapter(), Sect
         }
     protected val filterGames = ArrayList<RowItem>()
     private var sumRuns = 0
-    private var sortType = SORT_TYPES.SORT_BY_NAME_ALPHA
+    private var sortType: TabInfo? = null
     private val nameComparator =
         java.util.Comparator { lhs: GameDescription, rhs: GameDescription ->
             lhs.sortName.compareTo(rhs.sortName)
@@ -103,7 +104,7 @@ open class BaseGalleryAdapter(activity: AppCompatActivity) : BaseAdapter(), Sect
             sumRuns = if (game.runCount > sumRuns) game.runCount else sumRuns
             val name = game.cleanName.lowercase(Locale.getDefault())
             var secondCondition = true
-            if (sortType === SORT_TYPES.SORT_BY_LAST_PLAYED || sortType === SORT_TYPES.SORT_BY_MOST_PLAYED) {
+            if (sortType?.sortType === SortType.SORT_BY_LAST_PLAYED || sortType?.sortType === SortType.SORT_BY_MOST_PLAYED) {
                 secondCondition = game.lastGameTime != 0L
             }
             if ((name.startsWith(filter) || name.contains(containsFilter)) and secondCondition) {
@@ -114,7 +115,7 @@ open class BaseGalleryAdapter(activity: AppCompatActivity) : BaseAdapter(), Sect
             }
         }
         alphaIndexer.clear()
-        if (sortType === SORT_TYPES.SORT_BY_NAME_ALPHA) {
+        if (sortType?.sortType === SortType.SORT_BY_NAME_ALPHA) {
             for (i in filterGames.indices) {
                 val (_, ch) = filterGames[i]
                 if (!alphaIndexer.containsKey(ch)) {
@@ -125,7 +126,7 @@ open class BaseGalleryAdapter(activity: AppCompatActivity) : BaseAdapter(), Sect
         super.notifyDataSetChanged()
     }
 
-    fun setSortType(sortType: SORT_TYPES) {
+    fun setSortType(sortType: TabInfo) {
         this.sortType = sortType
         filterGames()
     }
