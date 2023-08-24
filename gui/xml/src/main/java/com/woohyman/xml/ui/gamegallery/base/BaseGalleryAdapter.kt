@@ -10,6 +10,7 @@ import android.widget.SectionIndexer
 import androidx.appcompat.app.AppCompatActivity
 import com.woohyman.keyboard.data.database.GameDescription
 import com.woohyman.keyboard.data.entity.RowItem
+import com.woohyman.keyboard.utils.NLog
 import com.woohyman.xml.R
 import com.woohyman.xml.databinding.RowGameListBinding
 import com.woohyman.xml.ui.gamegallery.model.SortType

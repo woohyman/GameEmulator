@@ -17,7 +17,7 @@ import com.woohyman.xml.ui.videwmodels.DownLoadViewModel
 
 class StoreAdapter(activity: AppCompatActivity) : BaseGalleryAdapter(activity) {
     init {
-        addGames(TestRemoteRomSource.remoteRomList)
+        games = TestRemoteRomSource.remoteRomList
     }
 
     private val downLoaderViewModel by lazy {

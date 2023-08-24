@@ -19,8 +19,8 @@ class GalleryPagerAdapter(
 
     private val tabTypes = arrayOf(
         TabInfo.StoreRomList(SortType.SORT_BY_NAME_ALPHA),
-        TabInfo.LocalRomList(SortType.SORT_BY_NAME_ALPHA),
-        TabInfo.LocalRomList(SortType.SORT_BY_LAST_PLAYED)
+//        TabInfo.LocalRomList(SortType.SORT_BY_NAME_ALPHA),
+//        TabInfo.LocalRomList(SortType.SORT_BY_LAST_PLAYED)
     )
 
     private var yOffsets: IntArray? = IntArray(tabTypes.size)
