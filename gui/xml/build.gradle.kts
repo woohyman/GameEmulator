@@ -19,6 +19,10 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    viewBinding {
+        isEnabled = true
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -42,6 +46,7 @@ kapt {
 }
 
 dependencies {
+    implementation("androidx.databinding:databinding-runtime:8.1.1")
     val lifecycle_version = "2.5.1"
     
     implementation(project(":domain:keyboard"))

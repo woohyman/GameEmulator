@@ -10,34 +10,29 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
-import android.widget.ListView
-import androidx.appcompat.app.ActionBar
-import androidx.appcompat.app.AppCompatActivity
-import com.woohyman.xml.R
 import com.woohyman.keyboard.base.EmulatorHolder.info
 import com.woohyman.keyboard.cheats.Cheat
+import com.woohyman.xml.R
+import com.woohyman.xml.base.BaseActivity
+import com.woohyman.xml.databinding.ActivityCheatsBinding
 import java.util.Locale
 
-class CheatsActivity : AppCompatActivity() {
+class CheatsActivity : BaseActivity<ActivityCheatsBinding>(
+    ActivityCheatsBinding::inflate
+) {
     var save: Button? = null
-    private var list: ListView? = null
     private var adapter: CheatsListAdapter? = null
     private var gameHash: String? = null
     private var cheats: ArrayList<Cheat>? = null
-    private var actionBar: ActionBar? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_cheats)
-        actionBar = supportActionBar
-        if (actionBar != null) {
-            actionBar!!.setHomeButtonEnabled(true)
-            actionBar!!.setDisplayHomeAsUpEnabled(true)
-        }
+        supportActionBar?.setHomeButtonEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         gameHash = intent.getStringExtra(EXTRA_IN_GAME_HASH)
-        list = findViewById(R.id.act_cheats_list)
         cheats = Cheat.getAllCheats(this, gameHash)
         adapter = CheatsListAdapter(this, cheats)
-        list!!.setAdapter(adapter)
+        binding.actCheatsList.adapter = adapter
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -46,11 +41,10 @@ class CheatsActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val itemId = item.itemId
-        if (itemId == R.id.cheats_menu_add) {
+        if (item.itemId == R.id.cheats_menu_add) {
             openCheatDetailDialog(-1)
             return true
-        } else if (itemId == android.R.id.home) {
+        } else if (item.itemId == android.R.id.home) {
             finish()
             return true
         }
@@ -109,7 +103,7 @@ class CheatsActivity : AppCompatActivity() {
                 }
             }
         })
-        save?.setOnClickListener(View.OnClickListener { v: View? ->
+        save?.setOnClickListener { v: View? ->
             if (idx == -1) {
                 cheats!!.add(Cheat(chars.text.toString(), desc.text.toString(), true))
             } else {
@@ -120,7 +114,7 @@ class CheatsActivity : AppCompatActivity() {
             adapter!!.notifyDataSetChanged()
             Cheat.saveCheats(this, gameHash, cheats)
             dialog.cancel()
-        })
+        }
         dialog.show()
     }
 

@@ -82,7 +82,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent">
 
-                <nostalgia.framework.ui.widget.VerticalSeekBar
+                <com.woohyman.xml.ui.widget.VerticalSeekBar
                     android:id="@+id/dialog_time_seek"
                     android:layout_width="wrap_content"
                     android:layout_height="fill_parent"

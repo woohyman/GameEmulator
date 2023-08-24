@@ -3,7 +3,7 @@
     <PreferenceCategory
         android:key="game_pref_ui_pal_ntsc_switch_category"
         android:title="@string/pref_video_settings">
-        <nostalgia.framework.ui.preferences.ControllableListPreference
+        <com.woohyman.xml.ui.preferences.ControllableListPreference
             android:key="game_pref_ui_pal_ntsc_switch"
             android:summary="@string/game_pref_ui_pal_ntsc_desc"
             android:title="@string/game_pref_ui_pal_ntsc" />
@@ -23,7 +23,7 @@
                     android:value="true" />
                 <extra
                     android:name=":android:show_fragment"
-                    android:value="nostalgia.framework.ui.preferences.GeneralPreferenceFragment" />
+                    android:value="com.woohyman.xml.ui.preferences.GeneralPreferenceFragment" />
             </intent>
         </Preference>
 

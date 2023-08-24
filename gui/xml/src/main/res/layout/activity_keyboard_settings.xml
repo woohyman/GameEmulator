@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="horizontal">
 
-    <nostalgia.framework.ui.preferences.PlayersLabelView
+    <com.woohyman.xml.ui.preferences.PlayersLabelView
         android:id="@+id/act_keyboard_settings_plv"
         android:layout_width="40dp"
         android:layout_height="match_parent" />

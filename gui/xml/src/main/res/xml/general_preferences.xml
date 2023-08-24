@@ -2,7 +2,7 @@
     <PreferenceCategory
         android:key="pref_general_settings_cat"
         android:title="@string/pref_general_settings">
-        <nostalgia.framework.ui.preferences.ControllableListPreference
+        <com.woohyman.xml.ui.preferences.ControllableListPreference
             android:defaultValue="1"
             android:entries="@array/general_pref_quality_list"
             android:entryValues="@array/general_pref_quality_values"
@@ -56,7 +56,7 @@
 
     <PreferenceCategory android:title="@string/pref_setting_display">
 
-        <nostalgia.framework.ui.preferences.ControllableListPreference
+        <com.woohyman.xml.ui.preferences.ControllableListPreference
             android:defaultValue="0"
             android:entries="@array/general_pref_rotation_list"
             android:entryValues="@array/general_pref_rotation_values"
@@ -90,7 +90,7 @@
             android:key="general_pref_ab_button"
             android:title="@string/general_pref_ab_button" />
 
-        <nostalgia.framework.ui.preferences.SeekBarVibrationPreference
+        <com.woohyman.xml.ui.preferences.SeekBarVibrationPreference
             android:defaultValue="0"
             android:key="game_pref_ui_strong_vibration"
             android:max="100"
@@ -98,7 +98,7 @@
             android:text="%"
             android:title="@string/game_pref_ui_vibration" />
 
-        <nostalgia.framework.ui.widget.SeekBarPreference
+        <com.woohyman.xml.ui.widget.SeekBarPreference
             android:defaultValue="100"
             android:key="general_pref_ui_opacity"
             android:max="100"
@@ -128,7 +128,7 @@
             android:summary="@string/general_pref_fastforward_toggle_desc"
             android:title="@string/general_pref_fastforward_toggle" />
 
-        <nostalgia.framework.ui.widget.SeekBarPreference
+        <com.woohyman.xml.ui.widget.SeekBarPreference
             android:defaultValue="4"
             android:dialogMessage=""
             android:key="general_pref_ff_speed"
@@ -156,7 +156,7 @@
     <PreferenceCategory
         android:key="pref_keyboard_cat"
         android:title="@string/key_pref">
-        <nostalgia.framework.ui.preferences.ControllableListPreference
+        <com.woohyman.xml.ui.preferences.ControllableListPreference
             android:key="pref_game_keyboard_profile"
             android:title="@string/key_select_profile_pref" />
 
