@@ -19,6 +19,7 @@ import com.woohyman.keyboard.data.entity.RowItem
 import com.woohyman.keyboard.download.RomDownloader
 import com.woohyman.keyboard.utils.NLog
 import com.woohyman.keyboard.utils.NLog.i
+import com.woohyman.xml.ui.gamegallery.SORT_TYPES
 
 class GalleryPagerAdapter(
     private val activity: AppCompatActivity,
@@ -41,8 +42,8 @@ class GalleryPagerAdapter(
     }
 
     private val tabTypes = arrayOf(
-        GalleryAdapter.SORT_TYPES.SORT_BY_NAME_ALPHA,
-        GalleryAdapter.SORT_TYPES.SORT_BY_LAST_PLAYED
+        SORT_TYPES.SORT_BY_NAME_ALPHA,
+        SORT_TYPES.SORT_BY_LAST_PLAYED
     )
     private var yOffsets: IntArray? = IntArray(tabTypes.size + 1)
     private val lists = arrayOfNulls<ListView>(tabTypes.size + 1)
@@ -78,7 +79,7 @@ class GalleryPagerAdapter(
         list.isFastScrollEnabled = true
         list.setSelector(R.drawable.row_game_item_list_selector)
         if (position == 0) {
-            val adapter: ListAdapter = AppStoreAdapter(activity)
+            val adapter: ListAdapter = StoreAdapter(activity)
             list.adapter = adapter
             list.onItemClickListener =
                 AdapterView.OnItemClickListener { parent: AdapterView<*>?, view: View, position: Int, id: Long ->
@@ -127,9 +128,9 @@ class GalleryPagerAdapter(
         container.removeView(`object` as View)
     }
 
-    fun setGames(games: ArrayList<GameDescription>?) {
+    fun setGames(games: ArrayList<GameDescription>) {
         for (adapter in listAdapters) {
-            adapter!!.setGames(ArrayList(games))
+            adapter?.games = games
         }
     }
 

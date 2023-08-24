@@ -25,6 +25,7 @@ import com.woohyman.xml.R
 import com.woohyman.xml.base.EmulatorActivity
 import com.woohyman.xml.databinding.ActivityGalleryBinding
 import com.woohyman.xml.ui.gamegallery.adapter.GalleryPagerAdapter
+import com.woohyman.xml.ui.gamegallery.base.BaseGameGalleryActivity
 import com.woohyman.xml.ui.preferences.GeneralPreferenceActivity
 import com.woohyman.xml.ui.preferences.GeneralPreferenceFragment
 import java.io.File
@@ -153,11 +154,11 @@ abstract class GalleryActivity :
         return true
     }
 
-    override fun setLastGames(games: ArrayList<GameDescription>?) {
+    override fun setLastGames(games: ArrayList<GameDescription>) {
         adapter.setGames(games)
     }
 
-    override fun setNewGames(games: ArrayList<GameDescription>?) {
+    override fun setNewGames(games: ArrayList<GameDescription>) {
         adapter.addGames(games)
     }
 

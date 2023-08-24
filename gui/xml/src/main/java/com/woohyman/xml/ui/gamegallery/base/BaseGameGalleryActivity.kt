@@ -1,4 +1,4 @@
-package com.woohyman.xml.ui.gamegallery
+package com.woohyman.xml.ui.gamegallery.base
 
 import android.app.AlertDialog
 import android.content.DialogInterface
@@ -103,7 +103,7 @@ abstract class BaseGameGalleryActivity<VB : ViewBinding>(bindingFactory: (Layout
 //        }
     }
 
-    override fun onRomsFinderFoundGamesInCache(oldRoms: ArrayList<GameDescription>?) {
+    override fun onRomsFinderFoundGamesInCache(oldRoms: ArrayList<GameDescription>) {
         setLastGames(oldRoms)
     }
 
@@ -139,8 +139,8 @@ abstract class BaseGameGalleryActivity<VB : ViewBinding>(bindingFactory: (Layout
     }
 
     abstract val emulatorActivityClass: Class<out EmulatorActivity?>?
-    abstract fun setLastGames(games: ArrayList<GameDescription>?)
-    abstract fun setNewGames(games: ArrayList<GameDescription>?)
+    abstract fun setLastGames(games: ArrayList<GameDescription>)
+    abstract fun setNewGames(games: ArrayList<GameDescription>)
     protected abstract val romExtensions: Set<String>?
     abstract val emulatorInstance: Emulator?
     protected val archiveExtensions: Set<String>

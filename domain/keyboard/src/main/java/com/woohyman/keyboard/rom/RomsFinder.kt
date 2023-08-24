@@ -329,7 +329,7 @@ class RomsFinder(
 
     interface OnRomsFinderListener {
         fun onRomsFinderStart(searchNew: Boolean)
-        fun onRomsFinderFoundGamesInCache(oldRoms: ArrayList<GameDescription>?)
+        fun onRomsFinderFoundGamesInCache(oldRoms: ArrayList<GameDescription>)
         fun onRomsFinderFoundFile(name: String?)
         fun onRomsFinderZipPartStart(countEntries: Int)
         fun onRomsFinderFoundZipEntry(message: String?, skipEntries: Int)
