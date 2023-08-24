@@ -9,12 +9,16 @@ import android.preference.PreferenceActivity
 import android.view.Menu
 import android.view.MenuItem
 import androidx.annotation.MainThread
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.woohyman.keyboard.data.database.GameDescription
+import com.woohyman.keyboard.rom.IRomLauncher
+import com.woohyman.keyboard.rom.RomLauncher
 import com.woohyman.keyboard.utils.DatabaseHelper
 import com.woohyman.keyboard.utils.DialogUtils.show
 import com.woohyman.keyboard.utils.EmuUtils.extractFile
+import com.woohyman.keyboard.utils.NLog
 import com.woohyman.keyboard.utils.NLog.e
 import com.woohyman.keyboard.utils.NLog.i
 import com.woohyman.keyboard.utils.NLog.w
@@ -28,24 +32,29 @@ import com.woohyman.xml.ui.gamegallery.adapter.GalleryPagerAdapter
 import com.woohyman.xml.ui.gamegallery.base.BaseGameGalleryActivity
 import com.woohyman.xml.ui.preferences.GeneralPreferenceActivity
 import com.woohyman.xml.ui.preferences.GeneralPreferenceFragment
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import java.io.File
 import java.io.IOException
 import java.text.NumberFormat
+import javax.inject.Inject
 
 abstract class GalleryActivity :
-    BaseGameGalleryActivity<ActivityGalleryBinding>(ActivityGalleryBinding::inflate),
-    GalleryPagerAdapter.OnItemClickListener {
+    BaseGameGalleryActivity<ActivityGalleryBinding>(ActivityGalleryBinding::inflate) {
+
+    @Inject
+    lateinit var romLauncher: IRomLauncher
+
     private var searchDialog: ProgressDialog? = null
-    private var dbHelper: DatabaseHelper? = null
     private val adapter by lazy {
-        GalleryPagerAdapter(this, this)
+        GalleryPagerAdapter(this)
     }
     private val importing = false
     private var rotateAnim = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        dbHelper = DatabaseHelper(this)
         setSupportActionBar(binding.toolbar)
         binding.gameGalleryPager.adapter = adapter
         binding.gameGalleryTab.setupWithViewPager(binding.gameGalleryPager)
@@ -55,12 +64,34 @@ abstract class GalleryActivity :
         exts = romExtensions
         exts = exts?.plus(archiveExtensions)
         inZipExts = romExtensions
+
+        lifecycleScope.launch {
+            romLauncher.romLauncherState.collect{
+
+                it.onSuccess {game ->
+                    onGameSelected(game, 0)
+                }
+
+                it.onFailure {
+                    val dialog = AlertDialog.Builder(this@GalleryActivity)
+                        .setMessage(getString(R.string.gallery_rom_not_found))
+                        .setTitle(R.string.error)
+                        .setPositiveButton(R.string.gallery_rom_not_found_reload) { dialog1: DialogInterface?, which: Int ->
+                            reloadGames(true, null)
+                        }
+                        .setCancelable(false)
+                        .create()
+                    dialog.setOnDismissListener { dialog12: DialogInterface? -> reloadGames(true, null) }
+                    dialog.show()
+                }
+            }
+        }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.gallery_main_menu, menu)
-        return super.onCreateOptionsMenu(menu)
-    }
+//    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+//        menuInflater.inflate(R.menu.gallery_main_menu, menu)
+//        return super.onCreateOptionsMenu(menu)
+//    }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
@@ -96,53 +127,13 @@ abstract class GalleryActivity :
         }
         adapter.notifyDataSetChanged()
         if (reloadGames && !importing) {
-            val isDBEmpty = dbHelper!!.countObjsInDb(GameDescription::class.java, null) == 0
-            reloadGames(isDBEmpty, null)
+            reloadGames(romLauncher.isDBEmpty, null)
         }
     }
 
     override fun onPause() {
         super.onPause()
         saveLastGalleryTab(this, binding.gameGalleryPager.currentItem)
-    }
-
-    override fun onItemClick(game: GameDescription?) {
-        var gameFile = File(game!!.path)
-        i(TAG, "select $game")
-        if (game.isInArchive) {
-            gameFile = File(externalCacheDir, game.checksum)
-            game.path = gameFile.absolutePath
-            val zipRomFile = dbHelper!!.selectObjFromDb(
-                ZipRomFile::class.java,
-                "WHERE _id=" + game.zipfile_id, false
-            )
-            val zipFile = File(zipRomFile.path)
-            if (!gameFile.exists()) {
-                try {
-                    extractFile(zipFile, game.name, gameFile)
-                } catch (e: IOException) {
-                    e(TAG, "", e)
-                }
-            }
-        }
-        if (gameFile.exists()) {
-            game.lastGameTime = System.currentTimeMillis()
-            game.runCount++
-            dbHelper!!.updateObjToDb(game, arrayOf("lastGameTime", "runCount"))
-            onGameSelected(game, 0)
-        } else {
-            w(TAG, "rom file:" + gameFile.absolutePath + " does not exist")
-            val dialog = AlertDialog.Builder(this)
-                .setMessage(getString(R.string.gallery_rom_not_found))
-                .setTitle(R.string.error)
-                .setPositiveButton(R.string.gallery_rom_not_found_reload) { dialog1: DialogInterface?, which: Int ->
-                    reloadGames(true, null)
-                }
-                .setCancelable(false)
-                .create()
-            dialog.setOnDismissListener { dialog12: DialogInterface? -> reloadGames(true, null) }
-            dialog.show()
-        }
     }
 
     private fun onGameSelected(game: GameDescription?, slot: Int): Boolean {

@@ -19,9 +19,6 @@ class SplashActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
-        val intent = Intent()
-        intent.action = getString(R.string.action_gallery_page)
-        startActivity(intent)
 
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
 //            if (Environment.isExternalStorageManager()) {
@@ -46,12 +43,17 @@ class SplashActivity : Activity() {
 
     override fun onStart() {
         super.onStart()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && Environment.isExternalStorageManager()) {
-            val intent = Intent()
-            intent.action = getString(R.string.action_gallery_page)
-            startActivity(intent)
-            finish()
-        }
+        val intent = Intent()
+        intent.action = getString(R.string.action_gallery_page)
+        startActivity(intent)
+        finish()
+
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && Environment.isExternalStorageManager()) {
+//            val intent = Intent()
+//            intent.action = getString(R.string.action_gallery_page)
+//            startActivity(intent)
+//            finish()
+//        }
     }
 
     private fun startWithPermission() {

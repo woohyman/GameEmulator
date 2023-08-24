@@ -1,4 +1,4 @@
-package com.woohyman.keyboard.download
+package com.woohyman.keyboard.rom
 
 import com.blankj.utilcode.util.Utils
 import com.liulishuo.filedownloader.BaseDownloadTask
@@ -13,8 +13,10 @@ import javax.inject.Inject
 class RomDownloader @Inject constructor() {
     sealed class DownLoadResult {
         object Idle : DownLoadResult()
-        object Start : DownLoadResult()
-        data class DownLoading(val progress: Int) : DownLoadResult()
+        data class Start(val gameDescription: GameDescription) : DownLoadResult()
+        data class DownLoading(val gameDescription: GameDescription, val progress: Int) :
+            DownLoadResult()
+
         data class Success(val gameDescription: GameDescription) : DownLoadResult()
         data class Fail(val throwable: Throwable?) : DownLoadResult()
     }
@@ -31,9 +33,7 @@ class RomDownloader @Inject constructor() {
         val task = FileDownloader.getImpl().create(gameDescription.url)
             .setPath(filePath)
             .setListener(romDownloadListener)
-        NLog.e("RomDownloader","task ==> "+task.isForceReDownload)
         task.start()
-        _downLoadState.value = DownLoadResult.Start
     }
 
     inner class RomDownloadListener constructor(
@@ -43,8 +43,20 @@ class RomDownloader @Inject constructor() {
 
         }
 
+        override fun connected(
+            task: BaseDownloadTask?,
+            etag: String?,
+            isContinue: Boolean,
+            soFarBytes: Int,
+            totalBytes: Int
+        ) {
+            super.connected(task, etag, isContinue, soFarBytes, totalBytes)
+            _downLoadState.value = DownLoadResult.Start(gameDescription)
+        }
+
         override fun progress(task: BaseDownloadTask?, soFarBytes: Int, totalBytes: Int) {
-            _downLoadState.value = DownLoadResult.DownLoading(soFarBytes * 100 / totalBytes)
+            _downLoadState.value =
+                DownLoadResult.DownLoading(gameDescription, soFarBytes * 100 / totalBytes)
         }
 
         override fun completed(task: BaseDownloadTask?) {

@@ -549,7 +549,7 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
     }
 
     fun openGameMenu() {
-        gameMenu!!.open()
+//        gameMenu!!.open()
     }
 
     override fun onGameMenuCreate(menu: GameMenu) {

@@ -14,7 +14,6 @@ import com.woohyman.xml.ui.gamegallery.model.TabInfo
 
 class GalleryPagerAdapter(
     private val activity: AppCompatActivity,
-    private val listener: OnItemClickListener
 ) : PagerAdapter() {
 
     private val tabTypes = arrayOf(
@@ -48,7 +47,7 @@ class GalleryPagerAdapter(
     }
 
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
-        val list = RomListView(activity, tabTypes[position], listener)
+        val list = RomListView(activity, tabTypes[position])
         list.setSelection(yOffsets!![position])
         list.registerScrollStateChangedListener { scrollState, firstVisiblePosition ->
             NLog.i("list", "$position:$scrollState")
@@ -100,10 +99,6 @@ class GalleryPagerAdapter(
 
     fun onRestoreInstanceState(inState: Bundle?) {
         yOffsets = inState?.getIntArray(EXTRA_POSITIONS) ?: IntArray(listAdapters.size)
-    }
-
-    interface OnItemClickListener {
-        fun onItemClick(game: GameDescription?)
     }
 
     companion object {
