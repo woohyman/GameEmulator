@@ -76,6 +76,10 @@ import com.woohyman.keyboard.utils.PreferenceUtil.setDynamicDPADUsed
 import com.woohyman.keyboard.utils.PreferenceUtil.setEmulationQuality
 import com.woohyman.keyboard.utils.PreferenceUtil.setFastForwardUsed
 import com.woohyman.keyboard.utils.PreferenceUtil.setScreenLayoutUsed
+import com.woohyman.xml.ui.gamegallery.Constants.DIALOAG_TYPE_LOAD
+import com.woohyman.xml.ui.gamegallery.Constants.DIALOAG_TYPE_SAVE
+import com.woohyman.xml.ui.gamegallery.Constants.EXTRA_BASE_DIRECTORY
+import com.woohyman.xml.ui.gamegallery.Constants.EXTRA_DIALOG_TYPE_INT
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -286,7 +290,7 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
         setShouldPauseOnResume(false)
         if (resultCode == RESULT_OK) {
             canRestart = false
-            val slotIdx = data!!.getIntExtra(SlotSelectionActivity.EXTRA_SLOT, -1)
+            val slotIdx = data!!.getIntExtra(EXTRA_SLOT, -1)
             when (requestCode) {
                 REQUEST_SAVE -> {
                     slotToSave = slotIdx
@@ -627,20 +631,20 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
                 enableCheats()
             } else if (item.id == R.string.game_menu_save) {
                 val i = Intent(this, SlotSelectionActivity::class.java)
-                i.putExtra(SlotSelectionActivity.EXTRA_GAME, game)
-                i.putExtra(SlotSelectionActivity.EXTRA_BASE_DIRECTORY, baseDir)
+                i.putExtra(EXTRA_GAME, game)
+                i.putExtra(EXTRA_BASE_DIRECTORY, baseDir)
                 i.putExtra(
-                    SlotSelectionActivity.EXTRA_DIALOG_TYPE_INT,
-                    SlotSelectionActivity.DIALOAG_TYPE_SAVE
+                    EXTRA_DIALOG_TYPE_INT,
+                    DIALOAG_TYPE_SAVE
                 )
                 freeStartActivityForResult(this, i, REQUEST_SAVE)
             } else if (item.id == R.string.game_menu_load) {
                 val i = Intent(this, SlotSelectionActivity::class.java)
-                i.putExtra(SlotSelectionActivity.EXTRA_GAME, game)
-                i.putExtra(SlotSelectionActivity.EXTRA_BASE_DIRECTORY, baseDir)
+                i.putExtra(EXTRA_GAME, game)
+                i.putExtra(EXTRA_BASE_DIRECTORY, baseDir)
                 i.putExtra(
-                    SlotSelectionActivity.EXTRA_DIALOG_TYPE_INT,
-                    SlotSelectionActivity.DIALOAG_TYPE_LOAD
+                    EXTRA_DIALOG_TYPE_INT,
+                    DIALOAG_TYPE_LOAD
                 )
                 freeStartActivityForResult(this, i, REQUEST_LOAD)
             } else if (item.id == R.string.game_menu_cheats) {

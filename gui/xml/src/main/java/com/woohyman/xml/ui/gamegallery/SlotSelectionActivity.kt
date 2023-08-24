@@ -1,77 +1,79 @@
 package com.woohyman.xml.ui.gamegallery
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.os.Handler
-import android.os.Message
-import android.text.format.DateFormat
 import android.view.View
-import android.widget.ImageView
-import android.widget.TextView
+import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBar
-import androidx.appcompat.app.AppCompatActivity
-import com.woohyman.xml.R
-import com.woohyman.xml.ui.widget.MenuItem
-import com.woohyman.xml.ui.widget.PopupMenu
-import com.woohyman.keyboard.base.SlotUtils
+import androidx.core.content.res.ResourcesCompat
+import androidx.lifecycle.lifecycleScope
 import com.woohyman.keyboard.data.database.GameDescription
-import com.woohyman.keyboard.data.entity.SlotInfo
-import com.woohyman.keyboard.utils.NLog.i
-import java.util.Calendar
-import java.util.Date
+import com.woohyman.xml.R
+import com.woohyman.xml.base.BaseActivity
+import com.woohyman.xml.databinding.ActivitySlotSelectionBinding
+import com.woohyman.xml.databinding.RowSlotItemBinding
+import com.woohyman.xml.ui.gamegallery.Constants.DIALOAG_TYPE_LOAD
+import com.woohyman.xml.ui.gamegallery.Constants.EXTRA_GAME
+import com.woohyman.xml.ui.gamegallery.Constants.EXTRA_SLOT
+import com.woohyman.xml.ui.gamegallery.Constants.SEND_SLOT
+import com.woohyman.xml.ui.gamegallery.uistate.SlotInfoUIState
+import com.woohyman.xml.ui.gamegallery.viewmodel.SlotSelectionViewModel
+import com.woohyman.xml.ui.widget.PopupMenu
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
-class SlotSelectionActivity : AppCompatActivity() {
-    var slots = arrayOfNulls<View>(8)
-    var clearIcon: Drawable? = null
-    var sendIcon: Drawable? = null
-    var game: GameDescription? = null
-    var type = 0
-    var loadFocusIdx = 0
-    var saveFocusIdx = 0
-    private var actionBar: ActionBar? = null
-    private fun initSlot(
-        slotInfo: SlotInfo, idx: Int, labelS: String,
-        messageS: String, dateS: String, timeS: String
-    ) {
-        val slotView = slots[idx]
-        val isUsed = slotInfo.isUsed
-        val screenshotBitmap = slotInfo.screenShot
-        val label = slotView!!.findViewById<TextView>(R.id.row_slot_label)
-        val message = slotView.findViewById<TextView>(R.id.row_slot_message)
-        val date = slotView.findViewById<TextView>(R.id.row_slot_date)
-        val time = slotView.findViewById<TextView>(R.id.row_slot_time)
-        val screenshot = slotView.findViewById<ImageView>(R.id.row_slot_screenshot)
-        label.text = labelS
-        message.text = messageS
-        date.text = dateS
-        time.text = timeS
-        slotView.setOnClickListener { v: View? -> onSelected(game, idx + 1, isUsed) }
-        if (isUsed) {
-            slotView.setOnLongClickListener { v: View? ->
-                val menu = PopupMenu(this@SlotSelectionActivity)
-                menu.setHeaderTitle(labelS)
-                menu.setOnItemSelectedListener(object : PopupMenu.OnItemSelectedListener {
-                    override fun onItemSelected(item: MenuItem?) {
-                        if (item?.itemId == SEND_SLOT) {
-                        }
+class SlotSelectionActivity : BaseActivity<ActivitySlotSelectionBinding>
+    (ActivitySlotSelectionBinding::inflate) {
 
-                    }
-                })
-                menu.add(SEND_SLOT, R.string.act_slot_popup_menu_send).icon = sendIcon
-                menu.show(slotView)
-                true
+    private val slots by lazy {
+        listOf(
+            binding.slot0 as RowSlotItemBinding,
+            binding.slot1 as RowSlotItemBinding,
+            binding.slot2 as RowSlotItemBinding,
+            binding.slot3 as RowSlotItemBinding,
+            binding.slot4 as RowSlotItemBinding,
+            binding.slot5 as RowSlotItemBinding,
+            binding.slot6 as RowSlotItemBinding,
+            binding.slot7 as RowSlotItemBinding
+        )
+    }
+
+    private var clearIcon: Drawable? = null
+    private var sendIcon: Drawable? = null
+
+    private val viewModel: SlotSelectionViewModel by viewModels()
+
+    private fun initSlot(slotInfoUIState: SlotInfoUIState) {
+        slotInfoUIState.apply {
+            val slotView = slots[idx]
+            val isUsed = slotInfo.isUsed
+            val screenshotBitmap = slotInfo.screenShot
+
+            slotView.rowSlotLabel.text = labelS
+            slotView.rowSlotMessage.text = messageS
+            slotView.rowSlotDate.text = dateS
+            slotView.rowSlotTime.text = timeS
+            slotView.root.setOnClickListener { onSelected(viewModel.game, idx + 1, isUsed) }
+            if (isUsed) {
+                slotView.root.setOnLongClickListener {
+                    val menu = PopupMenu(this@SlotSelectionActivity)
+                    menu.setHeaderTitle(labelS)
+                    menu.add(SEND_SLOT, R.string.act_slot_popup_menu_send).icon = sendIcon
+                    menu.show(slotView.root)
+                    true
+                }
             }
-        }
-        if (screenshotBitmap != null) {
-            screenshot.setImageBitmap(screenshotBitmap)
-            message.visibility = View.INVISIBLE
+            if (screenshotBitmap != null) {
+                slotView.rowSlotScreenshot.setImageBitmap(screenshotBitmap)
+                slotView.rowSlotMessage.visibility = View.INVISIBLE
+            }
         }
     }
 
     private fun onSelected(game: GameDescription?, slot: Int, isUsed: Boolean) {
-        if (type == DIALOAG_TYPE_LOAD && !isUsed) {
+        if (viewModel.type == DIALOAG_TYPE_LOAD && !isUsed) {
             return
         }
         val data = Intent()
@@ -83,104 +85,44 @@ class SlotSelectionActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        clearIcon = resources.getDrawable(R.drawable.ic_clear_slot)
-        sendIcon = resources.getDrawable(R.drawable.ic_send_slot)
-        game = intent.getSerializableExtra(EXTRA_GAME) as GameDescription?
-        val baseDir = intent.getStringExtra(EXTRA_BASE_DIRECTORY)
-        val slotInfos = SlotUtils.getSlots(baseDir, game!!.checksum)
-        type = intent.getIntExtra(EXTRA_DIALOG_TYPE_INT, DIALOAG_TYPE_LOAD)
-        setContentView(R.layout.activity_slot_selection)
-        actionBar = supportActionBar
-        if (actionBar != null) {
-            actionBar!!.setHomeButtonEnabled(true)
-            actionBar!!.setDisplayHomeAsUpEnabled(true)
-            actionBar!!.setTitle(if (type == DIALOAG_TYPE_LOAD) R.string.game_menu_load else R.string.game_menu_save)
-        }
-        slots[0] = findViewById(R.id.slot_0)
-        slots[1] = findViewById(R.id.slot_1)
-        slots[2] = findViewById(R.id.slot_2)
-        slots[3] = findViewById(R.id.slot_3)
-        slots[4] = findViewById(R.id.slot_4)
-        slots[5] = findViewById(R.id.slot_5)
-        slots[6] = findViewById(R.id.slot_6)
-        slots[7] = findViewById(R.id.slot_7)
-        val dateFormat = DateFormat.getDateFormat(this)
-        val timeFormat = DateFormat.getTimeFormat(this)
-        val dd = Calendar.getInstance()
-        dd[1970, 10] = 10
-        var emptyDate = dateFormat.format(dd.time)
-        emptyDate = emptyDate.replace("1970", "----")
-        emptyDate = emptyDate.replace('0', '-')
-        emptyDate = emptyDate.replace('1', '-')
-        var focusTime: Long = 0
-        saveFocusIdx = -1
-        for (i in 0 until SlotUtils.NUM_SLOTS) {
-            var message = "EMPTY"
-            val slotInfo = slotInfos[i]
-            if (slotInfo.isUsed) {
-                message = "USED"
-            }
-            val label = "SLOT  " + (i + 1)
-            val time = Date(slotInfo.lastModified)
-            val dateString =
-                if (slotInfo.lastModified == -1L) emptyDate else dateFormat.format(time)
-            val timeString = if (slotInfo.lastModified == -1L) "--:--" else timeFormat.format(time)
-            initSlot(slotInfo, i, label, message, dateString, timeString)
-            if (focusTime < slotInfo.lastModified) {
-                loadFocusIdx = i
-                focusTime = slotInfo.lastModified
-            }
-            if (!slotInfo.isUsed && saveFocusIdx == -1) {
-                saveFocusIdx = i
-            }
-        }
-        if (loadFocusIdx < 0) loadFocusIdx = 0
-        if (saveFocusIdx < 0) saveFocusIdx = 0
+
+        clearIcon = ResourcesCompat.getDrawable(resources, R.drawable.ic_clear_slot, null)
+        sendIcon = ResourcesCompat.getDrawable(resources, R.drawable.ic_send_slot, null)
+
+        supportActionBar?.setHomeButtonEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setTitle(if (viewModel.type == DIALOAG_TYPE_LOAD) R.string.game_menu_load else R.string.game_menu_save)
+        viewModel.onCreate(intent)
+
+        viewModel.curShareFlow.onEach {
+            initSlot(it)
+        }.launchIn(lifecycleScope)
+
     }
 
     override fun onOptionsItemSelected(item: android.view.MenuItem): Boolean {
-        val itemId = item.itemId
-        if (itemId == android.R.id.home) {
+        if (item.itemId == android.R.id.home) {
             finish()
             return true
         }
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-    }
-
-    @SuppressLint("HandlerLeak")
     override fun onResume() {
         super.onResume()
-        val h: Handler = object : Handler() {
-            override fun handleMessage(msg: Message) {
-                slots[msg.what]!!.requestFocusFromTouch()
-                i(TAG, "focus item:$loadFocusIdx")
-                val pref = getSharedPreferences("slot-pref", MODE_PRIVATE)
-                if (!pref.contains("show")) {
-                    val editor = pref.edit()
-                    editor.putBoolean("show", true)
-                    editor.apply()
-                }
-            }
-        }
-        h.sendEmptyMessageDelayed(
-            if (type == DIALOAG_TYPE_LOAD) loadFocusIdx else saveFocusIdx,
-            500
-        )
+        slots[viewModel.curSlotIndex].root.requestFocusFromTouch()
+        viewModel.onResume()
     }
+}
 
-    companion object {
-        const val EXTRA_GAME = "EXTRA_GAME"
-        const val EXTRA_BASE_DIRECTORY = "EXTRA_BASE_DIR"
-        const val EXTRA_SLOT = "EXTRA_SLOT"
-        const val EXTRA_DIALOG_TYPE_INT = "EXTRA_DIALOG_TYPE_INT"
-        const val DIALOAG_TYPE_LOAD = 1
-        const val DIALOAG_TYPE_SAVE = 2
-        private const val TAG = "SlotSelectionActivity"
-        private const val SEND_SLOT = 0
-        private const val REMOVE_SLOT = 1
-    }
+object Constants{
+    val EXTRA_GAME = "EXTRA_GAME"
+    val EXTRA_BASE_DIRECTORY = "EXTRA_BASE_DIR"
+    val EXTRA_SLOT = "EXTRA_SLOT"
+    val EXTRA_DIALOG_TYPE_INT = "EXTRA_DIALOG_TYPE_INT"
+    val DIALOAG_TYPE_LOAD = 1
+    val DIALOAG_TYPE_SAVE = 2
+    const val TAG = "SlotSelectionActivity"
+    const val SEND_SLOT = 0
+    const val REMOVE_SLOT = 1
 }

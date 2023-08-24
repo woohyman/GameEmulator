@@ -8,15 +8,9 @@ import android.os.Bundle
 import android.preference.PreferenceActivity
 import android.view.Menu
 import android.view.MenuItem
-import androidx.appcompat.widget.Toolbar
-import androidx.viewpager.widget.ViewPager
+import androidx.annotation.MainThread
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
-import com.woohyman.xml.R
-import com.woohyman.xml.base.EmulatorActivity
-import com.woohyman.xml.ui.gamegallery.adapter.GalleryPagerAdapter
-import com.woohyman.xml.ui.preferences.GeneralPreferenceActivity
-import com.woohyman.xml.ui.preferences.GeneralPreferenceFragment
 import com.woohyman.keyboard.data.database.GameDescription
 import com.woohyman.keyboard.utils.DatabaseHelper
 import com.woohyman.keyboard.utils.DialogUtils.show
@@ -27,37 +21,36 @@ import com.woohyman.keyboard.utils.NLog.w
 import com.woohyman.keyboard.utils.PreferenceUtil.getLastGalleryTab
 import com.woohyman.keyboard.utils.PreferenceUtil.saveLastGalleryTab
 import com.woohyman.keyboard.utils.ZipRomFile
+import com.woohyman.xml.R
+import com.woohyman.xml.base.EmulatorActivity
+import com.woohyman.xml.databinding.ActivityGalleryBinding
+import com.woohyman.xml.ui.gamegallery.adapter.GalleryPagerAdapter
+import com.woohyman.xml.ui.preferences.GeneralPreferenceActivity
+import com.woohyman.xml.ui.preferences.GeneralPreferenceFragment
 import java.io.File
 import java.io.IOException
 import java.text.NumberFormat
 
-abstract class GalleryActivity : BaseGameGalleryActivity(),
+abstract class GalleryActivity :
+    BaseGameGalleryActivity<ActivityGalleryBinding>(ActivityGalleryBinding::inflate),
     GalleryPagerAdapter.OnItemClickListener {
-    var searchDialog: ProgressDialog? = null
-    private var pager: ViewPager? = null
+    private var searchDialog: ProgressDialog? = null
     private var dbHelper: DatabaseHelper? = null
-    private var adapter: GalleryPagerAdapter? = null
+    private val adapter by lazy {
+        GalleryPagerAdapter(this, this)
+    }
     private val importing = false
     private var rotateAnim = false
-    private var mTabLayout: TabLayout? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         dbHelper = DatabaseHelper(this)
-        setContentView(R.layout.activity_gallery)
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
-        setSupportActionBar(toolbar)
-        adapter = GalleryPagerAdapter(this, this)
-        adapter!!.onRestoreInstanceState(savedInstanceState)
-        pager = findViewById(R.id.game_gallery_pager)
-        pager?.setAdapter(adapter)
-        mTabLayout = findViewById(R.id.game_gallery_tab)
-        mTabLayout?.setupWithViewPager(pager)
-        mTabLayout?.setTabMode(TabLayout.MODE_FIXED)
-        if (savedInstanceState != null) {
-            pager?.setCurrentItem(savedInstanceState.getInt(EXTRA_TABS_IDX, 0))
-        } else {
-            pager?.setCurrentItem(getLastGalleryTab(this))
-        }
+        setSupportActionBar(binding.toolbar)
+        binding.gameGalleryPager.adapter = adapter
+        binding.gameGalleryTab.setupWithViewPager(binding.gameGalleryPager)
+        binding.gameGalleryTab.tabMode = TabLayout.MODE_FIXED
+        binding.gameGalleryPager.currentItem =
+            savedInstanceState?.getInt(EXTRA_TABS_IDX, 0) ?: getLastGalleryTab(this)
         exts = romExtensions
         exts = exts?.plus(archiveExtensions)
         inZipExts = romExtensions
@@ -69,24 +62,30 @@ abstract class GalleryActivity : BaseGameGalleryActivity(),
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val itemId = item.itemId
-        if (itemId == R.id.gallery_menu_pref) {
-            val i = Intent(this, GeneralPreferenceActivity::class.java)
-            i.putExtra(
-                PreferenceActivity.EXTRA_SHOW_FRAGMENT,
-                GeneralPreferenceFragment::class.java.name
-            )
-            i.putExtra(PreferenceActivity.EXTRA_NO_HEADERS, true)
-            startActivity(i)
-            return true
-        } else if (itemId == R.id.gallery_menu_reload) {
-            reloadGames(true, null)
-            return true
-        } else if (itemId == R.id.gallery_menu_exit) {
-            finish()
-            return true
+        when (item.itemId) {
+            R.id.gallery_menu_pref -> {
+                val i = Intent(this, GeneralPreferenceActivity::class.java)
+                i.putExtra(
+                    PreferenceActivity.EXTRA_SHOW_FRAGMENT,
+                    GeneralPreferenceFragment::class.java.name
+                )
+                i.putExtra(PreferenceActivity.EXTRA_NO_HEADERS, true)
+                startActivity(i)
+                return true
+            }
+
+            R.id.gallery_menu_reload -> {
+                reloadGames(true, null)
+                return true
+            }
+
+            R.id.gallery_menu_exit -> {
+                finish()
+                return true
+            }
+
+            else -> return super.onOptionsItemSelected(item)
         }
-        return super.onOptionsItemSelected(item)
     }
 
     override fun onResume() {
@@ -94,7 +93,7 @@ abstract class GalleryActivity : BaseGameGalleryActivity(),
         if (rotateAnim) {
             rotateAnim = false
         }
-        adapter!!.notifyDataSetChanged()
+        adapter.notifyDataSetChanged()
         if (reloadGames && !importing) {
             val isDBEmpty = dbHelper!!.countObjsInDb(GameDescription::class.java, null) == 0
             reloadGames(isDBEmpty, null)
@@ -103,7 +102,7 @@ abstract class GalleryActivity : BaseGameGalleryActivity(),
 
     override fun onPause() {
         super.onPause()
-        saveLastGalleryTab(this, pager!!.currentItem)
+        saveLastGalleryTab(this, binding.gameGalleryPager.currentItem)
     }
 
     override fun onItemClick(game: GameDescription?) {
@@ -136,10 +135,7 @@ abstract class GalleryActivity : BaseGameGalleryActivity(),
                 .setMessage(getString(R.string.gallery_rom_not_found))
                 .setTitle(R.string.error)
                 .setPositiveButton(R.string.gallery_rom_not_found_reload) { dialog1: DialogInterface?, which: Int ->
-                    reloadGames(
-                        true,
-                        null
-                    )
+                    reloadGames(true, null)
                 }
                 .setCancelable(false)
                 .create()
@@ -148,7 +144,7 @@ abstract class GalleryActivity : BaseGameGalleryActivity(),
         }
     }
 
-    fun onGameSelected(game: GameDescription?, slot: Int): Boolean {
+    private fun onGameSelected(game: GameDescription?, slot: Int): Boolean {
         val intent = Intent(this, emulatorActivityClass)
         intent.putExtra(EmulatorActivity.EXTRA_GAME, game)
         intent.putExtra(EmulatorActivity.EXTRA_SLOT, slot)
@@ -158,43 +154,46 @@ abstract class GalleryActivity : BaseGameGalleryActivity(),
     }
 
     override fun setLastGames(games: ArrayList<GameDescription>?) {
-        adapter!!.setGames(games)
+        adapter.setGames(games)
     }
 
     override fun setNewGames(games: ArrayList<GameDescription>?) {
-        adapter!!.addGames(games)
+        adapter.addGames(games)
     }
 
+    @MainThread
     private fun showSearchProgressDialog(zipMode: Boolean) {
-        if (searchDialog == null) {
-            searchDialog = ProgressDialog(this)
-            searchDialog!!.max = 100
-            searchDialog!!.setCancelable(false)
-            searchDialog!!.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL)
-            searchDialog!!.isIndeterminate = true
-            searchDialog!!.setProgressNumberFormat("")
-            searchDialog!!.setProgressPercentFormat(null)
-            searchDialog!!.setButton(
-                DialogInterface.BUTTON_NEGATIVE, getString(R.string.cancel)
+        searchDialog ?: ProgressDialog(this).also {
+            it.max = 100
+            it.setCancelable(false)
+            it.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL)
+            it.isIndeterminate = true
+            it.setProgressNumberFormat("")
+            it.setProgressPercentFormat(null)
+            it.setButton(
+                DialogInterface.BUTTON_NEGATIVE,
+                getString(R.string.cancel)
             ) { dialog: DialogInterface?, which: Int -> stopRomsFinding() }
+        }.also {
+            it.setMessage(getString(if (zipMode) R.string.gallery_zip_search_label else R.string.gallery_sdcard_search_label))
+            show(it, false)
         }
-        searchDialog!!.setMessage(getString(if (zipMode) R.string.gallery_zip_search_label else R.string.gallery_sdcard_search_label))
-        show(searchDialog!!, false)
+
     }
 
-    fun onSearchingEnd(count: Int, showToast: Boolean) {
-        runOnUiThread {
-            if (searchDialog != null) {
-                searchDialog!!.dismiss()
-                searchDialog = null
-            }
-            if (showToast) {
-                if (count > 0) {
-                    Snackbar.make(
-                        pager!!, getString(R.string.gallery_count_of_found_games, count),
-                        Snackbar.LENGTH_LONG
-                    ).setAction("Action", null).show()
-                }
+    @MainThread
+    private fun onSearchingEnd(count: Int, showToast: Boolean) {
+        if (searchDialog != null) {
+            searchDialog!!.dismiss()
+            searchDialog = null
+        }
+        if (showToast) {
+            if (count > 0) {
+                Snackbar.make(
+                    binding.gameGalleryPager,
+                    getString(R.string.gallery_count_of_found_games, count),
+                    Snackbar.LENGTH_LONG
+                ).setAction("Action", null).show()
             }
         }
     }
@@ -205,18 +204,13 @@ abstract class GalleryActivity : BaseGameGalleryActivity(),
         }
     }
 
+    @MainThread
     override fun onRomsFinderZipPartStart(countEntries: Int) {
-        if (searchDialog != null) {
-            runOnUiThread {
-                if (searchDialog != null) {
-                    searchDialog!!.setProgressNumberFormat("%1d/%2d")
-                    searchDialog!!.setProgressPercentFormat(NumberFormat.getPercentInstance())
-                    searchDialog!!.setMessage(getString(R.string.gallery_start_sip_search_label))
-                    searchDialog!!.isIndeterminate = false
-                    searchDialog!!.max = countEntries
-                }
-            }
-        }
+        searchDialog?.setProgressNumberFormat("%1d/%2d")
+        searchDialog?.setProgressPercentFormat(NumberFormat.getPercentInstance())
+        searchDialog?.setMessage(getString(R.string.gallery_start_sip_search_label))
+        searchDialog?.isIndeterminate = false
+        searchDialog?.max = countEntries
     }
 
     override fun onRomsFinderCancel(searchNew: Boolean) {
@@ -234,31 +228,21 @@ abstract class GalleryActivity : BaseGameGalleryActivity(),
         onSearchingEnd(roms.size, true)
     }
 
+    @MainThread
     override fun onRomsFinderFoundZipEntry(message: String?, skipEntries: Int) {
-        if (searchDialog != null) {
-            runOnUiThread {
-                if (searchDialog != null) {
-                    searchDialog!!.setMessage(message)
-                    searchDialog!!.progress = searchDialog!!.progress + 1 + skipEntries
-                }
-            }
-        }
+        searchDialog?.setMessage(message)
+        searchDialog?.progress = searchDialog!!.progress + 1 + skipEntries
     }
 
+    @MainThread
     override fun onRomsFinderFoundFile(name: String?) {
-        if (searchDialog != null) {
-            runOnUiThread {
-                if (searchDialog != null) {
-                    searchDialog!!.setMessage(name)
-                }
-            }
-        }
+        searchDialog?.setMessage(name)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putInt(EXTRA_TABS_IDX, pager!!.currentItem)
-        adapter!!.onSaveInstanceState(outState)
+        outState.putInt(EXTRA_TABS_IDX, binding.gameGalleryPager.currentItem)
+        adapter.onSaveInstanceState(outState)
     }
 
     companion object {

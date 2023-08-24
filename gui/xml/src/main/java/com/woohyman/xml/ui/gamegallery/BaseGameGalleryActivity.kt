@@ -1,28 +1,31 @@
 package com.woohyman.xml.ui.gamegallery
 
-import android.annotation.TargetApi
 import android.app.AlertDialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
+import android.view.LayoutInflater
+import androidx.annotation.MainThread
 import androidx.documentfile.provider.DocumentFile
-import com.blankj.utilcode.util.StringUtils
+import androidx.viewbinding.ViewBinding
 import com.blankj.utilcode.util.UriUtils
-import com.woohyman.xml.R
-import com.woohyman.xml.base.EmulatorActivity
-import com.woohyman.xml.ui.gamegallery.RomsFinder.OnRomsFinderListener
 import com.woohyman.keyboard.data.database.GameDescription
 import com.woohyman.keyboard.emulator.Emulator
+import com.woohyman.keyboard.rom.RomsFinder
+import com.woohyman.keyboard.rom.RomsFinder.OnRomsFinderListener
 import com.woohyman.keyboard.utils.DatabaseHelper
 import com.woohyman.keyboard.utils.DialogUtils.show
 import com.woohyman.keyboard.utils.FileUtils.isSDCardRWMounted
 import com.woohyman.keyboard.utils.NLog.i
+import com.woohyman.xml.R
+import com.woohyman.xml.base.BaseActivity
+import com.woohyman.xml.base.EmulatorActivity
 import java.io.File
 
-abstract class BaseGameGalleryActivity : AppCompatActivity(), OnRomsFinderListener {
+abstract class BaseGameGalleryActivity<VB : ViewBinding>(bindingFactory: (LayoutInflater) -> VB) :
+    BaseActivity<VB>(bindingFactory), OnRomsFinderListener {
     protected var exts: Set<String>? = null
     protected var inZipExts: Set<String>? = null
     protected var reloadGames = true
@@ -30,7 +33,6 @@ abstract class BaseGameGalleryActivity : AppCompatActivity(), OnRomsFinderListen
     private var romsFinder: RomsFinder? = null
     private var dbHelper: DatabaseHelper? = null
     private var sharedPreferences: SharedPreferences? = null
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val exts = HashSet(romExtensions)
@@ -60,9 +62,7 @@ abstract class BaseGameGalleryActivity : AppCompatActivity(), OnRomsFinderListen
 
     override fun onDestroy() {
         super.onDestroy()
-        if (romsFinder != null) {
-            romsFinder!!.stopSearch()
-        }
+        romsFinder?.stopSearch()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -75,7 +75,8 @@ abstract class BaseGameGalleryActivity : AppCompatActivity(), OnRomsFinderListen
                 val file = UriUtils.uri2File(dfile!!.uri)
                 editor.putString("path", file.absolutePath)
                 editor.commit()
-                romsFinder = RomsFinder(exts, inZipExts, this, this, reloading, file)
+                romsFinder =
+                    RomsFinder(exts, inZipExts, { showSDCardFailed() }, this, reloading, file)
                 romsFinder!!.start()
             }
         }
@@ -126,16 +127,15 @@ abstract class BaseGameGalleryActivity : AppCompatActivity(), OnRomsFinderListen
         }
     }
 
-    fun showSDCardFailed() {
-        runOnUiThread {
-            val dialog = AlertDialog.Builder(this@BaseGameGalleryActivity)
-                .setTitle(R.string.error)
-                .setMessage(R.string.gallery_sd_card_not_mounted)
-                .setOnCancelListener { dialog1: DialogInterface? -> finish() }
-                .setPositiveButton(R.string.exit) { dialog1: DialogInterface?, which: Int -> finish() }
-                .create()
-            show(dialog, true)
-        }
+    @MainThread
+    private fun showSDCardFailed() {
+        val dialog = AlertDialog.Builder(this@BaseGameGalleryActivity)
+            .setTitle(R.string.error)
+            .setMessage(R.string.gallery_sd_card_not_mounted)
+            .setOnCancelListener { dialog1: DialogInterface? -> finish() }
+            .setPositiveButton(R.string.exit) { dialog1: DialogInterface?, which: Int -> finish() }
+            .create()
+        show(dialog, true)
     }
 
     abstract val emulatorActivityClass: Class<out EmulatorActivity?>?
@@ -144,7 +144,7 @@ abstract class BaseGameGalleryActivity : AppCompatActivity(), OnRomsFinderListen
     protected abstract val romExtensions: Set<String>?
     abstract val emulatorInstance: Emulator?
     protected val archiveExtensions: Set<String>
-        protected get() {
+        get() {
             val set = HashSet<String>()
             set.add("zip")
             return set

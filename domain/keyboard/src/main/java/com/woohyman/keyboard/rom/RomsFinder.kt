@@ -1,7 +1,8 @@
-package com.woohyman.xml.ui.gamegallery
+package com.woohyman.keyboard.rom
 
 import android.os.Environment
 import android.os.Process
+import com.blankj.utilcode.util.Utils
 import com.woohyman.keyboard.data.database.GameDescription
 import com.woohyman.keyboard.utils.DatabaseHelper
 import com.woohyman.keyboard.utils.EmuUtils.getExt
@@ -19,8 +20,11 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 
 class RomsFinder(
-    exts: Set<String>?, inZipExts: Set<String>?, private val activity: BaseGameGalleryActivity,
-    private val listener: OnRomsFinderListener, searchNew: Boolean, selectedFolder: File?
+    exts: Set<String>?,
+    inZipExts: Set<String>?,
+    private val SDCardFindFailed:()->Unit,
+    private val listener: OnRomsFinderListener,
+    searchNew: Boolean, selectedFolder: File?
 ) : Thread() {
     private val filenameExtFilter: FilenameExtFilter
     private val inZipFileNameExtFilter: FilenameExtFilter
@@ -38,7 +42,7 @@ class RomsFinder(
         filenameExtFilter = FilenameExtFilter(exts, true, false)
         inZipFileNameExtFilter = FilenameExtFilter(inZipExts, true, false)
         androidAppDataFolder = Environment.getExternalStorageDirectory().absolutePath + "/Android"
-        dbHelper = DatabaseHelper(activity)
+        dbHelper = DatabaseHelper(Utils.getApp())
     }
 
     private fun getRomAndPackedFiles(
@@ -96,24 +100,24 @@ class RomsFinder(
         Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND)
         running.set(true)
         i(TAG, "start")
-        activity.runOnUiThread { listener.onRomsFinderStart(searchNew) }
+        listener.onRomsFinderStart(searchNew)
         var oldRoms = getAllGames(dbHelper)
         oldRoms = removeNonExistRoms(oldRoms)
         val roms = oldRoms
         i(TAG, "old games " + oldRoms.size)
-        activity.runOnUiThread { listener.onRomsFinderFoundGamesInCache(roms) }
+        listener.onRomsFinderFoundGamesInCache(roms)
         if (searchNew) {
             for (desc in oldRoms) {
-                oldGames[desc!!.path] = desc
+                oldGames[desc.path] = desc
             }
             startFileSystemMode(oldRoms)
         } else {
-            activity.runOnUiThread { listener.onRomsFinderEnd(false) }
+            listener.onRomsFinderEnd(false)
         }
     }
 
     private fun checkZip(zipFile: File) {
-        val externalCache = activity.externalCacheDir
+        val externalCache = Utils.getApp().externalCacheDir
         if (externalCache != null) {
             val cacheDir = externalCache.absolutePath
             i(TAG, "check zip" + zipFile.absolutePath)
@@ -205,7 +209,7 @@ class RomsFinder(
             }
         } else {
             e(TAG, "external cache dir is null")
-            activity.showSDCardFailed()
+            SDCardFindFailed()
         }
     }
 
@@ -266,10 +270,8 @@ class RomsFinder(
         }
         i(TAG, "compute checksum- done")
         if (running.get()) {
-            activity.runOnUiThread {
-                listener.onRomsFinderNewGames(games)
-                listener.onRomsFinderEnd(true)
-            }
+            listener.onRomsFinderNewGames(games)
+            listener.onRomsFinderEnd(true)
         }
         i(TAG, "time:" + (System.currentTimeMillis() - startTime) / 1000)
     }
