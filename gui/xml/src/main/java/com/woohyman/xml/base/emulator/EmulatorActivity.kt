@@ -139,7 +139,7 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
         EmulatorControlProxy(this, emulatorInstance, game)
     }
 
-    private val gameManagerProxy by lazy {
+    val gameManagerProxy by lazy {
         GameManagerProxy(this, emulatorInstance, game)
     }
 
