@@ -1,4 +1,4 @@
-package com.woohyman.xml.base
+package com.woohyman.xml.ui.opengl
 
 import android.annotation.SuppressLint
 import android.app.Application
@@ -12,6 +12,8 @@ import com.woohyman.keyboard.base.ViewPort
 import com.woohyman.keyboard.base.ViewUtils.loadOrComputeViewPort
 import com.woohyman.keyboard.emulator.Emulator
 import com.woohyman.keyboard.utils.NLog
+import com.woohyman.keyboard.emulator.EmulatorView
+import com.woohyman.xml.base.emulator.EmulatorActivity
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer

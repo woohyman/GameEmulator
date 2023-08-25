@@ -1,4 +1,4 @@
-package com.woohyman.xml.base
+package com.woohyman.xml.ui.menu
 
 import android.app.Dialog
 import android.content.Context

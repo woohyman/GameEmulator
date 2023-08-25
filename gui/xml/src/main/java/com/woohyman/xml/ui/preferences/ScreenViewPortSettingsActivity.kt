@@ -5,9 +5,9 @@ import android.os.Bundle
 import android.view.KeyEvent
 import androidx.appcompat.app.AppCompatActivity
 import com.woohyman.xml.R
-import com.woohyman.xml.base.GameMenu
-import com.woohyman.xml.base.GameMenu.GameMenuItem
-import com.woohyman.xml.base.GameMenu.OnGameMenuListener
+import com.woohyman.xml.ui.menu.GameMenu
+import com.woohyman.xml.ui.menu.GameMenu.GameMenuItem
+import com.woohyman.xml.ui.menu.GameMenu.OnGameMenuListener
 import com.woohyman.xml.ui.multitouchbutton.MultitouchLayer
 import com.woohyman.keyboard.base.EmulatorUtils
 import com.woohyman.keyboard.base.SlotUtils

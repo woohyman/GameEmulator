@@ -8,7 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
 import com.woohyman.xml.R
-import com.woohyman.xml.base.EmulatorActivity
+import com.woohyman.xml.base.emulator.EmulatorActivity
 import com.woohyman.xml.ui.multitouchbutton.MultitouchBtnInterface
 import com.woohyman.xml.ui.multitouchbutton.MultitouchButton
 import com.woohyman.xml.ui.multitouchbutton.MultitouchImageButton

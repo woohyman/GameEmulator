@@ -5,7 +5,6 @@ import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
-import androidx.appcompat.app.ActionBar
 import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.lifecycleScope
 import com.woohyman.keyboard.data.database.GameDescription
@@ -19,10 +18,9 @@ import com.woohyman.xml.ui.gamegallery.Constants.EXTRA_SLOT
 import com.woohyman.xml.ui.gamegallery.Constants.SEND_SLOT
 import com.woohyman.xml.ui.gamegallery.uistate.SlotInfoUIState
 import com.woohyman.xml.ui.gamegallery.viewmodel.SlotSelectionViewModel
-import com.woohyman.xml.ui.widget.PopupMenu
+import com.woohyman.xml.ui.menu.PopupMenu
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 
 class SlotSelectionActivity : BaseActivity<ActivitySlotSelectionBinding>
     (ActivitySlotSelectionBinding::inflate) {

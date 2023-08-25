@@ -1,9 +1,9 @@
-package com.woohyman.xml.base
+package com.woohyman.keyboard.emulator
 
 import android.view.View
 import com.woohyman.keyboard.base.ViewPort
 
-internal interface EmulatorView {
+interface EmulatorView {
     fun onPause()
     fun onResume()
     fun setQuality(quality: Int)

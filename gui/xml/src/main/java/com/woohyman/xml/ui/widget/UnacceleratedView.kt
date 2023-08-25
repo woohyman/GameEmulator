@@ -1,4 +1,4 @@
-package com.woohyman.xml.base
+package com.woohyman.xml.ui.widget
 
 import android.app.Activity
 import android.app.Application
@@ -8,6 +8,7 @@ import android.view.View
 import com.woohyman.keyboard.base.ViewPort
 import com.woohyman.keyboard.base.ViewUtils.loadOrComputeViewPort
 import com.woohyman.keyboard.emulator.Emulator
+import com.woohyman.keyboard.emulator.EmulatorView
 
 internal class UnacceleratedView(
     context: Activity,

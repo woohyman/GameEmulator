@@ -21,7 +21,7 @@ import com.woohyman.keyboard.utils.FileUtils.isSDCardRWMounted
 import com.woohyman.keyboard.utils.NLog.i
 import com.woohyman.xml.R
 import com.woohyman.xml.base.BaseActivity
-import com.woohyman.xml.base.EmulatorActivity
+import com.woohyman.xml.base.emulator.EmulatorActivity
 import java.io.File
 
 abstract class BaseGameGalleryActivity<VB : ViewBinding>(bindingFactory: (LayoutInflater) -> VB) :

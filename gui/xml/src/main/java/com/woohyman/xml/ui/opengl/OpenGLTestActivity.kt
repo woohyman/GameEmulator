@@ -1,4 +1,4 @@
-package com.woohyman.xml.base
+package com.woohyman.xml.ui.opengl
 
 import android.app.Activity
 import android.os.Bundle

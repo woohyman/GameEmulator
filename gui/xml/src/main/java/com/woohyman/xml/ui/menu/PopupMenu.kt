@@ -1,4 +1,4 @@
-package com.woohyman.xml.ui.widget
+package com.woohyman.xml.ui.menu
 
 import android.annotation.SuppressLint
 import android.app.Activity

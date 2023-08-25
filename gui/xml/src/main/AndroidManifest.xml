@@ -115,14 +115,14 @@
             android:name="com.woohyman.xml.ui.cheats.CheatsActivity"
             android:label="Cheats" />
 
-        <activity android:name="com.woohyman.xml.base.OpenGLTestActivity" />
+        <activity android:name="com.woohyman.xml.ui.opengl.OpenGLTestActivity" />
 
         <activity
             android:name="com.woohyman.xml.ui.preferences.AboutActivity"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
-            android:name="com.woohyman.xml.base.RestarterActivity"
+            android:name="com.woohyman.xml.ui.control.RestarterActivity"
             android:configChanges="orientation|screenSize"
             android:process=":restarter" />
 

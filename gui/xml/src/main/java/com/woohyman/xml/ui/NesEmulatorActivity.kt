@@ -3,7 +3,7 @@ package com.woohyman.xml.ui
 import android.app.ActivityManager
 import android.content.Intent
 import android.os.Bundle
-import com.woohyman.xml.base.EmulatorActivity
+import com.woohyman.xml.base.emulator.EmulatorActivity
 import com.woohyman.keyboard.emulator.Emulator
 import com.woohyman.keyboard.emulator.NesEmulator
 import com.woohyman.keyboard.utils.PreferenceUtil.getFragmentShader

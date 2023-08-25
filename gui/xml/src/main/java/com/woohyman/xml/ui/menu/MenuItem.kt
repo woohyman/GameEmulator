@@ -1,4 +1,4 @@
-package com.woohyman.xml.ui.widget
+package com.woohyman.xml.ui.menu
 
 import android.content.Intent
 import android.graphics.drawable.Drawable

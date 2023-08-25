@@ -1,4 +1,4 @@
-package com.woohyman.xml.base
+package com.woohyman.xml.base.emulator
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -16,7 +16,6 @@ import android.preference.PreferenceActivity
 import android.preference.PreferenceManager
 import android.view.KeyEvent
 import android.view.MotionEvent
-import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.FrameLayout
@@ -24,22 +23,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.blankj.utilcode.constant.PermissionConstants
 import com.blankj.utilcode.util.PermissionUtils
-import com.woohyman.xml.BaseApplication
-import com.woohyman.xml.R
-import com.woohyman.xml.base.GameMenu.GameMenuItem
-import com.woohyman.xml.base.GameMenu.OnGameMenuListener
-import com.woohyman.xml.controllers.DynamicDPad
-import com.woohyman.xml.controllers.KeyboardController
-import com.woohyman.xml.controllers.QuickSaveController
-import com.woohyman.xml.controllers.TouchController
-import com.woohyman.xml.controllers.ZapperGun
-import com.woohyman.xml.ui.cheats.CheatsActivity
-import com.woohyman.xml.ui.gamegallery.SlotSelectionActivity
-import com.woohyman.xml.ui.preferences.GamePreferenceActivity
-import com.woohyman.xml.ui.preferences.GamePreferenceFragment
-import com.woohyman.xml.ui.preferences.GeneralPreferenceActivity
-import com.woohyman.xml.ui.preferences.GeneralPreferenceFragment
-import com.woohyman.xml.ui.timetravel.TimeTravelDialog
 import com.woohyman.keyboard.base.Benchmark
 import com.woohyman.keyboard.base.Benchmark.BenchmarkCallback
 import com.woohyman.keyboard.base.EmulatorHolder.info
@@ -47,11 +30,11 @@ import com.woohyman.keyboard.base.EmulatorUtils
 import com.woohyman.keyboard.base.Manager
 import com.woohyman.keyboard.base.SlotUtils
 import com.woohyman.keyboard.base.ViewPort
-import com.woohyman.keyboard.controllers.EmulatorController
 import com.woohyman.keyboard.data.database.GameDescription
 import com.woohyman.keyboard.emulator.Emulator
 import com.woohyman.keyboard.emulator.EmulatorException
 import com.woohyman.keyboard.emulator.EmulatorRunner.OnNotRespondingListener
+import com.woohyman.keyboard.emulator.EmulatorView
 import com.woohyman.keyboard.utils.DialogUtils.show
 import com.woohyman.keyboard.utils.EmuUtils.checkGL20Support
 import com.woohyman.keyboard.utils.EmuUtils.createScreenshotBitmap
@@ -66,20 +49,31 @@ import com.woohyman.keyboard.utils.PreferenceUtil.getEmulationQuality
 import com.woohyman.keyboard.utils.PreferenceUtil.getFastForwardFrameCount
 import com.woohyman.keyboard.utils.PreferenceUtil.isAutoHideControls
 import com.woohyman.keyboard.utils.PreferenceUtil.isBenchmarked
-import com.woohyman.keyboard.utils.PreferenceUtil.isDynamicDPADEnable
-import com.woohyman.keyboard.utils.PreferenceUtil.isFastForwardEnabled
 import com.woohyman.keyboard.utils.PreferenceUtil.isFastForwardToggleable
-import com.woohyman.keyboard.utils.PreferenceUtil.isScreenSettingsSaved
 import com.woohyman.keyboard.utils.PreferenceUtil.isTimeshiftEnabled
 import com.woohyman.keyboard.utils.PreferenceUtil.setBenchmarked
-import com.woohyman.keyboard.utils.PreferenceUtil.setDynamicDPADUsed
 import com.woohyman.keyboard.utils.PreferenceUtil.setEmulationQuality
-import com.woohyman.keyboard.utils.PreferenceUtil.setFastForwardUsed
-import com.woohyman.keyboard.utils.PreferenceUtil.setScreenLayoutUsed
+import com.woohyman.xml.BaseApplication
+import com.woohyman.xml.R
+import com.woohyman.xml.ui.cheats.CheatsActivity
+import com.woohyman.xml.ui.control.RestarterActivity
 import com.woohyman.xml.ui.gamegallery.Constants.DIALOAG_TYPE_LOAD
 import com.woohyman.xml.ui.gamegallery.Constants.DIALOAG_TYPE_SAVE
 import com.woohyman.xml.ui.gamegallery.Constants.EXTRA_BASE_DIRECTORY
 import com.woohyman.xml.ui.gamegallery.Constants.EXTRA_DIALOG_TYPE_INT
+import com.woohyman.xml.ui.gamegallery.SlotSelectionActivity
+import com.woohyman.xml.ui.menu.GameMenu
+import com.woohyman.xml.ui.menu.GameMenu.GameMenuItem
+import com.woohyman.xml.ui.menu.GameMenu.OnGameMenuListener
+import com.woohyman.xml.ui.opengl.OpenGLView
+import com.woohyman.xml.ui.preferences.GamePreferenceActivity
+import com.woohyman.xml.ui.preferences.GamePreferenceFragment
+import com.woohyman.xml.ui.preferences.GeneralPreferenceActivity
+import com.woohyman.xml.ui.preferences.GeneralPreferenceFragment
+import com.woohyman.xml.ui.timetravel.TimeTravelDialog
+import com.woohyman.xml.ui.widget.UnacceleratedView
+import kotlinx.atomicfu.atomic
+import kotlinx.atomicfu.getAndUpdate
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -89,22 +83,27 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
     var isRestarting = false
     var canRestart = false
     var runTimeMachine = false
-    var dialog: TimeTravelDialog? = null
-    private var gameMenu: GameMenu? = null
-    private var game: GameDescription? = null
-    private var dynamic: DynamicDPad? = null
-    private var touchController: TouchController? = null
+    val dialog: TimeTravelDialog by lazy {
+        TimeTravelDialog(this, manager, game)
+    }
+    private val gameMenu: GameMenu by lazy {
+        GameMenu(this, this)
+    }
+    private val game: GameDescription by lazy {
+        intent.getSerializableExtra(EXTRA_GAME) as GameDescription
+    }
+
     private var autoHide = false
-    private var warningShowing = false
+    private var warningShowing = atomic(false)
     private var isFF = false
     private var isToggleFF = false
     private var isFFPressed = false
     private var exceptionOccurred = false
     private var slotToRun: Int? = null
     private var slotToSave: Int? = null
-    private var controllers: MutableList<EmulatorController?>? = null
-    var manager: Manager? = null
-        private set
+    val manager: Manager by lazy {
+        Manager(emulatorInstance, applicationContext)
+    }
     private var emulatorView: EmulatorView? = null
     private val benchmarkCallback: BenchmarkCallback = object : BenchmarkCallback {
         private var numTests = 0
@@ -126,15 +125,13 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
             if (numTests == 2) {
                 setBenchmarked(this@EmulatorActivity, true)
                 if (numOk == 2) {
-                    emulatorView!!.setQuality(2)
+                    emulatorView?.setQuality(2)
                     setEmulationQuality(this@EmulatorActivity, 2)
-                } else {
                 }
             }
         }
     }
-    private var controllerViews: MutableList<View>? = null
-    private var group: ViewGroup? = null
+
     private var baseDir: String? = null
     abstract val emulatorInstance: Emulator
     abstract val fragmentShader: String
@@ -142,15 +139,21 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
         return null
     }
 
-    val gLTextureSize: Int
-        get() = 256
+    val gLTextureSize = 256
 
     fun hasGLPalette(): Boolean {
         return true
     }
 
+    private val controlProxy by lazy {
+        ControlProxy(this,emulatorInstance,game)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        lifecycle.addObserver(controlProxy)
+
         val extras = intent.extras
         if (extras != null && extras.getBoolean(EXTRA_FROM_GALLERY)) {
             setShouldPauseOnResume(false)
@@ -166,15 +169,13 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
         }
         d(TAG, "onCreate - BaseActivity")
         val hasOpenGL20 = checkGL20Support(applicationContext)
-        gameMenu = GameMenu(this, this)
-        game = intent.getSerializableExtra(EXTRA_GAME) as GameDescription?
         slotToRun = -1
         val wParams = window.attributes
         wParams.flags = wParams.flags or WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
         wParams.flags = wParams.flags or WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
         wParams.flags = wParams.flags or WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
         window.attributes = wParams
-        val emulator = emulatorInstance
+
         val paddingLeft = 0
         var paddingTop = 0
         if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -186,70 +187,38 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
         val alreadyBenchmarked = isBenchmarked(this)
         val needsBenchmark = quality != 2 && !alreadyBenchmarked
         if (hasOpenGL20) {
-            openGLView = OpenGLView(this, emulator, paddingLeft, paddingTop, shader)
+            openGLView = OpenGLView(this, emulatorInstance, paddingLeft, paddingTop, shader)
             if (needsBenchmark) {
                 openGLView.setBenchmark(Benchmark(OPEN_GL_BENCHMARK, 200, benchmarkCallback))
             }
         }
-        emulatorView = openGLView ?: UnacceleratedView(this, emulator, paddingLeft, paddingTop)
-        controllers = ArrayList()
-        touchController = TouchController(this)
-        controllers?.add(touchController)
-        touchController!!.connectToEmulator(0, emulator)
-        dynamic = DynamicDPad(this, windowManager.defaultDisplay, touchController)
-        controllers?.add(dynamic)
-        dynamic!!.connectToEmulator(0, emulator)
-        val qsc = QuickSaveController(this, touchController)
-        controllers?.add(qsc)
-        val kc = KeyboardController(emulator, applicationContext, game!!.checksum, this)
-        val zapper = ZapperGun(applicationContext, this)
-        zapper.connectToEmulator(1, emulator)
-        controllers?.add(zapper)
-        controllers?.add(kc)
-        group = FrameLayout(this)
+
+        emulatorView =
+            openGLView ?: UnacceleratedView(this, emulatorInstance, paddingLeft, paddingTop)
         val display = windowManager.defaultDisplay
         val w = getDisplayWidth(display)
         val h = getDisplayHeight(display)
         val params = ViewGroup.LayoutParams(w, h)
-        group?.setLayoutParams(params)
-        group?.addView(emulatorView!!.asView())
-        controllerViews = ArrayList()
-        for (controller in controllers!!) {
-            val controllerView = controller!!.view
-            if (controllerView != null) {
-                controllerViews?.add(controllerView)
-                group?.addView(controllerView)
-            }
-        }
-        group?.addView(object : View(applicationContext) {
-            override fun onTouchEvent(event: MotionEvent): Boolean {
-                return true
-            }
-        })
-        setContentView(group)
-        manager = Manager(emulator, applicationContext)
-        manager!!.setOnNotRespondingListener(this)
+        controlProxy.group.layoutParams = params
+        controlProxy.group.addView(emulatorView?.asView())
+        setContentView(controlProxy.group)
+
+        manager.setOnNotRespondingListener(this)
         if (needsBenchmark) {
-            manager!!.setBenchmark(Benchmark(EMULATION_BENCHMARK, 1000, benchmarkCallback))
+            manager.setBenchmark(Benchmark(EMULATION_BENCHMARK, 1000, benchmarkCallback))
         }
     }
 
     fun hideTouchController() {
         i(TAG, "hide controler")
         if (autoHide) {
-            if (touchController != null) {
-                touchController!!.hide()
-            }
+            controlProxy.hideTouchController()
         }
     }
 
     override fun onNotResponding() {
-        synchronized(warningShowing) {
-            warningShowing = if (!warningShowing) {
-                true
-            } else {
-                return
-            }
+        warningShowing.getAndUpdate {
+            true
         }
         runOnUiThread {
             val dialog = AlertDialog.Builder(this)
@@ -257,7 +226,7 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
                 .create()
             dialog.setOnDismissListener { dialog1: DialogInterface? -> finish() }
             try {
-                manager!!.pauseEmulation()
+                manager.pauseEmulation()
             } catch (ignored: EmulatorException) {
             }
             show(dialog, true)
@@ -273,16 +242,11 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
             return
         }
         oldConfig = changingConfigurations
-        group!!.removeAllViews()
-        controllerViews!!.clear()
+        controlProxy.group.removeAllViews()
         try {
-            manager!!.destroy()
+            manager.destroy()
         } catch (ignored: EmulatorException) {
         }
-        for (controller in controllers!!) {
-            controller!!.onDestroy()
-        }
-        controllers!!.clear()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -290,7 +254,7 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
         setShouldPauseOnResume(false)
         if (resultCode == RESULT_OK) {
             canRestart = false
-            val slotIdx = data!!.getIntExtra(EXTRA_SLOT, -1)
+            val slotIdx = data?.getIntExtra(EXTRA_SLOT, -1)
             when (requestCode) {
                 REQUEST_SAVE -> {
                     slotToSave = slotIdx
@@ -307,20 +271,13 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
 
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
         val res = super.dispatchTouchEvent(ev)
-        if (touchController != null) {
-            touchController!!.show()
-        }
-        for (controllerView in controllerViews!!) {
-            controllerView.dispatchTouchEvent(ev)
-        }
+        controlProxy.dispatchTouchEvent(ev)
         return res
     }
 
     override fun dispatchKeyEvent(ev: KeyEvent): Boolean {
         val res = super.dispatchKeyEvent(ev)
-        for (controllerView in controllerViews!!) {
-            controllerView.dispatchKeyEvent(ev)
-        }
+        controlProxy.dispatchKeyEvent(ev)
         return res
     }
 
@@ -345,22 +302,18 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
             return
         }
         pm = null
-        if (gameMenu != null && gameMenu!!.isOpen) {
-            gameMenu!!.dismiss()
+        if (gameMenu.isOpen) {
+            gameMenu.dismiss()
         }
-        if (dialog != null && dialog!!.isShowing) {
-            dialog!!.dismiss()
-        }
-        for (controller in controllers!!) {
-            controller!!.onPause()
-            controller.onGamePaused(game)
+        if (dialog.isShowing) {
+            dialog.dismiss()
         }
         try {
-            manager!!.stopGame()
+            manager.stopGame()
         } catch (e: EmulatorException) {
             handleException(e)
         } finally {
-            emulatorView!!.onPause()
+            emulatorView?.onPause()
         }
     }
 
@@ -369,16 +322,16 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
             if (!isFFPressed) {
                 isFFPressed = true
                 isFF = !isFF
-                manager!!.setFastForwardEnabled(isFF)
+                manager.setFastForwardEnabled(isFF)
             }
         } else {
-            manager!!.setFastForwardEnabled(true)
+            manager.setFastForwardEnabled(true)
         }
     }
 
     fun onFastForwardUp() {
         if (!isToggleFF) {
-            manager!!.setFastForwardEnabled(false)
+            manager.setFastForwardEnabled(false)
         }
         isFFPressed = false
     }
@@ -394,9 +347,9 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
         isRestarting = true
         val intent = Intent(this, RestarterActivity::class.java)
         intent.putExtras(getIntent())
-        intent.putExtra(RestarterActivity.Companion.EXTRA_PID, Process.myPid())
+        intent.putExtra(RestarterActivity.EXTRA_PID, Process.myPid())
         val className = activityToStartClass.name
-        intent.putExtra(RestarterActivity.Companion.EXTRA_CLASS, className)
+        intent.putExtra(RestarterActivity.EXTRA_CLASS, className)
         startActivity(intent)
     }
 
@@ -418,7 +371,7 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
     }
 
     fun quickSave() {
-        manager!!.saveState(10)
+        manager.saveState(10)
         runOnUiThread {
             Toast.makeText(
                 this,
@@ -428,7 +381,7 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
     }
 
     fun quickLoad() {
-        manager!!.loadState(10)
+        manager.loadState(10)
     }
 
     @SuppressLint("DefaultLocale")
@@ -439,9 +392,9 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
         var isAfterProcessRestart = false
         if (extras != null) {
             isAfterProcessRestart =
-                extras.getBoolean(RestarterActivity.Companion.EXTRA_AFTER_RESTART)
+                extras.getBoolean(RestarterActivity.EXTRA_AFTER_RESTART)
         }
-        intent.removeExtra(RestarterActivity.Companion.EXTRA_AFTER_RESTART)
+        intent.removeExtra(RestarterActivity.EXTRA_AFTER_RESTART)
         val shouldRestart = decreaseResumesToRestart() == 0
         if (!isAfterProcessRestart && shouldRestart && canRestart) {
             resetProcessResetCounter()
@@ -461,57 +414,36 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
             ROTATION.PORT -> this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
             ROTATION.LAND -> this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         }
-        manager!!.setFastForwardFrameCount(getFastForwardFrameCount(this))
-        if (isDynamicDPADEnable(this)) {
-            if (!controllers!!.contains(dynamic)) {
-                controllers!!.add(dynamic)
-                controllerViews!!.add(dynamic!!.view)
-            }
-            setDynamicDPADUsed(this, true)
-        } else {
-            controllers!!.remove(dynamic)
-            controllerViews!!.remove(dynamic!!.view)
-        }
-        if (isFastForwardEnabled(this)) {
-            setFastForwardUsed(this, true)
-        }
-        if (isScreenSettingsSaved(this)) {
-            setScreenLayoutUsed(this, true)
-        }
+        manager.setFastForwardFrameCount(getFastForwardFrameCount(this))
         pm = packageManager
         pn = packageName
-        for (controller in controllers!!) {
-            controller!!.onResume()
-        }
         try {
-            manager!!.startGame(game!!)
-            for (controller in controllers!!) {
-                controller!!.onGameStarted(game)
-            }
+            manager.startGame(game)
+
             if (slotToRun != -1) {
-                manager!!.loadState(slotToRun!!)
+                manager.loadState(slotToRun)
             } else {
-                if (SlotUtils.autoSaveExists(baseDir, game!!.checksum)) {
-                    manager!!.loadState(0)
+                if (SlotUtils.autoSaveExists(baseDir, game.checksum)) {
+                    manager.loadState(0)
                 }
             }
             if (slotToSave != null) {
-                manager!!.copyAutoSave(slotToSave!!)
+                manager.copyAutoSave(slotToSave)
             }
             val wasRotated =
                 oldConfig and ActivityInfo.CONFIG_ORIENTATION == ActivityInfo.CONFIG_ORIENTATION
             oldConfig = 0
             if (shouldPause() && !wasRotated) {
-                gameMenu!!.open()
+                gameMenu.open()
             }
             setShouldPauseOnResume(true)
-            if (gameMenu != null && gameMenu!!.isOpen) {
-                manager!!.pauseEmulation()
+            if (gameMenu.isOpen) {
+                manager.pauseEmulation()
             }
             slotToRun = 0
             val quality = getEmulationQuality(this)
-            emulatorView!!.setQuality(quality)
-            emulatorView!!.onResume()
+            emulatorView?.setQuality(quality)
+            emulatorView?.onResume()
             enableCheats()
         } catch (e: EmulatorException) {
             handleException(e)
@@ -521,7 +453,7 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
     private fun enableCheats() {
         var numCheats = 0
         try {
-            numCheats = manager!!.enableCheats(this, game!!)
+            numCheats = manager.enableCheats(this, game)
         } catch (e: EmulatorException) {
             runOnUiThread {
                 Toast.makeText(
@@ -543,13 +475,11 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
         if (exceptionOccurred) {
             return
         }
-        for (controller in controllers!!) {
-            controller!!.onGameStarted(game)
-        }
+        controlProxy.onGameStarted(game)
     }
 
     fun openGameMenu() {
-//        gameMenu!!.open()
+//        gameMenu.open()
     }
 
     override fun onGameMenuCreate(menu: GameMenu) {
@@ -567,7 +497,7 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
 
     override fun onGameMenuPrepare(menu: GameMenu) {
         val backToPast = menu.getItem(R.string.game_menu_back_to_past)
-        backToPast!!.enable = isTimeshiftEnabled(this)
+        backToPast?.enable = isTimeshiftEnabled(this)
         i(TAG, "prepare menu")
     }
 
@@ -575,11 +505,9 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
         try {
             if (!runTimeMachine) {
                 if (!menu.isOpen) {
-                    manager!!.resumeEmulation()
-                    for (controller in controllers!!) {
-                        controller!!.onGameStarted(game)
-                        controller.onResume()
-                    }
+                    manager.resumeEmulation()
+                    controlProxy.onGameStarted(game)
+                    controlProxy.onResume()
                 }
             }
         } catch (e: EmulatorException) {
@@ -590,13 +518,9 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
     override fun onGameMenuOpened(menu: GameMenu?) {
         i(TAG, "on game menu open")
         try {
-            if (manager != null) {
-                manager!!.pauseEmulation()
-                for (controller in controllers!!) {
-                    controller!!.onGamePaused(game)
-                    controller.onPause()
-                }
-            }
+            manager.pauseEmulation()
+            controlProxy.onGamePaused(game)
+            controlProxy.onPause()
         } catch (e: EmulatorException) {
             handleException(e)
         }
@@ -627,7 +551,7 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
             if (item.id == R.string.game_menu_back_to_past) {
                 onGameBackToPast()
             } else if (item.id == R.string.game_menu_reset) {
-                manager!!.resetEmulator()
+                manager.resetEmulator()
                 enableCheats()
             } else if (item.id == R.string.game_menu_save) {
                 val i = Intent(this, SlotSelectionActivity::class.java)
@@ -649,7 +573,7 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
                 freeStartActivityForResult(this, i, REQUEST_LOAD)
             } else if (item.id == R.string.game_menu_cheats) {
                 val i = Intent(this, CheatsActivity::class.java)
-                i.putExtra(CheatsActivity.EXTRA_IN_GAME_HASH, game!!.checksum)
+                i.putExtra(CheatsActivity.EXTRA_IN_GAME_HASH, game.checksum)
                 freeStartActivity(this, i)
             } else if (item.id == R.string.game_menu_settings) {
                 val i = Intent(this, GamePreferenceActivity::class.java)
@@ -677,12 +601,11 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
     }
 
     private fun onGameBackToPast() {
-        if (manager!!.historyItemCount > 1) {
-            dialog = TimeTravelDialog(this, manager!!, game!!)
-            dialog!!.setOnDismissListener { dialog: DialogInterface? ->
+        if (manager.historyItemCount > 1) {
+            dialog?.setOnDismissListener { dialog: DialogInterface? ->
                 runTimeMachine = false
                 try {
-                    manager!!.resumeEmulation()
+                    manager.resumeEmulation()
                 } catch (e: EmulatorException) {
                     handleException(e)
                 }
@@ -704,10 +627,10 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
     }
 
     private fun saveGameScreenshot() {
-        val name = game!!.cleanName + "-screenshot"
+        val name = game.cleanName + "-screenshot"
         val dir = File(
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
-            info!!.name!!.replace(' ', '_')
+            info?.name?.replace(' ', '_')
         )
         if (!dir.exists()) {
             dir.mkdirs()
@@ -721,7 +644,7 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
         }
         try {
             val fos = FileOutputStream(to)
-            createScreenshotBitmap(this@EmulatorActivity, game!!)
+            createScreenshotBitmap(this@EmulatorActivity, game)
                 .compress(CompressFormat.PNG, 90, fos)
             fos.close()
             Toast.makeText(

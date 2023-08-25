@@ -67,6 +67,7 @@ dependencies {
     implementation("androidx.activity:activity-ktx:1.2.0")
     implementation("androidx.fragment:fragment-ktx:1.3.0")
     implementation("androidx.databinding:databinding-runtime:8.1.1")
+    implementation("org.jetbrains.kotlinx:atomicfu:0.17.2")
     val lifecycle_version = "2.5.1"
 
     implementation(project(":domain:keyboard"))

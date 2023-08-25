@@ -194,7 +194,10 @@ open class EmulatorRunner(@JvmField protected var emulator: Emulator, context: C
         synchronized(lock) { emulator.renderHistoryScreenshot(bmp!!, pos) }
     }
 
-    fun loadState(slot: Int) {
+    fun loadState(slot: Int?) {
+        if(slot == null){
+            return
+        }
         checkGameLoaded()
         synchronized(lock) {
             emulator.emulateFrame(-1)

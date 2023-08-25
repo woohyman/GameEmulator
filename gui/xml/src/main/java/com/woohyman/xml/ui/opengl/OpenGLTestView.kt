@@ -1,4 +1,4 @@
-package com.woohyman.xml.base
+package com.woohyman.xml.ui.opengl
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -7,7 +7,7 @@ import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import android.opengl.GLUtils
 import android.opengl.Matrix
-import com.woohyman.xml.base.OpenGLView.Renderer.Companion.loadShader
+import com.woohyman.xml.ui.opengl.OpenGLView.Renderer.Companion.loadShader
 import com.woohyman.keyboard.base.ViewPort
 import com.woohyman.keyboard.utils.NLog.i
 import java.nio.ByteBuffer

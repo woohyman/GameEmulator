@@ -3,7 +3,7 @@ package com.woohyman.xml.controllers
 import android.content.Context
 import android.view.MotionEvent
 import android.view.View
-import com.woohyman.xml.base.EmulatorActivity
+import com.woohyman.xml.base.emulator.EmulatorActivity
 import com.woohyman.keyboard.controllers.EmulatorController
 import com.woohyman.keyboard.data.database.GameDescription
 import com.woohyman.keyboard.emulator.Emulator

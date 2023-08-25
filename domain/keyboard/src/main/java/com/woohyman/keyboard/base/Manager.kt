@@ -23,7 +23,10 @@ class Manager(emulator: Emulator, context: Context) : EmulatorRunner(
         emulator.setFastForwardFrameCount(frames)
     }
 
-    fun copyAutoSave(slot: Int) {
+    fun copyAutoSave(slot: Int?) {
+        if(slot == null){
+            return
+        }
         if (!emulator.isGameLoaded) {
             throw EmulatorException("game not loaded")
         }
