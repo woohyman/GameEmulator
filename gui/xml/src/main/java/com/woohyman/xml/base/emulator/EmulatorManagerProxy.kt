@@ -11,7 +11,7 @@ import com.woohyman.keyboard.emulator.Emulator
 import com.woohyman.keyboard.emulator.EmulatorException
 import com.woohyman.keyboard.utils.PreferenceUtil
 
-class GameManagerProxy(
+class EmulatorManagerProxy(
     private val activity: EmulatorActivity,
     private val emulatorInstance: Emulator,
     private val game: GameDescription,
@@ -89,6 +89,7 @@ class GameManagerProxy(
             if (activity.gameMenu.isOpen) {
                 pauseEmulation()
             }
+            activity.setShouldPauseOnResume(true)
         } catch (e: EmulatorException) {
             activity.handleException(e)
         }

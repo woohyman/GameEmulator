@@ -96,11 +96,7 @@ class CheatsActivity : BaseActivity<ActivityCheatsBinding>(
                     chars.setText(newText)
                     chars.setSelection(newText.length)
                 }
-                if (newText == "") {
-                    save?.setEnabled(false)
-                } else {
-                    save?.setEnabled(true)
-                }
+                save?.isEnabled = newText != ""
             }
         })
         save?.setOnClickListener { v: View? ->
@@ -119,8 +115,8 @@ class CheatsActivity : BaseActivity<ActivityCheatsBinding>(
     }
 
     fun removeCheat(idx: Int) {
-        cheats!!.removeAt(idx)
-        adapter!!.notifyDataSetChanged()
+        cheats?.removeAt(idx)
+        adapter?.notifyDataSetChanged()
         Cheat.saveCheats(this, gameHash, cheats)
     }
 

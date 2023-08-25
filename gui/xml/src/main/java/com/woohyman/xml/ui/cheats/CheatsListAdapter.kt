@@ -8,47 +8,34 @@ import android.widget.ArrayAdapter
 import android.widget.CheckBox
 import android.widget.CompoundButton
 import android.widget.ImageButton
-import android.widget.TextView
-import com.woohyman.xml.R
 import com.woohyman.keyboard.cheats.Cheat
+import com.woohyman.xml.R
+import com.woohyman.xml.databinding.RowCheatListItemBinding
 
-class CheatsListAdapter(var cheatsActivity: CheatsActivity, objects: List<Cheat>?) :
-    ArrayAdapter<Cheat?>(
-        cheatsActivity, 0, objects!!
-    ) {
-    var inflater: LayoutInflater
+class CheatsListAdapter(private var cheatsActivity: CheatsActivity, objects: List<Cheat>?) :
+    ArrayAdapter<Cheat?>(cheatsActivity, 0, objects!!) {
 
-    init {
-        inflater =
-            cheatsActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+    private val inflater: LayoutInflater by lazy {
+        cheatsActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        var convertView = convertView
-        val chars: TextView
-        val desc: TextView
-        if (convertView == null) {
-            convertView = inflater.inflate(R.layout.row_cheat_list_item, null)
-            chars = convertView.findViewById(R.id.row_cheat_chars)
-            desc = convertView.findViewById(R.id.row_cheat_desc)
-        } else {
-            chars = convertView.findViewById(R.id.row_cheat_chars)
-            desc = convertView.findViewById(R.id.row_cheat_desc)
+        val view = convertView ?: inflater.inflate(R.layout.row_cheat_list_item, null)
+        val binding = RowCheatListItemBinding.bind(view)
+        val cheat = getItem(position) ?: return view
+        binding.rowCheatChars.text = cheat.chars
+        binding.rowCheatDesc.text = cheat.desc
+        binding.rowCheatEnable.isChecked = cheat.enable
+        binding.rowCheatEdit.setOnClickListener {
+            cheatsActivity.editCheat(position)
         }
-        val cheat = getItem(position)
-        val enable = convertView!!.findViewById<CheckBox>(R.id.row_cheat_enable)
-        val edit = convertView.findViewById<ImageButton>(R.id.row_cheat_edit)
-        val remove = convertView.findViewById<ImageButton>(R.id.row_cheat_remove)
-        chars.text = cheat!!.chars
-        desc.text = cheat.desc
-        enable.isChecked = cheat.enable
-        edit.setOnClickListener { v: View? -> cheatsActivity.editCheat(position) }
-        remove.setOnClickListener { v: View? -> cheatsActivity.removeCheat(position) }
-        enable.setOnCheckedChangeListener { buttonView: CompoundButton?, isChecked: Boolean ->
-            val cheat1 = getItem(position)
-            cheat1!!.enable = isChecked
+        binding.rowCheatRemove.setOnClickListener {
+            cheatsActivity.removeCheat(position)
+        }
+        binding.rowCheatEnable.setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
+            cheat.enable = isChecked
             cheatsActivity.saveCheats()
         }
-        return convertView
+        return view
     }
 }

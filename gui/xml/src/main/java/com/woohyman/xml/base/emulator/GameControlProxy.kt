@@ -11,6 +11,7 @@ import com.blankj.utilcode.util.Utils
 import com.woohyman.keyboard.controllers.EmulatorController
 import com.woohyman.keyboard.data.database.GameDescription
 import com.woohyman.keyboard.emulator.Emulator
+import com.woohyman.keyboard.emulator.EmulatorException
 import com.woohyman.keyboard.utils.EmuUtils
 import com.woohyman.keyboard.utils.PreferenceUtil
 import com.woohyman.xml.controllers.DynamicDPad
@@ -19,7 +20,7 @@ import com.woohyman.xml.controllers.QuickSaveController
 import com.woohyman.xml.controllers.TouchController
 import com.woohyman.xml.controllers.ZapperGun
 
-class EmulatorControlProxy(
+class GameControlProxy(
     private val activity: EmulatorActivity,
     private val emulatorInstance: Emulator,
     private val game: GameDescription,
@@ -89,12 +90,18 @@ class EmulatorControlProxy(
         if (PreferenceUtil.isScreenSettingsSaved(activity)) {
             PreferenceUtil.setScreenLayoutUsed(activity, true)
         }
+
         for (controller in controllers) {
             controller.onResume()
         }
-        for (controller in controllers) {
-            controller.onGameStarted(game)
+        try {
+            for (controller in controllers) {
+                controller.onGameStarted(game)
+            }
+        }catch (e: EmulatorException) {
+            activity.handleException(e)
         }
+
     }
 
     override fun onPause(owner: LifecycleOwner) {

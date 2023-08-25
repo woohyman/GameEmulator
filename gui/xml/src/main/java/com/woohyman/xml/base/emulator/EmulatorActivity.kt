@@ -77,7 +77,7 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
     var canRestart = false
     var runTimeMachine = false
     val dialog: TimeTravelDialog by lazy {
-        TimeTravelDialog(this, gameManagerProxy, game)
+        TimeTravelDialog(this, emulatorManagerProxy, game)
     }
     val gameMenu: GameMenu by lazy {
         GameMenu(this, this)
@@ -135,19 +135,19 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
         return true
     }
 
-    private val emulatorControlProxy by lazy {
-        EmulatorControlProxy(this, emulatorInstance, game)
+    private val gameControlProxy by lazy {
+        GameControlProxy(this, emulatorInstance, game)
     }
 
-    val gameManagerProxy by lazy {
-        GameManagerProxy(this, emulatorInstance, game)
+    val emulatorManagerProxy by lazy {
+        EmulatorManagerProxy(this, emulatorInstance, game)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        lifecycle.addObserver(emulatorControlProxy)
-        lifecycle.addObserver(gameManagerProxy)
+        lifecycle.addObserver(emulatorManagerProxy)
+        lifecycle.addObserver(gameControlProxy)
 
         val extras = intent.extras
         if (extras != null && extras.getBoolean(EXTRA_FROM_GALLERY)) {
@@ -181,21 +181,21 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
 
         if (hasOpenGL20) {
             openGLView = OpenGLView(this, emulatorInstance, paddingLeft, paddingTop, shader)
-            if (gameManagerProxy.needsBenchmark) {
+            if (emulatorManagerProxy.needsBenchmark) {
                 openGLView.setBenchmark(Benchmark(OPEN_GL_BENCHMARK, 200, benchmarkCallback))
             }
         }
 
         emulatorView =
             openGLView ?: UnacceleratedView(this, emulatorInstance, paddingLeft, paddingTop)
-        emulatorControlProxy.group.addView(emulatorView?.asView())
-        setContentView(emulatorControlProxy.group)
+        gameControlProxy.group.addView(emulatorView?.asView())
+        setContentView(gameControlProxy.group)
     }
 
     fun hideTouchController() {
         i(TAG, "hide controler")
         if (autoHide) {
-            emulatorControlProxy.hideTouchController()
+            gameControlProxy.hideTouchController()
         }
     }
 
@@ -212,7 +212,7 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
             .setMessage(R.string.too_slow)
             .create()
         dialog.setOnDismissListener { dialog1: DialogInterface? -> finish() }
-        gameManagerProxy.pauseEmulation()
+        emulatorManagerProxy.pauseEmulation()
         show(dialog, true)
     }
 
@@ -249,17 +249,17 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
 
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
         val res = super.dispatchTouchEvent(ev)
-        emulatorControlProxy.dispatchTouchEvent(ev)
+        gameControlProxy.dispatchTouchEvent(ev)
         return res
     }
 
     override fun dispatchKeyEvent(ev: KeyEvent): Boolean {
         val res = super.dispatchKeyEvent(ev)
-        emulatorControlProxy.dispatchKeyEvent(ev)
+        gameControlProxy.dispatchKeyEvent(ev)
         return res
     }
 
-    private fun setShouldPauseOnResume(b: Boolean) {
+    fun setShouldPauseOnResume(b: Boolean) {
         PreferenceManager.getDefaultSharedPreferences(this).edit()
             .putBoolean("emulator_activity_pause", b)
             .apply()
@@ -293,16 +293,16 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
             if (!isFFPressed) {
                 isFFPressed = true
                 isFF = !isFF
-                gameManagerProxy.setFastForwardEnabled(isFF)
+                emulatorManagerProxy.setFastForwardEnabled(isFF)
             }
         } else {
-            gameManagerProxy.setFastForwardEnabled(true)
+            emulatorManagerProxy.setFastForwardEnabled(true)
         }
     }
 
     fun onFastForwardUp() {
         if (!isToggleFF) {
-            gameManagerProxy.setFastForwardEnabled(false)
+            emulatorManagerProxy.setFastForwardEnabled(false)
         }
         isFFPressed = false
     }
@@ -342,7 +342,7 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
     }
 
     fun quickSave() {
-        gameManagerProxy.saveState(10)
+        emulatorManagerProxy.saveState(10)
         runOnUiThread {
             Toast.makeText(
                 this,
@@ -352,7 +352,7 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
     }
 
     fun quickLoad() {
-        gameManagerProxy.loadState(10)
+        emulatorManagerProxy.loadState(10)
     }
 
     @SuppressLint("DefaultLocale")
@@ -388,7 +388,6 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
         pm = packageManager
         pn = packageName
         try {
-            setShouldPauseOnResume(true)
             slotToRun = 0
             val quality = getEmulationQuality(this)
             emulatorView?.setQuality(quality)
@@ -403,7 +402,7 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
     private fun enableCheats() {
         var numCheats = 0
         try {
-            numCheats = gameManagerProxy.enableCheats(this, game)
+            numCheats = emulatorManagerProxy.enableCheats(this, game)
         } catch (e: EmulatorException) {
             Toast.makeText(
                 this, e.getMessage(this),
@@ -423,7 +422,7 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
         if (exceptionOccurred) {
             return
         }
-        emulatorControlProxy.onGameStarted(game)
+        gameControlProxy.onGameStarted(game)
     }
 
     fun openGameMenu() {
@@ -454,9 +453,9 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
             if (runTimeMachine || menu.isOpen) {
                 return
             }
-            gameManagerProxy.resumeEmulation()
-            emulatorControlProxy.onGameStarted(game)
-            emulatorControlProxy.onResume()
+            emulatorManagerProxy.resumeEmulation()
+            gameControlProxy.onGameStarted(game)
+            gameControlProxy.onResume()
         } catch (e: EmulatorException) {
             handleException(e)
         }
@@ -465,9 +464,9 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
     override fun onGameMenuOpened(menu: GameMenu?) {
         i(TAG, "on game menu open")
         try {
-            gameManagerProxy.pauseEmulation()
-            emulatorControlProxy.onGamePaused(game)
-            emulatorControlProxy.onPause()
+            emulatorManagerProxy.pauseEmulation()
+            gameControlProxy.onGamePaused(game)
+            gameControlProxy.onPause()
         } catch (e: EmulatorException) {
             handleException(e)
         }
@@ -495,52 +494,61 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
 
     override fun onGameMenuItemSelected(menu: GameMenu?, item: GameMenuItem) {
         try {
-            if (item.id == R.string.game_menu_back_to_past) {
-                onGameBackToPast()
-            } else if (item.id == R.string.game_menu_reset) {
-                gameManagerProxy.resetEmulator()
-                enableCheats()
-            } else if (item.id == R.string.game_menu_save) {
-                val i = Intent(this, SlotSelectionActivity::class.java)
-                i.putExtra(EXTRA_GAME, game)
-                i.putExtra(EXTRA_BASE_DIRECTORY, baseDir)
-                i.putExtra(
-                    EXTRA_DIALOG_TYPE_INT,
-                    DIALOAG_TYPE_SAVE
-                )
-                freeStartActivityForResult(this, i, REQUEST_SAVE)
-            } else if (item.id == R.string.game_menu_load) {
-                val i = Intent(this, SlotSelectionActivity::class.java)
-                i.putExtra(EXTRA_GAME, game)
-                i.putExtra(EXTRA_BASE_DIRECTORY, baseDir)
-                i.putExtra(
-                    EXTRA_DIALOG_TYPE_INT,
-                    DIALOAG_TYPE_LOAD
-                )
-                freeStartActivityForResult(this, i, REQUEST_LOAD)
-            } else if (item.id == R.string.game_menu_cheats) {
-                val i = Intent(this, CheatsActivity::class.java)
-                i.putExtra(CheatsActivity.EXTRA_IN_GAME_HASH, game.checksum)
-                freeStartActivity(this, i)
-            } else if (item.id == R.string.game_menu_settings) {
-                val i = Intent(this, GamePreferenceActivity::class.java)
-                i.putExtra(PreferenceActivity.EXTRA_NO_HEADERS, true)
-                i.putExtra(
-                    PreferenceActivity.EXTRA_SHOW_FRAGMENT,
-                    GamePreferenceFragment::class.java.name
-                )
-                i.putExtra(GamePreferenceActivity.EXTRA_GAME, game)
-                startActivity(i)
-            } else if (item.id == R.string.gallery_menu_pref) {
-                val i = Intent(this, GeneralPreferenceActivity::class.java)
-                i.putExtra(PreferenceActivity.EXTRA_NO_HEADERS, true)
-                i.putExtra(
-                    PreferenceActivity.EXTRA_SHOW_FRAGMENT,
-                    GeneralPreferenceFragment::class.java.name
-                )
-                startActivity(i)
-            } else if (item.id == R.string.game_menu_screenshot) {
-                saveScreenshotWithPermission()
+            when (item.id) {
+                R.string.game_menu_back_to_past -> {
+                    onGameBackToPast()
+                }
+                R.string.game_menu_reset -> {
+                    emulatorManagerProxy.resetEmulator()
+                    enableCheats()
+                }
+                R.string.game_menu_save -> {
+                    val i = Intent(this, SlotSelectionActivity::class.java)
+                    i.putExtra(EXTRA_GAME, game)
+                    i.putExtra(EXTRA_BASE_DIRECTORY, baseDir)
+                    i.putExtra(
+                        EXTRA_DIALOG_TYPE_INT,
+                        DIALOAG_TYPE_SAVE
+                    )
+                    freeStartActivityForResult(this, i, REQUEST_SAVE)
+                }
+                R.string.game_menu_load -> {
+                    val i = Intent(this, SlotSelectionActivity::class.java)
+                    i.putExtra(EXTRA_GAME, game)
+                    i.putExtra(EXTRA_BASE_DIRECTORY, baseDir)
+                    i.putExtra(
+                        EXTRA_DIALOG_TYPE_INT,
+                        DIALOAG_TYPE_LOAD
+                    )
+                    freeStartActivityForResult(this, i, REQUEST_LOAD)
+                }
+                R.string.game_menu_cheats -> {
+                    val i = Intent(this, CheatsActivity::class.java)
+                    i.putExtra(CheatsActivity.EXTRA_IN_GAME_HASH, game.checksum)
+                    freeStartActivity(this, i)
+                }
+                R.string.game_menu_settings -> {
+                    val i = Intent(this, GamePreferenceActivity::class.java)
+                    i.putExtra(PreferenceActivity.EXTRA_NO_HEADERS, true)
+                    i.putExtra(
+                        PreferenceActivity.EXTRA_SHOW_FRAGMENT,
+                        GamePreferenceFragment::class.java.name
+                    )
+                    i.putExtra(GamePreferenceActivity.EXTRA_GAME, game)
+                    startActivity(i)
+                }
+                R.string.gallery_menu_pref -> {
+                    val i = Intent(this, GeneralPreferenceActivity::class.java)
+                    i.putExtra(PreferenceActivity.EXTRA_NO_HEADERS, true)
+                    i.putExtra(
+                        PreferenceActivity.EXTRA_SHOW_FRAGMENT,
+                        GeneralPreferenceFragment::class.java.name
+                    )
+                    startActivity(i)
+                }
+                R.string.game_menu_screenshot -> {
+                    saveScreenshotWithPermission()
+                }
             }
         } catch (e: EmulatorException) {
             handleException(e)
@@ -548,11 +556,11 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
     }
 
     private fun onGameBackToPast() {
-        if (gameManagerProxy.historyItemCount > 1) {
+        if (emulatorManagerProxy.historyItemCount > 1) {
             dialog.setOnDismissListener { dialog: DialogInterface? ->
                 runTimeMachine = false
                 try {
-                    gameManagerProxy.resumeEmulation()
+                    emulatorManagerProxy.resumeEmulation()
                 } catch (e: EmulatorException) {
                     handleException(e)
                 }
@@ -577,7 +585,7 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
         val name = game.cleanName + "-screenshot"
         val dir = File(
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
-            info?.name?.replace(' ', '_')
+            info?.name?.replace(' ', '_').toString()
         )
         if (!dir.exists()) {
             dir.mkdirs()
