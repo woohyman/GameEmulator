@@ -18,6 +18,7 @@ import java.io.FilenameFilter
 import java.util.Locale
 import java.util.concurrent.atomic.AtomicBoolean
 
+/*管理模拟器运行*/
 open class EmulatorRunner(@JvmField protected var emulator: Emulator, context: Context) {
     protected val lock = Any()
     @JvmField

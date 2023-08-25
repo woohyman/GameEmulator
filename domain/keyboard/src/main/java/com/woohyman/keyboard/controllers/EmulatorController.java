@@ -6,6 +6,7 @@ import com.woohyman.keyboard.data.database.GameDescription;
 
 import com.woohyman.keyboard.emulator.Emulator;
 
+/*管理游戏控制器*/
 public interface EmulatorController {
 
     int KEY_A = 0;

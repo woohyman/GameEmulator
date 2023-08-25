@@ -11,6 +11,7 @@ import com.blankj.utilcode.util.Utils
 import com.woohyman.keyboard.controllers.EmulatorController
 import com.woohyman.keyboard.data.database.GameDescription
 import com.woohyman.keyboard.emulator.Emulator
+import com.woohyman.keyboard.utils.EmuUtils
 import com.woohyman.keyboard.utils.PreferenceUtil
 import com.woohyman.xml.controllers.DynamicDPad
 import com.woohyman.xml.controllers.KeyboardController
@@ -18,15 +19,23 @@ import com.woohyman.xml.controllers.QuickSaveController
 import com.woohyman.xml.controllers.TouchController
 import com.woohyman.xml.controllers.ZapperGun
 
-class ControlProxy(
+class EmulatorControlProxy(
     private val activity: EmulatorActivity,
     private val emulatorInstance: Emulator,
     private val game: GameDescription,
 ) : DefaultLifecycleObserver, EmulatorController {
+
     private var controllers: MutableList<EmulatorController> = mutableListOf()
     private var controllerViews: MutableList<View> = ArrayList()
+
     val group: ViewGroup by lazy {
-        FrameLayout(activity)
+        FrameLayout(activity).also {
+            val display = activity.windowManager.defaultDisplay
+            val w = EmuUtils.getDisplayWidth(display)
+            val h = EmuUtils.getDisplayHeight(display)
+            val params = ViewGroup.LayoutParams(w, h)
+            it.layoutParams = params
+        }
     }
 
     private val dynamic: DynamicDPad by lazy {
@@ -103,6 +112,7 @@ class ControlProxy(
         }
         controllers.clear()
         controllerViews.clear()
+        group.removeAllViews()
     }
 
     override fun onResume() {

@@ -16,10 +16,9 @@ import android.preference.PreferenceActivity
 import android.preference.PreferenceManager
 import android.view.KeyEvent
 import android.view.MotionEvent
-import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.FrameLayout
 import android.widget.Toast
+import androidx.annotation.MainThread
 import androidx.appcompat.app.AppCompatActivity
 import com.blankj.utilcode.constant.PermissionConstants
 import com.blankj.utilcode.util.PermissionUtils
@@ -27,8 +26,6 @@ import com.woohyman.keyboard.base.Benchmark
 import com.woohyman.keyboard.base.Benchmark.BenchmarkCallback
 import com.woohyman.keyboard.base.EmulatorHolder.info
 import com.woohyman.keyboard.base.EmulatorUtils
-import com.woohyman.keyboard.base.Manager
-import com.woohyman.keyboard.base.SlotUtils
 import com.woohyman.keyboard.base.ViewPort
 import com.woohyman.keyboard.data.database.GameDescription
 import com.woohyman.keyboard.emulator.Emulator
@@ -38,17 +35,13 @@ import com.woohyman.keyboard.emulator.EmulatorView
 import com.woohyman.keyboard.utils.DialogUtils.show
 import com.woohyman.keyboard.utils.EmuUtils.checkGL20Support
 import com.woohyman.keyboard.utils.EmuUtils.createScreenshotBitmap
-import com.woohyman.keyboard.utils.EmuUtils.getDisplayHeight
-import com.woohyman.keyboard.utils.EmuUtils.getDisplayWidth
 import com.woohyman.keyboard.utils.NLog.d
 import com.woohyman.keyboard.utils.NLog.e
 import com.woohyman.keyboard.utils.NLog.i
 import com.woohyman.keyboard.utils.PreferenceUtil.ROTATION
 import com.woohyman.keyboard.utils.PreferenceUtil.getDisplayRotation
 import com.woohyman.keyboard.utils.PreferenceUtil.getEmulationQuality
-import com.woohyman.keyboard.utils.PreferenceUtil.getFastForwardFrameCount
 import com.woohyman.keyboard.utils.PreferenceUtil.isAutoHideControls
-import com.woohyman.keyboard.utils.PreferenceUtil.isBenchmarked
 import com.woohyman.keyboard.utils.PreferenceUtil.isFastForwardToggleable
 import com.woohyman.keyboard.utils.PreferenceUtil.isTimeshiftEnabled
 import com.woohyman.keyboard.utils.PreferenceUtil.setBenchmarked
@@ -84,9 +77,9 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
     var canRestart = false
     var runTimeMachine = false
     val dialog: TimeTravelDialog by lazy {
-        TimeTravelDialog(this, manager, game)
+        TimeTravelDialog(this, gameManagerProxy, game)
     }
-    private val gameMenu: GameMenu by lazy {
+    val gameMenu: GameMenu by lazy {
         GameMenu(this, this)
     }
     private val game: GameDescription by lazy {
@@ -99,13 +92,10 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
     private var isToggleFF = false
     private var isFFPressed = false
     private var exceptionOccurred = false
-    private var slotToRun: Int? = null
-    private var slotToSave: Int? = null
-    val manager: Manager by lazy {
-        Manager(emulatorInstance, applicationContext)
-    }
-    private var emulatorView: EmulatorView? = null
-    private val benchmarkCallback: BenchmarkCallback = object : BenchmarkCallback {
+    var slotToRun: Int? = null
+    var slotToSave: Int? = null
+    var emulatorView: EmulatorView? = null
+    val benchmarkCallback: BenchmarkCallback = object : BenchmarkCallback {
         private var numTests = 0
         private var numOk = 0
         override fun onBenchmarkReset(benchmark: Benchmark) {}
@@ -132,7 +122,7 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
         }
     }
 
-    private var baseDir: String? = null
+    var baseDir: String? = null
     abstract val emulatorInstance: Emulator
     abstract val fragmentShader: String
     fun getTextureBounds(emulator: Emulator?): IntArray? {
@@ -145,14 +135,19 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
         return true
     }
 
-    private val controlProxy by lazy {
-        ControlProxy(this,emulatorInstance,game)
+    private val emulatorControlProxy by lazy {
+        EmulatorControlProxy(this, emulatorInstance, game)
+    }
+
+    private val gameManagerProxy by lazy {
+        GameManagerProxy(this, emulatorInstance, game)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        lifecycle.addObserver(controlProxy)
+        lifecycle.addObserver(emulatorControlProxy)
+        lifecycle.addObserver(gameManagerProxy)
 
         val extras = intent.extras
         if (extras != null && extras.getBoolean(EXTRA_FROM_GALLERY)) {
@@ -183,54 +178,42 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
         }
         val shader = fragmentShader
         var openGLView: OpenGLView? = null
-        val quality = getEmulationQuality(this)
-        val alreadyBenchmarked = isBenchmarked(this)
-        val needsBenchmark = quality != 2 && !alreadyBenchmarked
+
         if (hasOpenGL20) {
             openGLView = OpenGLView(this, emulatorInstance, paddingLeft, paddingTop, shader)
-            if (needsBenchmark) {
+            if (gameManagerProxy.needsBenchmark) {
                 openGLView.setBenchmark(Benchmark(OPEN_GL_BENCHMARK, 200, benchmarkCallback))
             }
         }
 
         emulatorView =
             openGLView ?: UnacceleratedView(this, emulatorInstance, paddingLeft, paddingTop)
-        val display = windowManager.defaultDisplay
-        val w = getDisplayWidth(display)
-        val h = getDisplayHeight(display)
-        val params = ViewGroup.LayoutParams(w, h)
-        controlProxy.group.layoutParams = params
-        controlProxy.group.addView(emulatorView?.asView())
-        setContentView(controlProxy.group)
-
-        manager.setOnNotRespondingListener(this)
-        if (needsBenchmark) {
-            manager.setBenchmark(Benchmark(EMULATION_BENCHMARK, 1000, benchmarkCallback))
-        }
+        emulatorControlProxy.group.addView(emulatorView?.asView())
+        setContentView(emulatorControlProxy.group)
     }
 
     fun hideTouchController() {
         i(TAG, "hide controler")
         if (autoHide) {
-            controlProxy.hideTouchController()
+            emulatorControlProxy.hideTouchController()
         }
     }
 
+    @MainThread
     override fun onNotResponding() {
         warningShowing.getAndUpdate {
-            true
-        }
-        runOnUiThread {
-            val dialog = AlertDialog.Builder(this)
-                .setMessage(R.string.too_slow)
-                .create()
-            dialog.setOnDismissListener { dialog1: DialogInterface? -> finish() }
-            try {
-                manager.pauseEmulation()
-            } catch (ignored: EmulatorException) {
+            if (!it) {
+                true
+            } else {
+                return
             }
-            show(dialog, true)
         }
+        val dialog = AlertDialog.Builder(this)
+            .setMessage(R.string.too_slow)
+            .create()
+        dialog.setOnDismissListener { dialog1: DialogInterface? -> finish() }
+        gameManagerProxy.pauseEmulation()
+        show(dialog, true)
     }
 
     val viewPort: ViewPort?
@@ -242,11 +225,6 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
             return
         }
         oldConfig = changingConfigurations
-        controlProxy.group.removeAllViews()
-        try {
-            manager.destroy()
-        } catch (ignored: EmulatorException) {
-        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -271,17 +249,17 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
 
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
         val res = super.dispatchTouchEvent(ev)
-        controlProxy.dispatchTouchEvent(ev)
+        emulatorControlProxy.dispatchTouchEvent(ev)
         return res
     }
 
     override fun dispatchKeyEvent(ev: KeyEvent): Boolean {
         val res = super.dispatchKeyEvent(ev)
-        controlProxy.dispatchKeyEvent(ev)
+        emulatorControlProxy.dispatchKeyEvent(ev)
         return res
     }
 
-    fun setShouldPauseOnResume(b: Boolean) {
+    private fun setShouldPauseOnResume(b: Boolean) {
         PreferenceManager.getDefaultSharedPreferences(this).edit()
             .putBoolean("emulator_activity_pause", b)
             .apply()
@@ -308,13 +286,6 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
         if (dialog.isShowing) {
             dialog.dismiss()
         }
-        try {
-            manager.stopGame()
-        } catch (e: EmulatorException) {
-            handleException(e)
-        } finally {
-            emulatorView?.onPause()
-        }
     }
 
     fun onFastForwardDown() {
@@ -322,21 +293,21 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
             if (!isFFPressed) {
                 isFFPressed = true
                 isFF = !isFF
-                manager.setFastForwardEnabled(isFF)
+                gameManagerProxy.setFastForwardEnabled(isFF)
             }
         } else {
-            manager.setFastForwardEnabled(true)
+            gameManagerProxy.setFastForwardEnabled(true)
         }
     }
 
     fun onFastForwardUp() {
         if (!isToggleFF) {
-            manager.setFastForwardEnabled(false)
+            gameManagerProxy.setFastForwardEnabled(false)
         }
         isFFPressed = false
     }
 
-    private fun handleException(e: EmulatorException) {
+    fun handleException(e: EmulatorException) {
         val dialog = AlertDialog.Builder(this)
             .setMessage(e.getMessage(this)).create()
         dialog.setOnDismissListener { dialog1: DialogInterface? -> runOnUiThread { finish() } }
@@ -371,7 +342,7 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
     }
 
     fun quickSave() {
-        manager.saveState(10)
+        gameManagerProxy.saveState(10)
         runOnUiThread {
             Toast.makeText(
                 this,
@@ -381,7 +352,7 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
     }
 
     fun quickLoad() {
-        manager.loadState(10)
+        gameManagerProxy.loadState(10)
     }
 
     @SuppressLint("DefaultLocale")
@@ -414,32 +385,10 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
             ROTATION.PORT -> this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
             ROTATION.LAND -> this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         }
-        manager.setFastForwardFrameCount(getFastForwardFrameCount(this))
         pm = packageManager
         pn = packageName
         try {
-            manager.startGame(game)
-
-            if (slotToRun != -1) {
-                manager.loadState(slotToRun)
-            } else {
-                if (SlotUtils.autoSaveExists(baseDir, game.checksum)) {
-                    manager.loadState(0)
-                }
-            }
-            if (slotToSave != null) {
-                manager.copyAutoSave(slotToSave)
-            }
-            val wasRotated =
-                oldConfig and ActivityInfo.CONFIG_ORIENTATION == ActivityInfo.CONFIG_ORIENTATION
-            oldConfig = 0
-            if (shouldPause() && !wasRotated) {
-                gameMenu.open()
-            }
             setShouldPauseOnResume(true)
-            if (gameMenu.isOpen) {
-                manager.pauseEmulation()
-            }
             slotToRun = 0
             val quality = getEmulationQuality(this)
             emulatorView?.setQuality(quality)
@@ -450,17 +399,16 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
         }
     }
 
+    @MainThread
     private fun enableCheats() {
         var numCheats = 0
         try {
-            numCheats = manager.enableCheats(this, game)
+            numCheats = gameManagerProxy.enableCheats(this, game)
         } catch (e: EmulatorException) {
-            runOnUiThread {
-                Toast.makeText(
-                    this, e.getMessage(this),
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
+            Toast.makeText(
+                this, e.getMessage(this),
+                Toast.LENGTH_SHORT
+            ).show()
         }
         if (numCheats > 0) {
             Toast.makeText(
@@ -475,11 +423,11 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
         if (exceptionOccurred) {
             return
         }
-        controlProxy.onGameStarted(game)
+        emulatorControlProxy.onGameStarted(game)
     }
 
     fun openGameMenu() {
-//        gameMenu.open()
+        gameMenu.open()
     }
 
     override fun onGameMenuCreate(menu: GameMenu) {
@@ -503,13 +451,12 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
 
     override fun onGameMenuClosed(menu: GameMenu) {
         try {
-            if (!runTimeMachine) {
-                if (!menu.isOpen) {
-                    manager.resumeEmulation()
-                    controlProxy.onGameStarted(game)
-                    controlProxy.onResume()
-                }
+            if (runTimeMachine || menu.isOpen) {
+                return
             }
+            gameManagerProxy.resumeEmulation()
+            emulatorControlProxy.onGameStarted(game)
+            emulatorControlProxy.onResume()
         } catch (e: EmulatorException) {
             handleException(e)
         }
@@ -518,9 +465,9 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
     override fun onGameMenuOpened(menu: GameMenu?) {
         i(TAG, "on game menu open")
         try {
-            manager.pauseEmulation()
-            controlProxy.onGamePaused(game)
-            controlProxy.onPause()
+            gameManagerProxy.pauseEmulation()
+            emulatorControlProxy.onGamePaused(game)
+            emulatorControlProxy.onPause()
         } catch (e: EmulatorException) {
             handleException(e)
         }
@@ -551,7 +498,7 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
             if (item.id == R.string.game_menu_back_to_past) {
                 onGameBackToPast()
             } else if (item.id == R.string.game_menu_reset) {
-                manager.resetEmulator()
+                gameManagerProxy.resetEmulator()
                 enableCheats()
             } else if (item.id == R.string.game_menu_save) {
                 val i = Intent(this, SlotSelectionActivity::class.java)
@@ -601,16 +548,16 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
     }
 
     private fun onGameBackToPast() {
-        if (manager.historyItemCount > 1) {
-            dialog?.setOnDismissListener { dialog: DialogInterface? ->
+        if (gameManagerProxy.historyItemCount > 1) {
+            dialog.setOnDismissListener { dialog: DialogInterface? ->
                 runTimeMachine = false
                 try {
-                    manager.resumeEmulation()
+                    gameManagerProxy.resumeEmulation()
                 } catch (e: EmulatorException) {
                     handleException(e)
                 }
             }
-            show(dialog!!, true)
+            show(dialog, true)
             runTimeMachine = true
         }
     }
@@ -708,12 +655,12 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
         const val EXTRA_FROM_GALLERY = "fromGallery"
         private const val TAG = "EmulatorActivity"
         private const val OPEN_GL_BENCHMARK = "openGL"
-        private const val EMULATION_BENCHMARK = "emulation"
+        const val EMULATION_BENCHMARK = "emulation"
         private const val REQUEST_SAVE = 1
         private const val REQUEST_LOAD = 2
         var pm: PackageManager? = null
         var pn: String? = null
         var sd: String? = null
-        private var oldConfig = 0
+        var oldConfig = 0
     }
 }

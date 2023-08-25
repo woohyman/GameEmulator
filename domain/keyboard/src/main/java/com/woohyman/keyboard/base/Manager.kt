@@ -12,7 +12,7 @@ import com.woohyman.keyboard.utils.NLog
 import java.io.File
 import java.util.Locale
 
-class Manager(emulator: Emulator, context: Context) : EmulatorRunner(
+open class Manager(emulator: Emulator, context: Context) : EmulatorRunner(
     emulator, context
 ) {
     fun setFastForwardEnabled(enabled: Boolean) {
