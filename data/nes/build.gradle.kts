@@ -22,6 +22,7 @@ android {
                 "arm64-v8a"
             )
         }
+
         externalNativeBuild {
             cmake {
                 arguments += listOf("-DANDROID_STL=c++_static")
@@ -36,6 +37,14 @@ android {
     }
 
     buildTypes {
+        debug {
+            externalNativeBuild {
+                cmake {
+                    cppFlags += listOf("-DNATIVE_LOG")
+                }
+            }
+        }
+
         release {
             isMinifyEnabled = false
             proguardFiles(

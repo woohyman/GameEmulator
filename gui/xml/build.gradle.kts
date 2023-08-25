@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.archivesName
+
 plugins {
     kotlin("kapt")
     id("com.google.dagger.hilt.android")
@@ -23,8 +25,21 @@ android {
         isEnabled = true
     }
 
+    signingConfigs {
+        create("demokey") {
+            keyAlias = "demokey"
+            keyPassword = "demokey"
+            storeFile = file("demokey.jks")
+            storePassword = "demokey"
+        }
+    }
+
     buildTypes {
+        debug {
+            signingConfig = signingConfigs.getByName("demokey")
+        }
         release {
+            signingConfig = signingConfigs.getByName("demokey")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -32,10 +47,12 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+
     kotlinOptions {
         jvmTarget = "1.8"
     }
@@ -51,7 +68,7 @@ dependencies {
     implementation("androidx.fragment:fragment-ktx:1.3.0")
     implementation("androidx.databinding:databinding-runtime:8.1.1")
     val lifecycle_version = "2.5.1"
-    
+
     implementation(project(":domain:keyboard"))
     implementation(project(":data:nes"))
     api("com.google.dagger:hilt-android:2.44")
