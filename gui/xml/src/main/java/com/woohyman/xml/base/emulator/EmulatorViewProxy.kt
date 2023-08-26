@@ -14,8 +14,8 @@ import com.woohyman.xml.ui.opengl.OpenGLView
 import com.woohyman.xml.ui.widget.UnacceleratedView
 
 class EmulatorViewProxy(
-    private val activity: EmulatorActivity,
-):EmulatorView {
+    private val emulatorMediator: EmulatorMediator,
+) : EmulatorView {
     val gLTextureSize = 256
 
     fun getTextureBounds(emulator: Emulator?): IntArray? {
@@ -30,19 +30,38 @@ class EmulatorViewProxy(
         val paddingLeft = 0
         var paddingTop = 0
         if (Utils.getApp().resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            paddingTop = activity.resources.getDimensionPixelSize(R.dimen.top_panel_touchcontroler_height)
+            paddingTop =
+                emulatorMediator.activity?.resources?.getDimensionPixelSize(R.dimen.top_panel_touchcontroler_height)
+                    ?: 0
         }
-        val shader = activity.fragmentShader
+        val shader = emulatorMediator.fragmentShader
         var openGLView: OpenGLView? = null
         val hasOpenGL20 = EmuUtils.checkGL20Support(Utils.getApp())
 
         if (hasOpenGL20) {
-            openGLView = OpenGLView(activity, activity.emulatorInstance, paddingLeft, paddingTop, shader)
-            if (activity.emulatorMediator.emulatorManagerProxy.needsBenchmark) {
-                openGLView.setBenchmark(Benchmark(EmulatorActivity.OPEN_GL_BENCHMARK, 200, benchmarkCallback))
+            openGLView = OpenGLView(
+                emulatorMediator,
+                emulatorMediator.emulatorInstance,
+                paddingLeft,
+                paddingTop,
+                shader
+            )
+            if (emulatorMediator.emulatorManagerProxy.needsBenchmark) {
+                openGLView.setBenchmark(
+                    Benchmark(
+                        EmulatorActivity.OPEN_GL_BENCHMARK,
+                        200,
+                        benchmarkCallback
+                    )
+                )
             }
         }
-        openGLView ?: UnacceleratedView(activity, activity.emulatorInstance, paddingLeft, paddingTop)
+        openGLView ?: UnacceleratedView(
+            emulatorMediator.activity,
+            emulatorMediator.emulatorInstance,
+            paddingLeft,
+            paddingTop
+        )
     }
 
     val benchmarkCallback: Benchmark.BenchmarkCallback = object : Benchmark.BenchmarkCallback {
@@ -63,10 +82,10 @@ class EmulatorViewProxy(
                 }
             }
             if (numTests == 2) {
-                PreferenceUtil.setBenchmarked(activity, true)
+                PreferenceUtil.setBenchmarked(Utils.getApp(), true)
                 if (numOk == 2) {
-                    emulatorView?.setQuality(2)
-                    PreferenceUtil.setEmulationQuality(activity, 2)
+                    emulatorView.setQuality(2)
+                    PreferenceUtil.setEmulationQuality(Utils.getApp(), 2)
                 }
             }
         }

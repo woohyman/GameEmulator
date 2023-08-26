@@ -17,7 +17,8 @@ import com.woohyman.keyboard.emulator.EmulatorException
 import java.util.Locale
 
 class TimeTravelDialog(
-    context: Context, private val manager: Manager,
+    context: Context,
+    private val manager: Manager,
     private val game: GameDescription
 ) : Dialog(context, android.R.style.Theme_Translucent_NoTitleBar), OnSeekBarChangeListener {
     private val img: ImageView

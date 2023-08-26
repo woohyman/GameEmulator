@@ -8,8 +8,12 @@ import com.woohyman.keyboard.controllers.EmulatorController
 import com.woohyman.keyboard.data.database.GameDescription
 import com.woohyman.keyboard.emulator.Emulator
 import com.woohyman.keyboard.utils.PreferenceUtil.isZapperEnabled
+import com.woohyman.xml.base.emulator.EmulatorMediator
 
-class ZapperGun(private var context: Context?, private var emulatorActivity: EmulatorActivity?) :
+class ZapperGun(
+    private var context: Context?,
+    private var emulatorMediator: EmulatorMediator
+) :
     EmulatorController {
     private val startX = 0f
     private val startY = 0f
@@ -45,7 +49,7 @@ class ZapperGun(private var context: Context?, private var emulatorActivity: Emu
                 }
                 if (event.action == MotionEvent.ACTION_DOWN) {
                     if (!inited) {
-                        val viewPort = emulatorActivity?.emulatorMediator?.emulatorView?.viewPort ?: return true
+                        val viewPort = emulatorMediator.emulatorView.viewPort ?: return true
                         minX = viewPort.x.toFloat()
                         minY = viewPort.y.toFloat()
                         maxX = minX + viewPort.width - 1
@@ -72,7 +76,6 @@ class ZapperGun(private var context: Context?, private var emulatorActivity: Emu
     override fun onDestroy() {
         context = null
         emulator = null
-        emulatorActivity = null
     }
 
     override fun onGameStarted(game: GameDescription) {

@@ -1,8 +1,6 @@
 package com.woohyman.xml.base.emulator
 
 import android.annotation.SuppressLint
-import android.app.AlertDialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
@@ -11,45 +9,30 @@ import android.os.Process
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.WindowManager
-import androidx.annotation.MainThread
 import androidx.appcompat.app.AppCompatActivity
 import com.woohyman.keyboard.base.EmulatorUtils
 import com.woohyman.keyboard.data.database.GameDescription
 import com.woohyman.keyboard.emulator.Emulator
 import com.woohyman.keyboard.emulator.EmulatorException
-import com.woohyman.keyboard.emulator.EmulatorRunner.OnNotRespondingListener
-import com.woohyman.keyboard.utils.DialogUtils.show
 import com.woohyman.keyboard.utils.NLog.d
 import com.woohyman.keyboard.utils.NLog.i
 import com.woohyman.keyboard.utils.PreferenceUtil.ROTATION
 import com.woohyman.keyboard.utils.PreferenceUtil.getDisplayRotation
-import com.woohyman.xml.R
 import com.woohyman.xml.ui.control.RestarterActivity
-import com.woohyman.xml.ui.timetravel.TimeTravelDialog
 
-abstract class EmulatorActivity : AppCompatActivity(), OnNotRespondingListener {
+abstract class EmulatorActivity : AppCompatActivity() {
 
     abstract val emulatorInstance: Emulator
     abstract val fragmentShader: String
+    private var exceptionOccurred = false
 
     val emulatorMediator: EmulatorMediator by lazy {
-        EmulatorMediator(this)
-    }
-
-    var isRestarting = false
-    var canRestart = false
-
-    val dialog: TimeTravelDialog by lazy {
-        TimeTravelDialog(this, emulatorMediator.emulatorManagerProxy, game)
+        EmulatorMediator(this, game, emulatorInstance, fragmentShader)
     }
 
     val game: GameDescription by lazy {
         intent.getSerializableExtra(EXTRA_GAME) as GameDescription
     }
-
-    private var exceptionOccurred = false
-    var slotToRun: Int? = null
-    var slotToSave: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,20 +40,22 @@ abstract class EmulatorActivity : AppCompatActivity(), OnNotRespondingListener {
         try {
             emulatorMediator.baseDir = EmulatorUtils.getBaseDir(this)
         } catch (e: EmulatorException) {
-            handleException(e)
+            emulatorMediator.handleException(e)
             exceptionOccurred = true
             return
         }
 
-        val extras = intent.extras
-        if (extras != null && extras.getBoolean(EXTRA_FROM_GALLERY)) {
-            emulatorMediator.setShouldPauseOnResume(false)
-            intent.removeExtra(EXTRA_FROM_GALLERY)
+        intent.extras?.let {
+            if (it.getBoolean(EXTRA_FROM_GALLERY)) {
+                emulatorMediator.setShouldPauseOnResume(false)
+                intent.removeExtra(EXTRA_FROM_GALLERY)
+            }
         }
-        canRestart = true
 
+        emulatorMediator.canRestart = true
         d(TAG, "onCreate - BaseActivity")
-        slotToRun = -1
+        emulatorMediator.slotToRun = -1
+
         val wParams = window.attributes
         wParams.flags = wParams.flags or WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
         wParams.flags = wParams.flags or WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
@@ -79,25 +64,6 @@ abstract class EmulatorActivity : AppCompatActivity(), OnNotRespondingListener {
 
         emulatorMediator.gameControlProxy.group.addView(emulatorMediator.emulatorView.asView())
         setContentView(emulatorMediator.gameControlProxy.group)
-    }
-
-    fun hideTouchController() {
-        i(TAG, "hide controler")
-        emulatorMediator.hideTouchController()
-    }
-
-    @MainThread
-    override fun onNotResponding() {
-        val result = emulatorMediator.onNotResponding()
-        if (!result) {
-            return
-        }
-        val dialog = AlertDialog.Builder(this)
-            .setMessage(R.string.too_slow)
-            .create()
-        dialog.setOnDismissListener { dialog1: DialogInterface? -> finish() }
-        emulatorMediator.emulatorManagerProxy.pauseEmulation()
-        show(dialog, true)
     }
 
     override fun onDestroy() {
@@ -112,17 +78,17 @@ abstract class EmulatorActivity : AppCompatActivity(), OnNotRespondingListener {
         super.onActivityResult(requestCode, resultCode, data)
         emulatorMediator.setShouldPauseOnResume(false)
         if (resultCode == RESULT_OK) {
-            canRestart = false
+            emulatorMediator.canRestart = false
             val slotIdx = data?.getIntExtra(EXTRA_SLOT, -1)
             when (requestCode) {
                 REQUEST_SAVE -> {
-                    slotToSave = slotIdx
-                    slotToRun = 0
+                    emulatorMediator.slotToSave = slotIdx
+                    emulatorMediator.slotToRun = 0
                 }
 
                 REQUEST_LOAD -> {
-                    slotToRun = slotIdx
-                    slotToSave = null
+                    emulatorMediator.slotToRun = slotIdx
+                    emulatorMediator.slotToSave = null
                 }
             }
         }
@@ -142,7 +108,7 @@ abstract class EmulatorActivity : AppCompatActivity(), OnNotRespondingListener {
 
     override fun onPause() {
         super.onPause()
-        if (isRestarting) {
+        if (emulatorMediator.isRestarting) {
             finish()
             return
         }
@@ -150,71 +116,36 @@ abstract class EmulatorActivity : AppCompatActivity(), OnNotRespondingListener {
             return
         }
         pm = null
-        if (dialog.isShowing) {
-            dialog.dismiss()
+        if (emulatorMediator.dialog.isShowing) {
+            emulatorMediator.dialog.dismiss()
         }
     }
 
-    fun onFastForwardDown() {
-        emulatorMediator.emulatorManagerProxy.onFastForwardDown()
-    }
-
-    fun onFastForwardUp() {
-        emulatorMediator.emulatorManagerProxy.onFastForwardUp()
-    }
-
-    fun handleException(e: EmulatorException) {
-        val dialog = AlertDialog.Builder(this)
-            .setMessage(e.getMessage(this)).create()
-        dialog.setOnDismissListener { dialog1: DialogInterface? -> runOnUiThread { finish() } }
-        show(dialog, true)
-    }
-
     private fun restartProcess(activityToStartClass: Class<*>) {
-        isRestarting = true
+        emulatorMediator.isRestarting = true
         val intent = Intent(this, RestarterActivity::class.java)
         intent.putExtras(getIntent())
         intent.putExtra(RestarterActivity.EXTRA_PID, Process.myPid())
-        val className = activityToStartClass.name
-        intent.putExtra(RestarterActivity.EXTRA_CLASS, className)
+        intent.putExtra(RestarterActivity.EXTRA_CLASS, activityToStartClass.name)
         startActivity(intent)
-    }
-
-    private fun decreaseResumesToRestart(): Int {
-        return emulatorMediator.decreaseResumesToRestart()
-    }
-
-    private fun resetProcessResetCounter() {
-        emulatorMediator.resetProcessResetCounter()
-    }
-
-    fun quickSave() {
-        emulatorMediator.emulatorManagerProxy.saveState(10)
-    }
-
-    fun quickLoad() {
-        emulatorMediator.emulatorManagerProxy.loadState(10)
     }
 
     @SuppressLint("DefaultLocale")
     override fun onResume() {
         super.onResume()
 
-        isRestarting = false
-        val extras = intent.extras
-        var isAfterProcessRestart = false
-        if (extras != null) {
-            isAfterProcessRestart =
-                extras.getBoolean(RestarterActivity.EXTRA_AFTER_RESTART)
-        }
+        emulatorMediator.isRestarting = false
+        val isAfterProcessRestart =
+            intent.extras?.getBoolean(RestarterActivity.EXTRA_AFTER_RESTART) ?: false
+
         intent.removeExtra(RestarterActivity.EXTRA_AFTER_RESTART)
-        val shouldRestart = decreaseResumesToRestart() == 0
-        if (!isAfterProcessRestart && shouldRestart && canRestart) {
-            resetProcessResetCounter()
+        val shouldRestart = emulatorMediator.decreaseResumesToRestart() == 0
+        if (!isAfterProcessRestart && shouldRestart && emulatorMediator.canRestart) {
+            emulatorMediator.resetProcessResetCounter()
             restartProcess(this.javaClass)
             return
         }
-        canRestart = true
+        emulatorMediator.canRestart = true
         if (exceptionOccurred) {
             return
         }
@@ -233,10 +164,6 @@ abstract class EmulatorActivity : AppCompatActivity(), OnNotRespondingListener {
             return
         }
         emulatorMediator.gameControlProxy.onGameStarted(game)
-    }
-
-    fun openGameMenu() {
-        emulatorMediator.gameMenuProxy.openGameMenu()
     }
 
     override fun startActivity(intent: Intent) {
@@ -277,7 +204,7 @@ abstract class EmulatorActivity : AppCompatActivity(), OnNotRespondingListener {
         i(TAG, "activity key down event:$keyCode")
         return when (keyCode) {
             KeyEvent.KEYCODE_MENU -> {
-                openGameMenu()
+                emulatorMediator.gameMenuProxy.openGameMenu()
                 true
             }
 

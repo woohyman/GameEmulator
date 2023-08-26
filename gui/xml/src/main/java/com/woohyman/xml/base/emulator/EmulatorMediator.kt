@@ -1,33 +1,58 @@
 package com.woohyman.xml.base.emulator
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.preference.PreferenceManager
+import androidx.annotation.MainThread
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LifecycleOwner
 import com.blankj.utilcode.util.Utils
+import com.woohyman.keyboard.data.database.GameDescription
+import com.woohyman.keyboard.emulator.Emulator
 import com.woohyman.keyboard.emulator.EmulatorException
+import com.woohyman.keyboard.emulator.EmulatorRunner
+import com.woohyman.keyboard.utils.DialogUtils
 import com.woohyman.keyboard.utils.NLog
 import com.woohyman.keyboard.utils.PreferenceUtil
+import com.woohyman.xml.R
+import com.woohyman.xml.ui.timetravel.TimeTravelDialog
 import kotlinx.atomicfu.atomic
 import kotlinx.atomicfu.getAndUpdate
+import java.lang.ref.WeakReference
 
 class EmulatorMediator constructor(
-    private val activity: EmulatorActivity,
-) : IEmulatorMediator {
+    private val appCompatActivity: AppCompatActivity,
+    val game: GameDescription,
+    val emulatorInstance: Emulator,
+    val fragmentShader: String,
+) : IEmulatorMediator, EmulatorRunner.OnNotRespondingListener {
 
-    val gameMenuProxy: GameMenuProxy = GameMenuProxy(activity)
-    val emulatorManagerProxy: EmulatorManagerProxy = EmulatorManagerProxy(activity)
-    val gameControlProxy: GameControlProxy = GameControlProxy(activity)
-    val emulatorView = EmulatorViewProxy(activity)
+    val gameMenuProxy: GameMenuProxy = GameMenuProxy(this)
+    val emulatorManagerProxy: EmulatorManagerProxy = EmulatorManagerProxy(this)
+    val gameControlProxy: GameControlProxy = GameControlProxy(this)
+    val emulatorView = EmulatorViewProxy(this)
 
-    val maxPRC = 10
-    var autoHide = false
-    var warningShowing = atomic(false)
+    val activity: AppCompatActivity? get() = WeakReference(appCompatActivity).get()
+
+    private val maxPRC = 10
+    private var autoHide = false
+    private var warningShowing = atomic(false)
+
+    var isRestarting = false
+    var canRestart = false
+    var slotToRun: Int? = null
+    var slotToSave: Int? = null
     var baseDir: String? = null
 
     init {
-        activity.lifecycle.addObserver(this)
-        activity.lifecycle.addObserver(gameMenuProxy)
-        activity.lifecycle.addObserver(emulatorManagerProxy)
-        activity.lifecycle.addObserver(gameControlProxy)
+        appCompatActivity.lifecycle.addObserver(this)
+        appCompatActivity.lifecycle.addObserver(gameMenuProxy)
+        appCompatActivity.lifecycle.addObserver(emulatorManagerProxy)
+        appCompatActivity.lifecycle.addObserver(gameControlProxy)
+    }
+
+    val dialog: TimeTravelDialog by lazy {
+        TimeTravelDialog(Utils.getApp(), emulatorManagerProxy, game)
     }
 
     override fun onCreate(owner: LifecycleOwner) {
@@ -40,20 +65,36 @@ class EmulatorMediator constructor(
         autoHide = PreferenceUtil.isAutoHideControls(activity)
 
         try {
-            activity.slotToRun = 0
+            slotToRun = 0
             val quality = PreferenceUtil.getEmulationQuality(activity)
             emulatorView.setQuality(quality)
             emulatorView.onResume()
             emulatorManagerProxy.enableCheats()
         } catch (e: EmulatorException) {
-            activity.handleException(e)
+            handleException(e)
         }
+    }
+
+    @MainThread
+    override fun onNotResponding() {
+        warningShowing.getAndUpdate {
+            if (!it) {
+                true
+            } else {
+                return
+            }
+        }
+        val dialog = AlertDialog.Builder(Utils.getApp())
+            .setMessage(R.string.too_slow)
+            .create()
+        dialog.setOnDismissListener { activity?.finish() }
+        emulatorManagerProxy.pauseEmulation()
+        DialogUtils.show(dialog, true)
     }
 
     fun setShouldPauseOnResume(b: Boolean) {
         PreferenceManager.getDefaultSharedPreferences(Utils.getApp()).edit()
-            .putBoolean("emulator_activity_pause", b)
-            .apply()
+            .putBoolean("emulator_activity_pause", b).apply()
     }
 
     fun shouldPause(): Boolean {
@@ -79,21 +120,26 @@ class EmulatorMediator constructor(
         editor.apply()
     }
 
-    fun onNotResponding(): Boolean {
-        warningShowing.getAndUpdate {
-            if (!it) {
-                true
-            } else {
-                return false
-            }
-        }
-        return true
-    }
-
     fun hideTouchController() {
         NLog.i(EmulatorActivity.TAG, "hide controler")
         if (autoHide) {
             gameControlProxy.hideTouchController()
         }
+    }
+
+    fun quickSave() {
+        emulatorManagerProxy.saveState(10)
+    }
+
+    fun quickLoad() {
+        emulatorManagerProxy.loadState(10)
+    }
+
+    fun handleException(e: EmulatorException) {
+        val dialog = AlertDialog.Builder(appCompatActivity)
+            .setMessage(e.getMessage(appCompatActivity))
+            .create()
+        dialog.setOnDismissListener { appCompatActivity.finish() }
+        DialogUtils.show(dialog, true)
     }
 }

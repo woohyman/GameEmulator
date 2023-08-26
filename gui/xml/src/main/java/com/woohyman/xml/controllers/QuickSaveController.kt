@@ -4,14 +4,16 @@ import android.view.GestureDetector.SimpleOnGestureListener
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.view.GestureDetectorCompat
+import com.blankj.utilcode.util.Utils
 import com.woohyman.xml.base.emulator.EmulatorActivity
 import com.woohyman.keyboard.controllers.EmulatorController
 import com.woohyman.keyboard.data.database.GameDescription
 import com.woohyman.keyboard.emulator.Emulator
 import com.woohyman.keyboard.utils.PreferenceUtil.isQuickSaveEnabled
+import com.woohyman.xml.base.emulator.EmulatorMediator
 
 class QuickSaveController(
-    var activity: EmulatorActivity?,
+    var emulatorMediator: EmulatorMediator,
     var touchController: TouchController?
 ) : EmulatorController {
     private val gestureDetector: GestureDetectorCompat
@@ -19,11 +21,11 @@ class QuickSaveController(
     private var isEnabled = false
 
     init {
-        gestureDetector = GestureDetectorCompat(activity!!, GestureListener())
+        gestureDetector = GestureDetectorCompat(Utils.getApp(), GestureListener())
     }
 
     override fun onResume() {
-        isEnabled = isQuickSaveEnabled(activity)
+        isEnabled = isQuickSaveEnabled(Utils.getApp())
     }
 
     override fun onPause() {}
@@ -32,7 +34,7 @@ class QuickSaveController(
     override fun onGamePaused(game: GameDescription) {}
     override fun connectToEmulator(port: Int, emulator: Emulator) {}
     override fun getView(): View {
-        return object : View(activity) {
+        return object : View(Utils.getApp()) {
             override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
                 super.onSizeChanged(w, h, oldw, oldh)
                 screenCenterX = w / 2
@@ -50,7 +52,6 @@ class QuickSaveController(
     }
 
     override fun onDestroy() {
-        activity = null
         touchController = null
     }
 
@@ -62,9 +63,9 @@ class QuickSaveController(
         override fun onDoubleTap(e: MotionEvent): Boolean {
             val x = e.x
             if (x < screenCenterX) {
-                activity!!.quickLoad()
+                emulatorMediator.quickLoad()
             } else if (x > screenCenterX) {
-                activity!!.quickSave()
+                emulatorMediator.quickSave()
             }
             return true
         }

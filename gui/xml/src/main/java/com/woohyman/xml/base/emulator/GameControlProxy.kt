@@ -1,6 +1,5 @@
 package com.woohyman.xml.base.emulator
 
-import android.content.Context
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
@@ -20,19 +19,17 @@ import com.woohyman.xml.controllers.KeyboardController
 import com.woohyman.xml.controllers.QuickSaveController
 import com.woohyman.xml.controllers.TouchController
 import com.woohyman.xml.controllers.ZapperGun
-import dagger.hilt.android.qualifiers.ActivityContext
-import javax.inject.Inject
 
-class GameControlProxy @Inject constructor(
-    private val activity: EmulatorActivity,
+class GameControlProxy constructor(
+    private val emulatorMediator: EmulatorMediator,
 ) : DefaultLifecycleObserver, EmulatorController {
 
     private var controllers: MutableList<EmulatorController> = mutableListOf()
     private var controllerViews: MutableList<View> = ArrayList()
 
     val group: ViewGroup by lazy {
-        FrameLayout(activity).also {
-            val display = activity.windowManager.defaultDisplay
+        FrameLayout(Utils.getApp()).also {
+            val display = emulatorMediator.activity?.windowManager?.defaultDisplay ?: return@also
             val w = EmuUtils.getDisplayWidth(display)
             val h = EmuUtils.getDisplayHeight(display)
             val params = ViewGroup.LayoutParams(w, h)
@@ -40,29 +37,39 @@ class GameControlProxy @Inject constructor(
         }
     }
 
-    private val dynamic: DynamicDPad by lazy {
-        touchController.connectToEmulator(0, activity.emulatorInstance)
-        DynamicDPad(activity, activity.windowManager.defaultDisplay, touchController)
+    private val dynamic: DynamicDPad? by lazy {
+        touchController.connectToEmulator(0, emulatorMediator.emulatorInstance)
+        val display = emulatorMediator.activity?.windowManager?.defaultDisplay ?: return@lazy null
+        DynamicDPad(Utils.getApp(), display, touchController)
     }
 
     private val touchController: TouchController by lazy {
-        TouchController(activity)
+        TouchController(emulatorMediator)
     }
 
     override fun onCreate(owner: LifecycleOwner) {
         super.onCreate(owner)
         controllers.add(touchController)
-        controllers.add(dynamic)
 
-        dynamic.connectToEmulator(0, activity.emulatorInstance)
-        val qsc = QuickSaveController(activity, touchController)
+        dynamic?.let {
+            controllers.add(it)
+
+            it.connectToEmulator(0, emulatorMediator.emulatorInstance)
+        }
+
+        val qsc = QuickSaveController(emulatorMediator, touchController)
         controllers.add(qsc)
 
-        val zapper = ZapperGun(Utils.getApp(), activity)
-        zapper.connectToEmulator(1, activity.emulatorInstance)
+        val zapper = ZapperGun(Utils.getApp(), emulatorMediator)
+        zapper.connectToEmulator(1, emulatorMediator.emulatorInstance)
         controllers.add(zapper)
 
-        val kc = KeyboardController(activity.emulatorInstance, Utils.getApp(), activity.game.checksum, activity)
+        val kc = KeyboardController(
+            emulatorMediator.emulatorInstance,
+            Utils.getApp(),
+            emulatorMediator.game.checksum,
+            emulatorMediator
+        )
         controllers.add(kc)
 
 
@@ -75,21 +82,24 @@ class GameControlProxy @Inject constructor(
 
     override fun onResume(owner: LifecycleOwner) {
         super.onResume(owner)
-        if (PreferenceUtil.isDynamicDPADEnable(activity)) {
-            if (!controllers.contains(dynamic)) {
-                controllers.add(dynamic)
-                controllerViews.add(dynamic.view)
+        dynamic?.let {
+            if (PreferenceUtil.isDynamicDPADEnable(Utils.getApp())) {
+                if (!controllers.contains(it)) {
+                    controllers.add(it)
+                    controllerViews.add(it.view)
+                }
+                PreferenceUtil.setDynamicDPADUsed(Utils.getApp(), true)
+            } else {
+                controllers.remove(it)
+                controllerViews.remove(it.view)
             }
-            PreferenceUtil.setDynamicDPADUsed(activity, true)
-        } else {
-            controllers.remove(dynamic)
-            controllerViews.remove(dynamic.view)
         }
-        if (PreferenceUtil.isFastForwardEnabled(activity)) {
-            PreferenceUtil.setFastForwardUsed(activity, true)
+
+        if (PreferenceUtil.isFastForwardEnabled(Utils.getApp())) {
+            PreferenceUtil.setFastForwardUsed(Utils.getApp(), true)
         }
-        if (PreferenceUtil.isScreenSettingsSaved(activity)) {
-            PreferenceUtil.setScreenLayoutUsed(activity, true)
+        if (PreferenceUtil.isScreenSettingsSaved(Utils.getApp())) {
+            PreferenceUtil.setScreenLayoutUsed(Utils.getApp(), true)
         }
 
         for (controller in controllers) {
@@ -97,10 +107,10 @@ class GameControlProxy @Inject constructor(
         }
         try {
             for (controller in controllers) {
-                controller.onGameStarted(activity.game)
+                controller.onGameStarted(emulatorMediator.game)
             }
         } catch (e: EmulatorException) {
-            activity.handleException(e)
+            emulatorMediator.handleException(e)
         }
 
     }
@@ -109,7 +119,7 @@ class GameControlProxy @Inject constructor(
         super.onPause(owner)
         for (controller in controllers) {
             controller.onPause()
-            controller.onGamePaused(activity.game)
+            controller.onGamePaused(emulatorMediator.game)
         }
     }
 

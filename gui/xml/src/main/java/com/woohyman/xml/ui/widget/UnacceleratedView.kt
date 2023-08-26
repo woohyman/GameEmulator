@@ -11,12 +11,11 @@ import com.woohyman.keyboard.emulator.Emulator
 import com.woohyman.keyboard.emulator.EmulatorView
 
 internal class UnacceleratedView(
-    context: Activity,
+    context: Activity?,
     private val emulator: Emulator?,
     paddingLeft: Int,
     paddingTop: Int
 ) : SurfaceView(context), EmulatorView {
-    private val context: Application
     private var startTime: Long = 0
     private var x = 0
     private var y = 0
@@ -26,7 +25,6 @@ internal class UnacceleratedView(
         private set
 
     init {
-        this.context = context.application
         setWillNotDraw(false)
         this.paddingTop = paddingTop
         this.paddingLeft = paddingLeft

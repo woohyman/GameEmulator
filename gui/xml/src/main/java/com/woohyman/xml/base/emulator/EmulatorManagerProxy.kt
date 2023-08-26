@@ -4,6 +4,7 @@ import android.content.pm.ActivityInfo
 import android.widget.Toast
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import com.blankj.utilcode.util.Utils
 import com.woohyman.keyboard.base.Benchmark
 import com.woohyman.keyboard.base.Manager
 import com.woohyman.keyboard.base.SlotUtils
@@ -12,36 +13,36 @@ import com.woohyman.keyboard.utils.PreferenceUtil
 import com.woohyman.xml.R
 
 class EmulatorManagerProxy constructor(
-    private val activity: EmulatorActivity,
-) : DefaultLifecycleObserver, Manager(activity.emulatorInstance, activity) {
+    private val emulatorMediator: EmulatorMediator,
+) : DefaultLifecycleObserver, Manager(emulatorMediator.emulatorInstance, Utils.getApp()) {
     private var isFF = false
     private var isToggleFF = false
     private var isFFPressed = false
 
     override fun saveState(slot: Int) {
         Toast.makeText(
-            activity,
+            Utils.getApp(),
             "state saved", Toast.LENGTH_SHORT
         ).show()
     }
 
 
     val needsBenchmark by lazy {
-        val quality = PreferenceUtil.getEmulationQuality(activity)
-        val alreadyBenchmarked = PreferenceUtil.isBenchmarked(activity)
+        val quality = PreferenceUtil.getEmulationQuality(Utils.getApp())
+        val alreadyBenchmarked = PreferenceUtil.isBenchmarked(Utils.getApp())
         quality != 2 && !alreadyBenchmarked
     }
 
     override fun onCreate(owner: LifecycleOwner) {
         super.onCreate(owner)
 
-        setOnNotRespondingListener(activity)
+        setOnNotRespondingListener(emulatorMediator)
         if (needsBenchmark) {
             setBenchmark(
                 Benchmark(
                     EmulatorActivity.EMULATION_BENCHMARK,
                     1000,
-                    activity.emulatorMediator.emulatorView.benchmarkCallback
+                    emulatorMediator.emulatorView.benchmarkCallback
                 )
             )
         }
@@ -65,50 +66,50 @@ class EmulatorManagerProxy constructor(
         try {
             stopGame()
         } catch (e: EmulatorException) {
-            activity.handleException(e)
+            emulatorMediator.handleException(e)
         } finally {
-            activity.emulatorMediator.emulatorView.onPause()
+            emulatorMediator.emulatorView.onPause()
         }
 
     }
 
     override fun onResume(owner: LifecycleOwner) {
         super.onResume(owner)
-        setFastForwardFrameCount(PreferenceUtil.getFastForwardFrameCount(activity))
+        setFastForwardFrameCount(PreferenceUtil.getFastForwardFrameCount(Utils.getApp()))
 
-        isToggleFF = PreferenceUtil.isFastForwardToggleable(activity)
+        isToggleFF = PreferenceUtil.isFastForwardToggleable(Utils.getApp())
         isFF = false
         isFFPressed = false
 
         try {
-            startGame(activity.game)
+            startGame(emulatorMediator.game)
 
-            if (activity.slotToRun != -1) {
-                loadState(activity.slotToRun)
+            if (emulatorMediator.slotToRun != -1) {
+                loadState(emulatorMediator.slotToRun)
             } else {
                 if (SlotUtils.autoSaveExists(
-                        activity.emulatorMediator.baseDir,
-                        activity.game.checksum
+                        emulatorMediator.baseDir,
+                        emulatorMediator.game.checksum
                     )
                 ) {
                     loadState(0)
                 }
             }
-            if (activity.slotToSave != null) {
-                copyAutoSave(activity.slotToSave)
+            if (emulatorMediator.slotToSave != null) {
+                copyAutoSave(emulatorMediator.slotToSave)
             }
             val wasRotated =
                 EmulatorActivity.oldConfig and ActivityInfo.CONFIG_ORIENTATION == ActivityInfo.CONFIG_ORIENTATION
             EmulatorActivity.oldConfig = 0
-            if (activity.emulatorMediator.shouldPause() && !wasRotated) {
-                activity.emulatorMediator.gameMenuProxy.gameMenu.open()
+            if (emulatorMediator.shouldPause() && !wasRotated) {
+                emulatorMediator.gameMenuProxy.gameMenu.open()
             }
-            if (activity.emulatorMediator.gameMenuProxy.gameMenu.isOpen) {
+            if (emulatorMediator.gameMenuProxy.gameMenu.isOpen) {
                 pauseEmulation()
             }
-            activity.emulatorMediator.setShouldPauseOnResume(true)
+            emulatorMediator.setShouldPauseOnResume(true)
         } catch (e: EmulatorException) {
-            activity.handleException(e)
+            emulatorMediator.handleException(e)
         }
     }
 
@@ -134,16 +135,16 @@ class EmulatorManagerProxy constructor(
     fun enableCheats() {
         var numCheats = 0
         try {
-            numCheats = enableCheats(activity, activity.game)
+            numCheats = enableCheats(Utils.getApp(), emulatorMediator.game)
         } catch (e: EmulatorException) {
             Toast.makeText(
-                activity, e.getMessage(activity),
+                Utils.getApp(), e.getMessage(Utils.getApp()),
                 Toast.LENGTH_SHORT
             ).show()
         }
         if (numCheats > 0) {
             Toast.makeText(
-                activity, activity.getString(R.string.toast_cheats_enabled, numCheats),
+                Utils.getApp(), Utils.getApp().getString(R.string.toast_cheats_enabled, numCheats),
                 Toast.LENGTH_LONG
             ).show()
         }

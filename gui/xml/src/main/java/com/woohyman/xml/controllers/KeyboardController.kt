@@ -21,12 +21,13 @@ import com.woohyman.keyboard.keyboard.KeyboardControllerKeys.Companion.PLAYER2_O
 import com.woohyman.keyboard.keyboard.KeyboardProfile
 import com.woohyman.keyboard.emulator.Emulator
 import com.woohyman.keyboard.utils.NLog
+import com.woohyman.xml.base.emulator.EmulatorMediator
 
 class KeyboardController(
     private val emulator: Emulator,
     private var context: Context?,
     var gameHash: String,
-    private var emulatorActivity: EmulatorActivity?
+    private var emulatorMediator: EmulatorMediator
 ) : EmulatorController {
     private val tmpKeys = IntArray(2)
     private val loadingOrSaving = BooleanArray(4)
@@ -95,7 +96,7 @@ class KeyboardController(
                         mapValue = it
                     } != -1) {
                     processKey(mapValue, false)
-                    emulatorActivity!!.hideTouchController()
+                    emulatorMediator.hideTouchController()
                     true
                 } else {
                     super.onKeyUp(keyCode, event)
@@ -114,7 +115,7 @@ class KeyboardController(
         }
         if (mapValue == KEY_BACK) {
             if (pressed) {
-                emulatorActivity!!.finish()
+                emulatorMediator.activity?.finish()
             }
         } else if (mapValue == KEY_SAVE_SLOT_0) {
             save(1, pressed)
@@ -130,13 +131,13 @@ class KeyboardController(
             load(3, pressed)
         } else if (mapValue == KEY_FAST_FORWARD) {
             if (pressed) {
-                emulatorActivity!!.onFastForwardDown()
+                emulatorMediator.emulatorManagerProxy.onFastForwardDown()
             } else {
-                emulatorActivity!!.onFastForwardUp()
+                emulatorMediator.emulatorManagerProxy.onFastForwardUp()
             }
         } else if (mapValue == KEY_MENU) {
             if (pressed) {
-                emulatorActivity?.openGameMenu()
+                emulatorMediator.gameMenuProxy.openGameMenu()
             }
         } else if (KeyboardControllerKeys.isMulti(mapValue)) {
             multiToKeys(mapValue, tmpKeys)
@@ -152,7 +153,7 @@ class KeyboardController(
     private fun save(slot: Int, isKeyPressed: Boolean) {
         if (isKeyPressed && !loadingOrSaving[slot]) {
             loadingOrSaving[slot] = true
-            emulatorActivity?.emulatorMediator?.emulatorManagerProxy?.saveState(slot)
+            emulatorMediator.emulatorManagerProxy.saveState(slot)
         }
         if (!isKeyPressed) {
             loadingOrSaving[slot] = false
@@ -162,7 +163,7 @@ class KeyboardController(
     private fun load(slot: Int, isKeyPressed: Boolean) {
         if (isKeyPressed && !loadingOrSaving[slot]) {
             loadingOrSaving[slot] = true
-            emulatorActivity?.emulatorMediator?.emulatorManagerProxy?.loadState(slot)
+            emulatorMediator.emulatorManagerProxy.loadState(slot)
         }
         if (!isKeyPressed) {
             loadingOrSaving[slot] = false
@@ -171,7 +172,6 @@ class KeyboardController(
 
     override fun onDestroy() {
         context = null
-        emulatorActivity = null
     }
 
     companion object{

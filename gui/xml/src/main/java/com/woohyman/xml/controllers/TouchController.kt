@@ -7,6 +7,7 @@ import android.util.SparseIntArray
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
+import com.blankj.utilcode.util.Utils
 import com.woohyman.xml.R
 import com.woohyman.xml.base.emulator.EmulatorActivity
 import com.woohyman.xml.ui.multitouchbutton.MultitouchBtnInterface
@@ -19,9 +20,12 @@ import com.woohyman.keyboard.data.database.GameDescription
 import com.woohyman.keyboard.emulator.Emulator
 import com.woohyman.keyboard.utils.EmuUtils
 import com.woohyman.keyboard.utils.PreferenceUtil
+import com.woohyman.xml.base.emulator.EmulatorMediator
 import java.lang.ref.WeakReference
 
-class TouchController(private var emulatorActivity: EmulatorActivity?) : EmulatorController,
+class TouchController(
+    private var emulatorMediator: EmulatorMediator
+) : EmulatorController,
     OnMultitouchEventListener {
     private var emulator: Emulator? = null
     private var port = 0
@@ -41,24 +45,19 @@ class TouchController(private var emulatorActivity: EmulatorActivity?) : Emulato
     private var hidden = false
     private val keyHandler = KeyHandler(this)
     override fun onResume() {
-        if (multitouchLayer != null) {
-            multitouchLayer!!.setVibrationDuration(
-                PreferenceUtil.getVibrationDuration(
-                    emulatorActivity!!
-                )
-            )
-        }
+        multitouchLayer?.setVibrationDuration(PreferenceUtil.getVibrationDuration(Utils.getApp()))
         emulator!!.resetKeys()
         multitouchLayer!!.reloadTouchProfile()
-        multitouchLayer!!.setOpacity(PreferenceUtil.getControlsOpacity(emulatorActivity))
-        multitouchLayer!!.setEnableStaticDPAD(!PreferenceUtil.isDynamicDPADEnable(emulatorActivity))
+        multitouchLayer!!.setOpacity(PreferenceUtil.getControlsOpacity(Utils.getApp()))
+        multitouchLayer!!.setEnableStaticDPAD(!PreferenceUtil.isDynamicDPADEnable(Utils.getApp()))
     }
 
     override fun onPause() {}
+
     override fun onWindowFocusChanged(hasFocus: Boolean) {}
+
     override fun onDestroy() {
         multitouchLayer = null
-        emulatorActivity = null
     }
 
     override fun connectToEmulator(port: Int, emulator: Emulator) {
@@ -73,7 +72,7 @@ class TouchController(private var emulatorActivity: EmulatorActivity?) : Emulato
 
     private fun createView(): View {
         val inflater =
-            emulatorActivity!!.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            Utils.getApp().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val layout = inflater.inflate(R.layout.controler_layout, null)
         multitouchLayer = layout.findViewById(R.id.touch_layer)
         val up = multitouchLayer?.findViewById<MultitouchImageButton>(R.id.button_up)
@@ -105,11 +104,11 @@ class TouchController(private var emulatorActivity: EmulatorActivity?) : Emulato
         fastForward?.setOnMultitouchEventlistener(object : OnMultitouchEventListener {
 
             override fun onMultitouchEnter(btn: MultitouchBtnInterface?) {
-                emulatorActivity!!.onFastForwardDown()
+                emulatorMediator.emulatorManagerProxy.onFastForwardDown()
             }
 
             override fun onMultitouchExit(btn: MultitouchBtnInterface?) {
-                emulatorActivity!!.onFastForwardUp()
+                emulatorMediator.emulatorManagerProxy.onFastForwardUp()
             }
         })
         val select = layout.findViewById<MultitouchButton>(R.id.button_select)
@@ -137,7 +136,7 @@ class TouchController(private var emulatorActivity: EmulatorActivity?) : Emulato
         val menu = layout.findViewById<MultitouchImageButton>(R.id.button_menu)
         menu.setOnMultitouchEventlistener(object : OnMultitouchEventListener {
             override fun onMultitouchEnter(btn: MultitouchBtnInterface?) {
-                emulatorActivity?.openGameMenu()
+                emulatorMediator.gameMenuProxy.openGameMenu()
             }
 
             override fun onMultitouchExit(btn: MultitouchBtnInterface?) {
@@ -185,7 +184,7 @@ class TouchController(private var emulatorActivity: EmulatorActivity?) : Emulato
     override fun onGameStarted(game: GameDescription) {
         val gfxProfile = emulator!!.activeGfxProfile
         zapperIc!!.visibility = if (PreferenceUtil.isZapperEnabled(
-                emulatorActivity!!,
+                Utils.getApp(),
                 game.checksum
             )
         ) View.VISIBLE else View.GONE
@@ -193,13 +192,13 @@ class TouchController(private var emulatorActivity: EmulatorActivity?) : Emulato
             if (gfxProfile!!.name == "PAL") View.VISIBLE else View.GONE
         ntscIc!!.visibility =
             if (gfxProfile.name == "NTSC") View.VISIBLE else View.GONE
-        val remoteVisible = (PreferenceUtil.isWifiServerEnable(emulatorActivity!!)
-                && EmuUtils.isWifiAvailable(emulatorActivity!!))
+        val remoteVisible = (PreferenceUtil.isWifiServerEnable(Utils.getApp())
+                && EmuUtils.isWifiAvailable(Utils.getApp()))
         remoteIc!!.visibility =
             if (remoteVisible) View.VISIBLE else View.INVISIBLE
         muteIc!!.visibility =
-            if (PreferenceUtil.isSoundEnabled(emulatorActivity)) View.GONE else View.VISIBLE
-        if (PreferenceUtil.isTurboEnabled(emulatorActivity)) {
+            if (PreferenceUtil.isSoundEnabled(Utils.getApp())) View.GONE else View.VISIBLE
+        if (PreferenceUtil.isTurboEnabled(Utils.getApp())) {
             aTurbo!!.visibility = View.VISIBLE
             bTurbo!!.visibility = View.VISIBLE
             aTurbo!!.isEnabled = true
@@ -210,7 +209,7 @@ class TouchController(private var emulatorActivity: EmulatorActivity?) : Emulato
             aTurbo!!.isEnabled = false
             bTurbo!!.isEnabled = false
         }
-        if (PreferenceUtil.isFastForwardEnabled(emulatorActivity)) {
+        if (PreferenceUtil.isFastForwardEnabled(Utils.getApp())) {
             fastForward!!.visibility = View.VISIBLE
             fastForward!!.isEnabled = true
         } else {
@@ -218,22 +217,23 @@ class TouchController(private var emulatorActivity: EmulatorActivity?) : Emulato
             fastForward!!.isEnabled = false
         }
         abButton!!.visibility =
-            if (PreferenceUtil.isABButtonEnabled(emulatorActivity)) View.VISIBLE else View.INVISIBLE
-        abButton!!.isEnabled = PreferenceUtil.isABButtonEnabled(emulatorActivity)
+            if (PreferenceUtil.isABButtonEnabled(Utils.getApp())) View.VISIBLE else View.INVISIBLE
+        abButton!!.isEnabled = PreferenceUtil.isABButtonEnabled(Utils.getApp())
         multitouchLayer!!.invalidate()
     }
 
     override fun onGamePaused(game: GameDescription) {}
+
     fun hide() {
         if (!hidden) {
-            emulatorActivity!!.runOnUiThread { view!!.visibility = View.GONE }
+            view!!.visibility = View.GONE
             hidden = true
         }
     }
 
     fun show() {
         if (hidden) {
-            emulatorActivity!!.runOnUiThread { view!!.visibility = View.VISIBLE }
+            view!!.visibility = View.VISIBLE
             hidden = false
         }
     }

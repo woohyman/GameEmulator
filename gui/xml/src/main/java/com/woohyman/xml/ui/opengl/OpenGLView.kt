@@ -8,12 +8,14 @@ import android.opengl.GLSurfaceView
 import android.opengl.GLUtils
 import android.opengl.Matrix
 import android.view.View
+import com.blankj.utilcode.util.Utils
 import com.woohyman.keyboard.base.ViewPort
 import com.woohyman.keyboard.base.ViewUtils.loadOrComputeViewPort
 import com.woohyman.keyboard.emulator.Emulator
 import com.woohyman.keyboard.utils.NLog
 import com.woohyman.keyboard.emulator.EmulatorView
 import com.woohyman.xml.base.emulator.EmulatorActivity
+import com.woohyman.xml.base.emulator.EmulatorMediator
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
@@ -23,17 +25,17 @@ import javax.microedition.khronos.opengles.GL10
 
 @SuppressLint("ViewConstructor")
 internal class OpenGLView(
-    context: EmulatorActivity,
+    emulatorMediator: EmulatorMediator,
     emulator: Emulator,
     paddingLeft: Int,
     paddingTop: Int, shader: String
-) : GLSurfaceView(context), EmulatorView {
+) : GLSurfaceView(Utils.getApp()), EmulatorView {
     private val renderer: Renderer
 
     init {
         setEGLContextClientVersion(2)
-        renderer = Renderer(context, emulator, paddingLeft, paddingTop, shader)
-        renderer.textureSize = context.emulatorMediator.emulatorView.gLTextureSize
+        renderer = Renderer(emulatorMediator, emulator, paddingLeft, paddingTop, shader)
+        renderer.textureSize = emulatorMediator.emulatorView.gLTextureSize
         setRenderer(renderer)
         renderMode = RENDERMODE_CONTINUOUSLY
     }
@@ -61,7 +63,9 @@ internal class OpenGLView(
         get() = renderer.viewPort!!
 
     internal class Renderer(
-        context: EmulatorActivity, private val emulator: Emulator, private val paddingLeft: Int,
+        emulatorMediator: EmulatorMediator,
+        private val emulator: Emulator,
+        private val paddingLeft: Int,
         private val paddingTop: Int, shader: String
     ) : GLSurfaceView.Renderer {
         val VERTEX_STRIDE = COORDS_PER_VERTEX * 4
@@ -69,7 +73,6 @@ internal class OpenGLView(
         private val drawOrder = shortArrayOf(0, 1, 2, 0, 2, 3)
         var benchmark: com.woohyman.keyboard.base.Benchmark? = null
         private val hasPalette: Boolean
-        private val context: Application
         private val textureBounds: IntArray?
         var textureSize = 256
             set
@@ -93,9 +96,8 @@ internal class OpenGLView(
         private var delayPerFrame = 40
 
         init {
-            hasPalette = context.emulatorMediator.emulatorView.hasGLPalette()
-            this.context = context.application
-            textureBounds = context.emulatorMediator.emulatorView.getTextureBounds(emulator)
+            hasPalette = emulatorMediator.emulatorView.hasGLPalette()
+            textureBounds = emulatorMediator.emulatorView.getTextureBounds(emulator)
             NLog.i("SHADER", "shader: $shader")
             fragmentShaderCode = shader
         }
@@ -125,7 +127,7 @@ internal class OpenGLView(
 
         override fun onSurfaceChanged(unused: GL10, width: Int, height: Int) {
             val vp = loadOrComputeViewPort(
-                context, emulator, width, height,
+                Utils.getApp(), emulator, width, height,
                 paddingLeft, paddingTop, false
             )
             viewPort = vp
