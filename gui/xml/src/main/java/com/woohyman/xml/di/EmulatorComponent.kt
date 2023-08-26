@@ -1,4 +1,4 @@
-package com.woohyman.xml.base.emulator.di
+package com.woohyman.xml.di
 
 import dagger.Module
 import dagger.hilt.InstallIn

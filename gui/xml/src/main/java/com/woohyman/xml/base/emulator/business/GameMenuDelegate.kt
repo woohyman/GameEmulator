@@ -1,4 +1,4 @@
-package com.woohyman.xml.base.emulator
+package com.woohyman.xml.base.emulator.business
 
 import android.content.DialogInterface
 import android.content.Intent
@@ -19,6 +19,8 @@ import com.woohyman.keyboard.utils.NLog
 import com.woohyman.keyboard.utils.PreferenceUtil
 import com.woohyman.xml.BaseApplication
 import com.woohyman.xml.R
+import com.woohyman.xml.base.emulator.EmulatorActivity
+import com.woohyman.xml.base.emulator.EmulatorMediator
 import com.woohyman.xml.ui.cheats.CheatsActivity
 import com.woohyman.xml.ui.gamegallery.Constants
 import com.woohyman.xml.ui.gamegallery.SlotSelectionActivity
@@ -31,10 +33,10 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 
-class GameMenuProxy constructor(
+class GameMenuDelegate constructor(
     private val emulatorMediator: EmulatorMediator,
 ) : GameMenu.OnGameMenuListener, DefaultLifecycleObserver {
-    var runTimeMachine = false
+    private var runTimeMachine = false
 
     val gameMenu: GameMenu by lazy {
         GameMenu(Utils.getApp(), this)

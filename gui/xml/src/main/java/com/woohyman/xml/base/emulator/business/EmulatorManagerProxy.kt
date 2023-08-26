@@ -1,4 +1,4 @@
-package com.woohyman.xml.base.emulator
+package com.woohyman.xml.base.emulator.business
 
 import android.content.pm.ActivityInfo
 import android.widget.Toast
@@ -11,6 +11,8 @@ import com.woohyman.keyboard.base.SlotUtils
 import com.woohyman.keyboard.emulator.EmulatorException
 import com.woohyman.keyboard.utils.PreferenceUtil
 import com.woohyman.xml.R
+import com.woohyman.xml.base.emulator.EmulatorActivity
+import com.woohyman.xml.base.emulator.EmulatorMediator
 
 class EmulatorManagerProxy constructor(
     private val emulatorMediator: EmulatorMediator,

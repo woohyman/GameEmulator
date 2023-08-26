@@ -1,7 +1,6 @@
 package com.woohyman.xml.base.emulator
 
 import android.app.AlertDialog
-import android.content.DialogInterface
 import android.preference.PreferenceManager
 import androidx.annotation.MainThread
 import androidx.appcompat.app.AppCompatActivity
@@ -15,6 +14,10 @@ import com.woohyman.keyboard.utils.DialogUtils
 import com.woohyman.keyboard.utils.NLog
 import com.woohyman.keyboard.utils.PreferenceUtil
 import com.woohyman.xml.R
+import com.woohyman.xml.base.emulator.business.EmulatorManagerProxy
+import com.woohyman.xml.base.emulator.business.EmulatorViewProxy
+import com.woohyman.xml.base.emulator.business.GameControlProxy
+import com.woohyman.xml.base.emulator.business.GameMenuDelegate
 import com.woohyman.xml.ui.timetravel.TimeTravelDialog
 import kotlinx.atomicfu.atomic
 import kotlinx.atomicfu.getAndUpdate
@@ -27,7 +30,7 @@ class EmulatorMediator constructor(
     val fragmentShader: String,
 ) : IEmulatorMediator, EmulatorRunner.OnNotRespondingListener {
 
-    val gameMenuProxy: GameMenuProxy = GameMenuProxy(this)
+    val gameMenuProxy: GameMenuDelegate = GameMenuDelegate(this)
     val emulatorManagerProxy: EmulatorManagerProxy = EmulatorManagerProxy(this)
     val gameControlProxy: GameControlProxy = GameControlProxy(this)
     val emulatorView = EmulatorViewProxy(this)

@@ -1,4 +1,4 @@
-package com.woohyman.xml.base.emulator
+package com.woohyman.xml.base.emulator.business
 
 import android.content.res.Configuration
 import android.view.View
@@ -10,6 +10,8 @@ import com.woohyman.keyboard.emulator.EmulatorView
 import com.woohyman.keyboard.utils.EmuUtils
 import com.woohyman.keyboard.utils.PreferenceUtil
 import com.woohyman.xml.R
+import com.woohyman.xml.base.emulator.EmulatorActivity
+import com.woohyman.xml.base.emulator.EmulatorMediator
 import com.woohyman.xml.ui.opengl.OpenGLView
 import com.woohyman.xml.ui.widget.UnacceleratedView
 
