@@ -173,7 +173,7 @@ open class EmulatorRunner(@JvmField protected var emulator: Emulator, context: C
         synchronized(lock) { emulator.enableRawCheat(addr, `val`, comp) }
     }
 
-    fun saveState(slot: Int) {
+    open fun saveState(slot: Int) {
         if (emulator.isGameLoaded) {
             synchronized(lock) { emulator.saveState(slot) }
         }

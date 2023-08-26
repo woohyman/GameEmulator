@@ -136,7 +136,7 @@ class KeyboardController(
             }
         } else if (mapValue == KEY_MENU) {
             if (pressed) {
-                emulatorActivity!!.openGameMenu()
+                emulatorActivity?.openGameMenu()
             }
         } else if (KeyboardControllerKeys.isMulti(mapValue)) {
             multiToKeys(mapValue, tmpKeys)
@@ -152,7 +152,7 @@ class KeyboardController(
     private fun save(slot: Int, isKeyPressed: Boolean) {
         if (isKeyPressed && !loadingOrSaving[slot]) {
             loadingOrSaving[slot] = true
-            emulatorActivity!!.emulatorManagerProxy?.saveState(slot)
+            emulatorActivity?.emulatorManagerProxy?.saveState(slot)
         }
         if (!isKeyPressed) {
             loadingOrSaving[slot] = false
@@ -162,7 +162,7 @@ class KeyboardController(
     private fun load(slot: Int, isKeyPressed: Boolean) {
         if (isKeyPressed && !loadingOrSaving[slot]) {
             loadingOrSaving[slot] = true
-            emulatorActivity!!.emulatorManagerProxy?.loadState(slot)
+            emulatorActivity?.emulatorManagerProxy?.loadState(slot)
         }
         if (!isKeyPressed) {
             loadingOrSaving[slot] = false

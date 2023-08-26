@@ -82,7 +82,7 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
     val gameMenu: GameMenu by lazy {
         GameMenu(this, this)
     }
-    private val game: GameDescription by lazy {
+    val game: GameDescription by lazy {
         intent.getSerializableExtra(EXTRA_GAME) as GameDescription
     }
 
@@ -135,7 +135,7 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
         return true
     }
 
-    private val gameControlProxy by lazy {
+    val gameControlProxy by lazy {
         GameControlProxy(this, emulatorInstance, game)
     }
 
@@ -161,7 +161,7 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
             handleException(e)
             exceptionOccurred = true
             return
-        }
+            }
         d(TAG, "onCreate - BaseActivity")
         val hasOpenGL20 = checkGL20Support(applicationContext)
         slotToRun = -1
@@ -358,6 +358,7 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
     @SuppressLint("DefaultLocale")
     override fun onResume() {
         super.onResume()
+
         isRestarting = false
         val extras = intent.extras
         var isAfterProcessRestart = false
@@ -395,11 +396,11 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
             enableCheats()
         } catch (e: EmulatorException) {
             handleException(e)
-        }
+    }
     }
 
     @MainThread
-    private fun enableCheats() {
+    fun enableCheats() {
         var numCheats = 0
         try {
             numCheats = emulatorManagerProxy.enableCheats(this, game)
@@ -451,8 +452,8 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
     override fun onGameMenuClosed(menu: GameMenu) {
         try {
             if (runTimeMachine || menu.isOpen) {
-                return
-            }
+            return
+        }
             emulatorManagerProxy.resumeEmulation()
             gameControlProxy.onGameStarted(game)
             gameControlProxy.onResume()
@@ -625,7 +626,12 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
                 } else super.onKeyUp(keyCode, event)
             }
 
-            KeyEvent.KEYCODE_HOME, KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.KEYCODE_VOLUME_UP, KeyEvent.KEYCODE_VOLUME_MUTE, KeyEvent.KEYCODE_3D_MODE, KeyEvent.KEYCODE_APP_SWITCH -> super.onKeyUp(
+            KeyEvent.KEYCODE_HOME,
+            KeyEvent.KEYCODE_VOLUME_DOWN,
+            KeyEvent.KEYCODE_VOLUME_UP,
+            KeyEvent.KEYCODE_VOLUME_MUTE,
+            KeyEvent.KEYCODE_3D_MODE,
+            KeyEvent.KEYCODE_APP_SWITCH -> super.onKeyUp(
                 keyCode,
                 event
             )
@@ -648,7 +654,12 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
                 } else super.onKeyDown(keyCode, event)
             }
 
-            KeyEvent.KEYCODE_HOME, KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.KEYCODE_VOLUME_UP, KeyEvent.KEYCODE_VOLUME_MUTE, KeyEvent.KEYCODE_3D_MODE, KeyEvent.KEYCODE_APP_SWITCH -> super.onKeyDown(
+            KeyEvent.KEYCODE_HOME,
+            KeyEvent.KEYCODE_VOLUME_DOWN,
+            KeyEvent.KEYCODE_VOLUME_UP,
+            KeyEvent.KEYCODE_VOLUME_MUTE,
+            KeyEvent.KEYCODE_3D_MODE,
+            KeyEvent.KEYCODE_APP_SWITCH -> super.onKeyDown(
                 keyCode,
                 event
             )
@@ -661,11 +672,11 @@ abstract class EmulatorActivity : AppCompatActivity(), OnGameMenuListener, OnNot
         const val EXTRA_GAME = "game"
         const val EXTRA_SLOT = "slot"
         const val EXTRA_FROM_GALLERY = "fromGallery"
-        private const val TAG = "EmulatorActivity"
-        private const val OPEN_GL_BENCHMARK = "openGL"
+        const val TAG = "EmulatorActivity"
+        const val OPEN_GL_BENCHMARK = "openGL"
         const val EMULATION_BENCHMARK = "emulation"
-        private const val REQUEST_SAVE = 1
-        private const val REQUEST_LOAD = 2
+        const val REQUEST_SAVE = 1
+        const val REQUEST_LOAD = 2
         var pm: PackageManager? = null
         var pn: String? = null
         var sd: String? = null

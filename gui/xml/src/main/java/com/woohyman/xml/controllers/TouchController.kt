@@ -137,7 +137,7 @@ class TouchController(private var emulatorActivity: EmulatorActivity?) : Emulato
         val menu = layout.findViewById<MultitouchImageButton>(R.id.button_menu)
         menu.setOnMultitouchEventlistener(object : OnMultitouchEventListener {
             override fun onMultitouchEnter(btn: MultitouchBtnInterface?) {
-                emulatorActivity!!.openGameMenu()
+                emulatorActivity?.openGameMenu()
             }
 
             override fun onMultitouchExit(btn: MultitouchBtnInterface?) {
