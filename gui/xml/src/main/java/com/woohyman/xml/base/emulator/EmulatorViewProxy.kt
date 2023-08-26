@@ -5,6 +5,7 @@ import android.view.View
 import com.blankj.utilcode.util.Utils
 import com.woohyman.keyboard.base.Benchmark
 import com.woohyman.keyboard.base.ViewPort
+import com.woohyman.keyboard.emulator.Emulator
 import com.woohyman.keyboard.emulator.EmulatorView
 import com.woohyman.keyboard.utils.EmuUtils
 import com.woohyman.keyboard.utils.PreferenceUtil
@@ -15,6 +16,16 @@ import com.woohyman.xml.ui.widget.UnacceleratedView
 class EmulatorViewProxy(
     private val activity: EmulatorActivity,
 ):EmulatorView {
+    val gLTextureSize = 256
+
+    fun getTextureBounds(emulator: Emulator?): IntArray? {
+        return null
+    }
+
+    fun hasGLPalette(): Boolean {
+        return true
+    }
+
     val emulatorView: EmulatorView by lazy {
         val paddingLeft = 0
         var paddingTop = 0
@@ -27,7 +38,7 @@ class EmulatorViewProxy(
 
         if (hasOpenGL20) {
             openGLView = OpenGLView(activity, activity.emulatorInstance, paddingLeft, paddingTop, shader)
-            if (activity.emulatorManagerProxy.needsBenchmark) {
+            if (activity.emulatorMediator.emulatorManagerProxy.needsBenchmark) {
                 openGLView.setBenchmark(Benchmark(EmulatorActivity.OPEN_GL_BENCHMARK, 200, benchmarkCallback))
             }
         }
@@ -59,10 +70,6 @@ class EmulatorViewProxy(
                 }
             }
         }
-    }
-
-    init {
-        activity.gameControlProxy.group.addView(emulatorView.asView())
     }
 
     override fun onPause() {

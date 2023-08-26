@@ -47,7 +47,7 @@ class EmulatorManagerProxy(
                 Benchmark(
                     EmulatorActivity.EMULATION_BENCHMARK,
                     1000,
-                    activity.benchmarkCallback
+                    activity.emulatorMediator.emulatorView.benchmarkCallback
                 )
             )
         }
@@ -73,7 +73,7 @@ class EmulatorManagerProxy(
         } catch (e: EmulatorException) {
             activity.handleException(e)
         } finally {
-            activity.emulatorView?.onPause()
+            activity.emulatorMediator.emulatorView.onPause()
         }
 
     }
@@ -92,7 +92,7 @@ class EmulatorManagerProxy(
             if (activity.slotToRun != -1) {
                 loadState(activity.slotToRun)
             } else {
-                if (SlotUtils.autoSaveExists(activity.baseDir, game.checksum)) {
+                if (SlotUtils.autoSaveExists(activity.emulatorMediator.baseDir, game.checksum)) {
                     loadState(0)
                 }
             }
@@ -102,13 +102,13 @@ class EmulatorManagerProxy(
             val wasRotated =
                 EmulatorActivity.oldConfig and ActivityInfo.CONFIG_ORIENTATION == ActivityInfo.CONFIG_ORIENTATION
             EmulatorActivity.oldConfig = 0
-            if (activity.shouldPause() && !wasRotated) {
-                activity.gameMenu.open()
+            if (activity.emulatorMediator.shouldPause() && !wasRotated) {
+                activity.emulatorMediator.gameMenuProxy.gameMenu.open()
             }
-            if (activity.gameMenu.isOpen) {
+            if (activity.emulatorMediator.gameMenuProxy.gameMenu.isOpen) {
                 pauseEmulation()
             }
-            activity.setShouldPauseOnResume(true)
+            activity.emulatorMediator.setShouldPauseOnResume(true)
         } catch (e: EmulatorException) {
             activity.handleException(e)
         }

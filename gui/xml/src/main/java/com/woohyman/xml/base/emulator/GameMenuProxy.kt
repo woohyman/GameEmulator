@@ -81,9 +81,9 @@ class GameMenuProxy(
             if (runTimeMachine || menu.isOpen) {
                 return
             }
-            activity.emulatorManagerProxy.resumeEmulation()
-            activity.gameControlProxy.onGameStarted(game)
-            activity.gameControlProxy.onResume()
+            activity.emulatorMediator.emulatorManagerProxy.resumeEmulation()
+            activity.emulatorMediator.gameControlProxy.onGameStarted(game)
+            activity.emulatorMediator.gameControlProxy.onResume()
         } catch (e: EmulatorException) {
             activity.handleException(e)
         }
@@ -97,14 +97,14 @@ class GameMenuProxy(
                 }
 
                 R.string.game_menu_reset -> {
-                    activity.emulatorManagerProxy.resetEmulator()
-                    activity.enableCheats()
+                    activity.emulatorMediator.emulatorManagerProxy.resetEmulator()
+                    activity.emulatorMediator.emulatorManagerProxy.enableCheats()
                 }
 
                 R.string.game_menu_save -> {
                     val i = Intent(activity, SlotSelectionActivity::class.java)
                     i.putExtra(EmulatorActivity.EXTRA_GAME, game)
-                    i.putExtra(Constants.EXTRA_BASE_DIRECTORY, activity.baseDir)
+                    i.putExtra(Constants.EXTRA_BASE_DIRECTORY, activity.emulatorMediator.baseDir)
                     i.putExtra(
                         Constants.EXTRA_DIALOG_TYPE_INT,
                         Constants.DIALOAG_TYPE_SAVE
@@ -115,7 +115,7 @@ class GameMenuProxy(
                 R.string.game_menu_load -> {
                     val i = Intent(activity, SlotSelectionActivity::class.java)
                     i.putExtra(EmulatorActivity.EXTRA_GAME, game)
-                    i.putExtra(Constants.EXTRA_BASE_DIRECTORY, activity.baseDir)
+                    i.putExtra(Constants.EXTRA_BASE_DIRECTORY, activity.emulatorMediator.baseDir)
                     i.putExtra(
                         Constants.EXTRA_DIALOG_TYPE_INT,
                         Constants.DIALOAG_TYPE_LOAD
@@ -162,9 +162,9 @@ class GameMenuProxy(
     override fun onGameMenuOpened(menu: GameMenu?) {
         NLog.i(EmulatorActivity.TAG, "on game menu open")
         try {
-            activity.emulatorManagerProxy.pauseEmulation()
-            activity.gameControlProxy.onGamePaused(game)
-            activity.gameControlProxy.onPause()
+            activity.emulatorMediator.emulatorManagerProxy.pauseEmulation()
+            activity.emulatorMediator.gameControlProxy.onGamePaused(game)
+            activity.emulatorMediator.gameControlProxy.onPause()
         } catch (e: EmulatorException) {
             activity.handleException(e)
         }
@@ -216,21 +216,21 @@ class GameMenuProxy(
     }
 
     private fun freeStartActivityForResult(activity1: Activity, intent: Intent, requestCode: Int) {
-        activity.setShouldPauseOnResume(false)
+        activity.emulatorMediator.setShouldPauseOnResume(false)
         activity.startActivityForResult(intent, requestCode)
     }
 
     private fun freeStartActivity(activity1: Activity, intent: Intent) {
-        activity.setShouldPauseOnResume(false)
+        activity.emulatorMediator.setShouldPauseOnResume(false)
         activity.startActivity(intent)
     }
 
     private fun onGameBackToPast() {
-        if (activity.emulatorManagerProxy.historyItemCount > 1) {
+        if (activity.emulatorMediator.emulatorManagerProxy.historyItemCount > 1) {
             activity.dialog.setOnDismissListener { dialog: DialogInterface? ->
                 runTimeMachine = false
                 try {
-                    activity.emulatorManagerProxy.resumeEmulation()
+                    activity.emulatorMediator.emulatorManagerProxy.resumeEmulation()
                 } catch (e: EmulatorException) {
                     activity.handleException(e)
                 }

@@ -8,17 +8,22 @@ import com.woohyman.keyboard.base.EmulatorUtils
 import com.woohyman.keyboard.emulator.EmulatorException
 import com.woohyman.keyboard.utils.NLog
 import com.woohyman.keyboard.utils.PreferenceUtil
+import com.woohyman.xml.ui.menu.GameMenu
 import kotlinx.atomicfu.atomic
 import kotlinx.atomicfu.getAndUpdate
 
 class EmulatorMediator constructor(
     private val activity: EmulatorActivity
 ) : DefaultLifecycleObserver {
-    private val maxPRC = 10
-    private var autoHide = false
+    val maxPRC = 10
+    var autoHide = false
     var warningShowing = atomic(false)
     var exceptionOccurred = false
     var baseDir: String? = null
+
+    val gameMenuProxy by lazy {
+        GameMenuProxy(activity, activity.emulatorInstance, activity.game)
+    }
 
     val gameControlProxy by lazy {
         GameControlProxy(activity, activity.emulatorInstance, activity.game)
@@ -28,30 +33,20 @@ class EmulatorMediator constructor(
         EmulatorManagerProxy(activity, activity.emulatorInstance, activity.game)
     }
 
-    val gameMenuProxy by lazy {
-        GameMenuProxy(activity, activity.emulatorInstance,activity.game)
-    }
-
     val emulatorView by lazy {
         EmulatorViewProxy(activity)
     }
 
     init {
+        activity.lifecycle.addObserver(this)
         activity.lifecycle.addObserver(gameMenuProxy)
         activity.lifecycle.addObserver(emulatorManagerProxy)
         activity.lifecycle.addObserver(gameControlProxy)
     }
 
     override fun onCreate(owner: LifecycleOwner) {
-        super.onCreate(owner)
-        try {
-            baseDir = EmulatorUtils.getBaseDir(activity)
-        } catch (e: EmulatorException) {
-            activity.handleException(e)
-            exceptionOccurred = true
-            return
-        }
         NLog.d(EmulatorActivity.TAG, "onCreate - BaseActivity")
+        super.onCreate(owner)
     }
 
     override fun onResume(owner: LifecycleOwner) {
@@ -63,7 +58,7 @@ class EmulatorMediator constructor(
             val quality = PreferenceUtil.getEmulationQuality(activity)
             emulatorView.setQuality(quality)
             emulatorView.onResume()
-            activity.enableCheats()
+            emulatorManagerProxy.enableCheats()
         } catch (e: EmulatorException) {
             activity.handleException(e)
         }
@@ -98,14 +93,15 @@ class EmulatorMediator constructor(
         editor.apply()
     }
 
-    fun onNotResponding(){
+    fun onNotResponding(): Boolean {
         warningShowing.getAndUpdate {
             if (!it) {
                 true
             } else {
-                return
+                return false
             }
         }
+        return true
     }
 
     fun hideTouchController() {

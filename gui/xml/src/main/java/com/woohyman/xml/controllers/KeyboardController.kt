@@ -152,7 +152,7 @@ class KeyboardController(
     private fun save(slot: Int, isKeyPressed: Boolean) {
         if (isKeyPressed && !loadingOrSaving[slot]) {
             loadingOrSaving[slot] = true
-            emulatorActivity?.emulatorManagerProxy?.saveState(slot)
+            emulatorActivity?.emulatorMediator?.emulatorManagerProxy?.saveState(slot)
         }
         if (!isKeyPressed) {
             loadingOrSaving[slot] = false
@@ -162,7 +162,7 @@ class KeyboardController(
     private fun load(slot: Int, isKeyPressed: Boolean) {
         if (isKeyPressed && !loadingOrSaving[slot]) {
             loadingOrSaving[slot] = true
-            emulatorActivity?.emulatorManagerProxy?.loadState(slot)
+            emulatorActivity?.emulatorMediator?.emulatorManagerProxy?.loadState(slot)
         }
         if (!isKeyPressed) {
             loadingOrSaving[slot] = false

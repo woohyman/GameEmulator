@@ -23,7 +23,9 @@ import javax.microedition.khronos.opengles.GL10
 
 @SuppressLint("ViewConstructor")
 internal class OpenGLView(
-    context: EmulatorActivity, emulator: Emulator, paddingLeft: Int,
+    context: EmulatorActivity,
+    emulator: Emulator,
+    paddingLeft: Int,
     paddingTop: Int, shader: String
 ) : GLSurfaceView(context), EmulatorView {
     private val renderer: Renderer
@@ -31,7 +33,7 @@ internal class OpenGLView(
     init {
         setEGLContextClientVersion(2)
         renderer = Renderer(context, emulator, paddingLeft, paddingTop, shader)
-        renderer.textureSize = context.gLTextureSize
+        renderer.textureSize = context.emulatorMediator.emulatorView.gLTextureSize
         setRenderer(renderer)
         renderMode = RENDERMODE_CONTINUOUSLY
     }
@@ -91,9 +93,9 @@ internal class OpenGLView(
         private var delayPerFrame = 40
 
         init {
-            hasPalette = context.hasGLPalette()
+            hasPalette = context.emulatorMediator.emulatorView.hasGLPalette()
             this.context = context.application
-            textureBounds = context.getTextureBounds(emulator)
+            textureBounds = context.emulatorMediator.emulatorView.getTextureBounds(emulator)
             NLog.i("SHADER", "shader: $shader")
             fragmentShaderCode = shader
         }

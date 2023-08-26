@@ -45,7 +45,7 @@ class ZapperGun(private var context: Context?, private var emulatorActivity: Emu
                 }
                 if (event.action == MotionEvent.ACTION_DOWN) {
                     if (!inited) {
-                        val viewPort = emulatorActivity!!.viewPort ?: return true
+                        val viewPort = emulatorActivity?.emulatorMediator?.emulatorView?.viewPort ?: return true
                         minX = viewPort.x.toFloat()
                         minY = viewPort.y.toFloat()
                         maxX = minX + viewPort.width - 1
