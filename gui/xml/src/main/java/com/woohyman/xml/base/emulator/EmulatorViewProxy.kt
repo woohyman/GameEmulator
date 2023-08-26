@@ -29,7 +29,7 @@ class EmulatorViewProxy(
     val emulatorView: EmulatorView by lazy {
         val paddingLeft = 0
         var paddingTop = 0
-        if (activity.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+        if (Utils.getApp().resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
             paddingTop = activity.resources.getDimensionPixelSize(R.dimen.top_panel_touchcontroler_height)
         }
         val shader = activity.fragmentShader

@@ -1,6 +1,7 @@
 package com.woohyman.xml.base.emulator
 
 import android.app.Activity
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
@@ -13,8 +14,6 @@ import com.blankj.utilcode.constant.PermissionConstants
 import com.blankj.utilcode.util.PermissionUtils
 import com.blankj.utilcode.util.Utils
 import com.woohyman.keyboard.base.EmulatorHolder
-import com.woohyman.keyboard.data.database.GameDescription
-import com.woohyman.keyboard.emulator.Emulator
 import com.woohyman.keyboard.emulator.EmulatorException
 import com.woohyman.keyboard.utils.DialogUtils
 import com.woohyman.keyboard.utils.EmuUtils
@@ -30,16 +29,15 @@ import com.woohyman.xml.ui.preferences.GamePreferenceActivity
 import com.woohyman.xml.ui.preferences.GamePreferenceFragment
 import com.woohyman.xml.ui.preferences.GeneralPreferenceActivity
 import com.woohyman.xml.ui.preferences.GeneralPreferenceFragment
+import dagger.hilt.android.qualifiers.ActivityContext
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import javax.inject.Inject
 
-class GameMenuProxy(
+class GameMenuProxy constructor(
     private val activity: EmulatorActivity,
-    private val emulatorInstance: Emulator,
-    private val game: GameDescription,
 ) : GameMenu.OnGameMenuListener, DefaultLifecycleObserver {
-
     var runTimeMachine = false
 
     val gameMenu: GameMenu by lazy {
@@ -82,7 +80,7 @@ class GameMenuProxy(
                 return
             }
             activity.emulatorMediator.emulatorManagerProxy.resumeEmulation()
-            activity.emulatorMediator.gameControlProxy.onGameStarted(game)
+            activity.emulatorMediator.gameControlProxy.onGameStarted(activity.game)
             activity.emulatorMediator.gameControlProxy.onResume()
         } catch (e: EmulatorException) {
             activity.handleException(e)
@@ -103,7 +101,7 @@ class GameMenuProxy(
 
                 R.string.game_menu_save -> {
                     val i = Intent(activity, SlotSelectionActivity::class.java)
-                    i.putExtra(EmulatorActivity.EXTRA_GAME, game)
+                    i.putExtra(EmulatorActivity.EXTRA_GAME, activity.game)
                     i.putExtra(Constants.EXTRA_BASE_DIRECTORY, activity.emulatorMediator.baseDir)
                     i.putExtra(
                         Constants.EXTRA_DIALOG_TYPE_INT,
@@ -114,7 +112,7 @@ class GameMenuProxy(
 
                 R.string.game_menu_load -> {
                     val i = Intent(activity, SlotSelectionActivity::class.java)
-                    i.putExtra(EmulatorActivity.EXTRA_GAME, game)
+                    i.putExtra(EmulatorActivity.EXTRA_GAME, activity.game)
                     i.putExtra(Constants.EXTRA_BASE_DIRECTORY, activity.emulatorMediator.baseDir)
                     i.putExtra(
                         Constants.EXTRA_DIALOG_TYPE_INT,
@@ -125,7 +123,7 @@ class GameMenuProxy(
 
                 R.string.game_menu_cheats -> {
                     val i = Intent(activity, CheatsActivity::class.java)
-                    i.putExtra(CheatsActivity.EXTRA_IN_GAME_HASH, game.checksum)
+                    i.putExtra(CheatsActivity.EXTRA_IN_GAME_HASH, activity.game.checksum)
                     freeStartActivity(activity, i)
                 }
 
@@ -136,7 +134,7 @@ class GameMenuProxy(
                         PreferenceActivity.EXTRA_SHOW_FRAGMENT,
                         GamePreferenceFragment::class.java.name
                     )
-                    i.putExtra(GamePreferenceActivity.EXTRA_GAME, game)
+                    i.putExtra(GamePreferenceActivity.EXTRA_GAME, activity.game)
                     activity.startActivity(i)
                 }
 
@@ -163,7 +161,7 @@ class GameMenuProxy(
         NLog.i(EmulatorActivity.TAG, "on game menu open")
         try {
             activity.emulatorMediator.emulatorManagerProxy.pauseEmulation()
-            activity.emulatorMediator.gameControlProxy.onGamePaused(game)
+            activity.emulatorMediator.gameControlProxy.onGamePaused(activity.game)
             activity.emulatorMediator.gameControlProxy.onPause()
         } catch (e: EmulatorException) {
             activity.handleException(e)
@@ -182,7 +180,7 @@ class GameMenuProxy(
     }
 
     private fun saveGameScreenshot() {
-        val name = game.cleanName + "-screenshot"
+        val name = activity.game.cleanName + "-screenshot"
         val dir = File(
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
             EmulatorHolder.info?.name?.replace(' ', '_').toString()
@@ -199,7 +197,7 @@ class GameMenuProxy(
         }
         try {
             val fos = FileOutputStream(to)
-            EmuUtils.createScreenshotBitmap(activity, game)
+            EmuUtils.createScreenshotBitmap(activity, activity.game)
                 .compress(Bitmap.CompressFormat.PNG, 90, fos)
             fos.close()
             Toast.makeText(

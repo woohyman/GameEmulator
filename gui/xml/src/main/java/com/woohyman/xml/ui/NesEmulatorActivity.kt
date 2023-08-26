@@ -3,10 +3,10 @@ package com.woohyman.xml.ui
 import android.app.ActivityManager
 import android.content.Intent
 import android.os.Bundle
-import com.woohyman.xml.base.emulator.EmulatorActivity
-import com.woohyman.keyboard.emulator.Emulator
 import com.woohyman.keyboard.emulator.NesEmulator
 import com.woohyman.keyboard.utils.PreferenceUtil.getFragmentShader
+import com.woohyman.xml.base.emulator.EmulatorActivity
+import com.woohyman.xml.base.emulator.EmulatorMediator
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -14,7 +14,7 @@ import javax.inject.Inject
 class NesEmulatorActivity : EmulatorActivity() {
 
     @Inject
-    lateinit var nesEmulator: NesEmulator
+    override lateinit var emulatorInstance: NesEmulator
 
     private var isLastOfStack = false
 
@@ -46,9 +46,6 @@ class NesEmulatorActivity : EmulatorActivity() {
             + "		 vec2 curPt = vec2(x, 0);"
             + "      gl_FragColor.rgb = texture2D(s_palette, curPt).rgb;"
             + "}")
-
-    override val emulatorInstance: Emulator
-        get() = nesEmulator
 
     override val fragmentShader: String
         get() = kotlin.run {

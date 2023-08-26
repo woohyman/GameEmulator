@@ -1,5 +1,6 @@
 package com.woohyman.xml.base.emulator
 
+import android.content.Context
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
@@ -19,11 +20,11 @@ import com.woohyman.xml.controllers.KeyboardController
 import com.woohyman.xml.controllers.QuickSaveController
 import com.woohyman.xml.controllers.TouchController
 import com.woohyman.xml.controllers.ZapperGun
+import dagger.hilt.android.qualifiers.ActivityContext
+import javax.inject.Inject
 
-class GameControlProxy(
+class GameControlProxy @Inject constructor(
     private val activity: EmulatorActivity,
-    private val emulatorInstance: Emulator,
-    private val game: GameDescription,
 ) : DefaultLifecycleObserver, EmulatorController {
 
     private var controllers: MutableList<EmulatorController> = mutableListOf()
@@ -40,7 +41,7 @@ class GameControlProxy(
     }
 
     private val dynamic: DynamicDPad by lazy {
-        touchController.connectToEmulator(0, emulatorInstance)
+        touchController.connectToEmulator(0, activity.emulatorInstance)
         DynamicDPad(activity, activity.windowManager.defaultDisplay, touchController)
     }
 
@@ -53,15 +54,15 @@ class GameControlProxy(
         controllers.add(touchController)
         controllers.add(dynamic)
 
-        dynamic.connectToEmulator(0, emulatorInstance)
+        dynamic.connectToEmulator(0, activity.emulatorInstance)
         val qsc = QuickSaveController(activity, touchController)
         controllers.add(qsc)
 
         val zapper = ZapperGun(Utils.getApp(), activity)
-        zapper.connectToEmulator(1, emulatorInstance)
+        zapper.connectToEmulator(1, activity.emulatorInstance)
         controllers.add(zapper)
 
-        val kc = KeyboardController(emulatorInstance, Utils.getApp(), game.checksum, activity)
+        val kc = KeyboardController(activity.emulatorInstance, Utils.getApp(), activity.game.checksum, activity)
         controllers.add(kc)
 
 
@@ -96,9 +97,9 @@ class GameControlProxy(
         }
         try {
             for (controller in controllers) {
-                controller.onGameStarted(game)
+                controller.onGameStarted(activity.game)
             }
-        }catch (e: EmulatorException) {
+        } catch (e: EmulatorException) {
             activity.handleException(e)
         }
 
@@ -108,7 +109,7 @@ class GameControlProxy(
         super.onPause(owner)
         for (controller in controllers) {
             controller.onPause()
-            controller.onGamePaused(game)
+            controller.onGamePaused(activity.game)
         }
     }
 

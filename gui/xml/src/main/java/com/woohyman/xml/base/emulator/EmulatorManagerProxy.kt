@@ -5,21 +5,15 @@ import android.widget.Toast
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.woohyman.keyboard.base.Benchmark
-import com.woohyman.keyboard.base.EmulatorUtils
 import com.woohyman.keyboard.base.Manager
 import com.woohyman.keyboard.base.SlotUtils
-import com.woohyman.keyboard.data.database.GameDescription
-import com.woohyman.keyboard.emulator.Emulator
 import com.woohyman.keyboard.emulator.EmulatorException
 import com.woohyman.keyboard.utils.PreferenceUtil
 import com.woohyman.xml.R
 
-class EmulatorManagerProxy(
+class EmulatorManagerProxy constructor(
     private val activity: EmulatorActivity,
-    private val emulatorInstance: Emulator,
-    private val game: GameDescription,
-) : DefaultLifecycleObserver, Manager(emulatorInstance, activity) {
-
+) : DefaultLifecycleObserver, Manager(activity.emulatorInstance, activity) {
     private var isFF = false
     private var isToggleFF = false
     private var isFFPressed = false
@@ -87,12 +81,16 @@ class EmulatorManagerProxy(
         isFFPressed = false
 
         try {
-            startGame(game)
+            startGame(activity.game)
 
             if (activity.slotToRun != -1) {
                 loadState(activity.slotToRun)
             } else {
-                if (SlotUtils.autoSaveExists(activity.emulatorMediator.baseDir, game.checksum)) {
+                if (SlotUtils.autoSaveExists(
+                        activity.emulatorMediator.baseDir,
+                        activity.game.checksum
+                    )
+                ) {
                     loadState(0)
                 }
             }
@@ -136,7 +134,7 @@ class EmulatorManagerProxy(
     fun enableCheats() {
         var numCheats = 0
         try {
-            numCheats = enableCheats(activity, game)
+            numCheats = enableCheats(activity, activity.game)
         } catch (e: EmulatorException) {
             Toast.makeText(
                 activity, e.getMessage(activity),

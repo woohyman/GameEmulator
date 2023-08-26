@@ -1,41 +1,27 @@
 package com.woohyman.xml.base.emulator
 
 import android.preference.PreferenceManager
-import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.blankj.utilcode.util.Utils
-import com.woohyman.keyboard.base.EmulatorUtils
 import com.woohyman.keyboard.emulator.EmulatorException
 import com.woohyman.keyboard.utils.NLog
 import com.woohyman.keyboard.utils.PreferenceUtil
-import com.woohyman.xml.ui.menu.GameMenu
 import kotlinx.atomicfu.atomic
 import kotlinx.atomicfu.getAndUpdate
 
 class EmulatorMediator constructor(
-    private val activity: EmulatorActivity
-) : DefaultLifecycleObserver {
+    private val activity: EmulatorActivity,
+) : IEmulatorMediator {
+
+    val gameMenuProxy: GameMenuProxy = GameMenuProxy(activity)
+    val emulatorManagerProxy: EmulatorManagerProxy = EmulatorManagerProxy(activity)
+    val gameControlProxy: GameControlProxy = GameControlProxy(activity)
+    val emulatorView = EmulatorViewProxy(activity)
+
     val maxPRC = 10
     var autoHide = false
     var warningShowing = atomic(false)
-    var exceptionOccurred = false
     var baseDir: String? = null
-
-    val gameMenuProxy by lazy {
-        GameMenuProxy(activity, activity.emulatorInstance, activity.game)
-    }
-
-    val gameControlProxy by lazy {
-        GameControlProxy(activity, activity.emulatorInstance, activity.game)
-    }
-
-    val emulatorManagerProxy by lazy {
-        EmulatorManagerProxy(activity, activity.emulatorInstance, activity.game)
-    }
-
-    val emulatorView by lazy {
-        EmulatorViewProxy(activity)
-    }
 
     init {
         activity.lifecycle.addObserver(this)

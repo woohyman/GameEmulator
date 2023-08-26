@@ -14,7 +14,6 @@ import android.view.WindowManager
 import androidx.annotation.MainThread
 import androidx.appcompat.app.AppCompatActivity
 import com.woohyman.keyboard.base.EmulatorUtils
-import com.woohyman.keyboard.base.ViewPort
 import com.woohyman.keyboard.data.database.GameDescription
 import com.woohyman.keyboard.emulator.Emulator
 import com.woohyman.keyboard.emulator.EmulatorException
@@ -30,12 +29,15 @@ import com.woohyman.xml.ui.timetravel.TimeTravelDialog
 
 abstract class EmulatorActivity : AppCompatActivity(), OnNotRespondingListener {
 
-    var isRestarting = false
-    var canRestart = false
+    abstract val emulatorInstance: Emulator
+    abstract val fragmentShader: String
 
-    val emulatorMediator by lazy {
+    val emulatorMediator: EmulatorMediator by lazy {
         EmulatorMediator(this)
     }
+
+    var isRestarting = false
+    var canRestart = false
 
     val dialog: TimeTravelDialog by lazy {
         TimeTravelDialog(this, emulatorMediator.emulatorManagerProxy, game)
@@ -48,9 +50,6 @@ abstract class EmulatorActivity : AppCompatActivity(), OnNotRespondingListener {
     private var exceptionOccurred = false
     var slotToRun: Int? = null
     var slotToSave: Int? = null
-
-    abstract val emulatorInstance: Emulator
-    abstract val fragmentShader: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
