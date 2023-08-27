@@ -7,9 +7,8 @@ import com.woohyman.xml.R
 
 class MultitouchTwoButton : MultitouchImageButton {
     var firstBtnRID = -1
-        protected set
     var secondBtnRID = -1
-        protected set
+
     private val holder = ViewHolder()
 
     constructor(context: Context, attrs: AttributeSet?, defStyle: Int) : super(
@@ -46,8 +45,8 @@ class MultitouchTwoButton : MultitouchImageButton {
         if (holder.firstButton == null) {
             initHolder()
         }
-        holder.firstButton!!.onTouchEnter(event)
-        holder.secondButton!!.onTouchEnter(event)
+        holder.firstButton?.onTouchEnter(event)
+        holder.secondButton?.onTouchEnter(event)
     }
 
     override fun onTouchExit(event: MotionEvent?) {
@@ -55,8 +54,8 @@ class MultitouchTwoButton : MultitouchImageButton {
         if (holder.firstButton == null) {
             initHolder()
         }
-        holder.firstButton!!.onTouchExit(event)
-        holder.secondButton!!.onTouchExit(event)
+        holder.firstButton?.onTouchExit(event)
+        holder.secondButton?.onTouchExit(event)
     }
 
     private fun initHolder() {
@@ -66,8 +65,8 @@ class MultitouchTwoButton : MultitouchImageButton {
 
     override fun requestRepaint() {
         super.requestRepaint()
-        holder.firstButton!!.requestRepaint()
-        holder.secondButton!!.requestRepaint()
+        holder.firstButton?.requestRepaint()
+        holder.secondButton?.requestRepaint()
     }
 
     private class ViewHolder {

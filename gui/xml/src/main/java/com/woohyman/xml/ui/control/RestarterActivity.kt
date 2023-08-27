@@ -10,7 +10,7 @@ import android.widget.TextView
 import java.util.concurrent.atomic.AtomicBoolean
 
 class RestarterActivity : Activity() {
-    var thread: RestarterThread? = null
+    private var thread: RestarterThread? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val tv = TextView(this)
@@ -20,8 +20,11 @@ class RestarterActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
-        val pid = intent.extras!!.getInt(EXTRA_PID)
-        val className = intent.extras!!.getString(EXTRA_CLASS)
+        val pid = intent.extras?.getInt(EXTRA_PID)
+        val className = intent.extras?.getString(EXTRA_CLASS)
+        if (pid == null || className == null) {
+            return
+        }
         var clazz: Class<*>? = null
         try {
             clazz = Class.forName(className)
@@ -32,16 +35,14 @@ class RestarterActivity : Activity() {
             restartIntent = Intent(this, clazz)
             restartIntent.putExtras(intent)
         }
-        thread = RestarterThread(pid, restartIntent)
-        thread!!.start()
+        thread = RestarterThread(pid, restartIntent).apply {
+            start()
+        }
     }
 
-    override fun onBackPressed() {}
     override fun onPause() {
         super.onPause()
-        if (thread != null) {
-            thread!!.cancel()
-        }
+        thread?.cancel()
         finish()
     }
 
@@ -61,21 +62,18 @@ class RestarterActivity : Activity() {
                 .getSystemService(ACTIVITY_SERVICE) as ActivityManager
             var killed = false
             while (!killed) {
-                var appProcesses: List<RunningAppProcessInfo>
-                if (activityManager != null) {
-                    appProcesses = activityManager.runningAppProcesses
-                    killed = true
-                    for (info in appProcesses) {
-                        if (info.pid == pid) {
-                            killed = false
-                            break
-                        }
+                val appProcesses: List<RunningAppProcessInfo> = activityManager.runningAppProcesses
+                killed = true
+                for (info in appProcesses) {
+                    if (info.pid == pid) {
+                        killed = false
+                        break
                     }
-                    if (!killed) {
-                        try {
-                            sleep(30)
-                        } catch (ignored: Exception) {
-                        }
+                }
+                if (!killed) {
+                    try {
+                        sleep(30)
+                    } catch (ignored: Exception) {
                     }
                 }
             }

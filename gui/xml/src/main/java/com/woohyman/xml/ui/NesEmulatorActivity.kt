@@ -1,12 +1,12 @@
 package com.woohyman.xml.ui
 
-import android.app.ActivityManager
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.addCallback
+import com.blankj.utilcode.util.ActivityUtils
 import com.woohyman.keyboard.emulator.NesEmulator
 import com.woohyman.keyboard.utils.PreferenceUtil.getFragmentShader
 import com.woohyman.xml.base.emulator.EmulatorActivity
-import com.woohyman.xml.base.emulator.EmulatorMediator
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -18,12 +18,7 @@ class NesEmulatorActivity : EmulatorActivity() {
 
     private var isLastOfStack = false
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        isLastOfStack = checkLastStack()
-    }
-
-    var shader1 = ("precision mediump float;"
+    private var shader1 = ("precision mediump float;"
             + "varying vec2 v_texCoord;"
             + "uniform sampler2D s_texture;"
             + "uniform sampler2D s_palette; "
@@ -35,7 +30,8 @@ class NesEmulatorActivity : EmulatorActivity() {
             + "      vec2 curPt = vec2(x, 0);"
             + "      gl_FragColor.rgb = texture2D(s_palette, curPt).rgb;"
             + "}")
-    var shader2 = ("precision mediump float;"
+
+    private var shader2 = ("precision mediump float;"
             + "varying vec2 v_texCoord;"
             + "uniform sampler2D s_texture;"
             + "uniform sampler2D s_palette; "
@@ -55,17 +51,18 @@ class NesEmulatorActivity : EmulatorActivity() {
             } else shader1
         }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
-        if (isLastOfStack) {
-            val intent = Intent(this, NesGalleryActivity::class.java)
-            startActivity(intent)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        isLastOfStack = checkLastStack()
+        onBackPressedDispatcher.addCallback {
+            if (isLastOfStack) {
+                val intent = Intent(this@NesEmulatorActivity, NesGalleryActivity::class.java)
+                startActivity(intent)
+            }
         }
     }
 
     private fun checkLastStack(): Boolean {
-        val mngr = getSystemService(ACTIVITY_SERVICE) as ActivityManager
-        val taskList = mngr.getRunningTasks(10)
-        return taskList[0].numActivities == 1 && taskList[0].topActivity!!.className == this.javaClass.name
+        return ActivityUtils.getTopActivity().componentName.className == this.javaClass.name
     }
 }

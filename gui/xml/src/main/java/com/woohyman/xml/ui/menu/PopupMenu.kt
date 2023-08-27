@@ -20,38 +20,44 @@ import android.widget.ListView
 import android.widget.PopupWindow
 import android.widget.TextView
 import com.woohyman.xml.R
+import com.woohyman.xml.databinding.PopupMenuBinding
 
-class PopupMenu @SuppressLint("ClickableViewAccessibility") constructor(private val mContext: Context) {
+class PopupMenu @SuppressLint("ClickableViewAccessibility") constructor(
+    private val mContext: Context
+) {
     var font: Typeface? = null
-    private val mInflater: LayoutInflater
-    private val mWindowManager: WindowManager
-    private val mPopupWindow: PopupWindow?
-    private var mContentView: View? = null
-    private var mItemsView: ListView? = null
-    private var mHeaderTitleView: TextView? = null
+    private val mInflater: LayoutInflater = mContext
+        .getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+
+    private val mWindowManager: WindowManager = mContext
+        .getSystemService(Context.WINDOW_SERVICE) as WindowManager
+
+    private val mPopupWindow by lazy {
+        PopupWindow(mContext).also {
+            it.setTouchInterceptor(OnTouchListener { v: View, event: MotionEvent ->
+                v.performClick()
+                if (event.action == MotionEvent.ACTION_OUTSIDE) {
+                    it.dismiss()
+                    return@OnTouchListener true
+                }
+                false
+            })
+        }
+    }
+
     private var mListener: OnItemSelectedListener? = null
-    private val mItems: MutableList<MenuItem>
+    private val mItems: MutableList<MenuItem> = ArrayList()
     private var mWidth = 240
     private val mScale: Float
 
+    private var binding:PopupMenuBinding
+
     init {
-        mInflater = mContext
-            .getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        mWindowManager = mContext
-            .getSystemService(Context.WINDOW_SERVICE) as WindowManager
         val metrics = DisplayMetrics()
         mWindowManager.defaultDisplay.getMetrics(metrics)
         mScale = metrics.scaledDensity
-        mItems = ArrayList()
-        mPopupWindow = PopupWindow(mContext)
-        mPopupWindow.setTouchInterceptor(OnTouchListener { v: View?, event: MotionEvent ->
-            if (event.action == MotionEvent.ACTION_OUTSIDE) {
-                mPopupWindow.dismiss()
-                return@OnTouchListener true
-            }
-            false
-        })
-        setContentView(mInflater.inflate(R.layout.popup_menu, null))
+        binding = PopupMenuBinding.bind(mInflater.inflate(R.layout.popup_menu, null))
+        setContentView(binding.root)
     }
 
     /**
@@ -60,10 +66,7 @@ class PopupMenu @SuppressLint("ClickableViewAccessibility") constructor(private 
      * @param contentView
      */
     private fun setContentView(contentView: View) {
-        mContentView = contentView
-        mItemsView = contentView.findViewById(R.id.items)
-        mHeaderTitleView = contentView.findViewById(R.id.header_title)
-        mPopupWindow!!.contentView = contentView
+        mPopupWindow.contentView = contentView
     }
 
     fun add(itemId: Int, titleRes: Int): MenuItem {
@@ -73,6 +76,7 @@ class PopupMenu @SuppressLint("ClickableViewAccessibility") constructor(private 
         mItems.add(item)
         return item
     }
+
     /**
      * Show popup menu.
      *
@@ -86,17 +90,15 @@ class PopupMenu @SuppressLint("ClickableViewAccessibility") constructor(private 
         check(mItems.size != 0) { "PopupMenu#add was not called with a menu item to display." }
         preShow()
         val adapter = MenuItemAdapter(mContext, mItems)
-        mItemsView!!.adapter = adapter
-        mItemsView!!.onItemClickListener =
+        binding.items.adapter = adapter
+        binding.items.onItemClickListener =
             AdapterView.OnItemClickListener { parent: AdapterView<*>?, view: View?, position: Int, id: Long ->
-                if (mListener != null) {
-                    mListener!!.onItemSelected(mItems[position])
-                }
-                mPopupWindow!!.dismiss()
+                mListener?.onItemSelected(mItems[position])
+                mPopupWindow.dismiss()
             }
         if (anchor == null) {
             val parent = (mContext as Activity).window.decorView
-            mPopupWindow!!.showAtLocation(parent, Gravity.CENTER, 0, 0)
+            mPopupWindow.showAtLocation(parent, Gravity.CENTER, 0, 0)
             return
         }
         val xPos: Int
@@ -107,18 +109,18 @@ class PopupMenu @SuppressLint("ClickableViewAccessibility") constructor(private 
             location[0], location[1], location[0]
                     + anchor.width, location[1] + anchor.height
         )
-        mContentView!!.layoutParams = ViewGroup.LayoutParams(
+        binding.root.layoutParams = ViewGroup.LayoutParams(
             ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
         )
-        mContentView!!.measure(
+        binding.root.measure(
             ViewGroup.LayoutParams.WRAP_CONTENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
-        val rootHeight = mContentView!!.measuredHeight
+        val rootHeight = binding.root.measuredHeight
         val screenHeight = mWindowManager.defaultDisplay.height
 
         // Set x-coordinate to display the popup menu
-        xPos = anchorRect.centerX() - mPopupWindow!!.width / 2
+        xPos = anchorRect.centerX() - mPopupWindow.width / 2
         val dyTop = anchorRect.top
         val dyBottom = screenHeight + rootHeight
         val onTop = dyTop > dyBottom
@@ -137,9 +139,10 @@ class PopupMenu @SuppressLint("ClickableViewAccessibility") constructor(private 
         mPopupWindow.showAtLocation(parent, Gravity.NO_GRAVITY, xPos, yPos)
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     private fun preShow() {
         val width = (mWidth * mScale).toInt()
-        mPopupWindow!!.width = width
+        mPopupWindow.width = width
         mPopupWindow.height = WindowManager.LayoutParams.WRAP_CONTENT
         mPopupWindow.isTouchable = true
         mPopupWindow.isFocusable = true
@@ -156,7 +159,7 @@ class PopupMenu @SuppressLint("ClickableViewAccessibility") constructor(private 
      * Dismiss the popup menu.
      */
     fun dismiss() {
-        if (mPopupWindow != null && mPopupWindow.isShowing) {
+        if (mPopupWindow.isShowing) {
             mPopupWindow.dismiss()
         }
     }
@@ -167,10 +170,10 @@ class PopupMenu @SuppressLint("ClickableViewAccessibility") constructor(private 
      * @param title
      */
     fun setHeaderTitle(title: CharSequence?) {
-        mHeaderTitleView!!.text = title
-        mHeaderTitleView!!.visibility = View.VISIBLE
-        mHeaderTitleView!!.requestFocus()
-        mHeaderTitleView!!.typeface = font
+        binding.headerTitle.text = title
+        binding.headerTitle.visibility = View.VISIBLE
+        binding.headerTitle.requestFocus()
+        binding.headerTitle.typeface = font
     }
 
     /**

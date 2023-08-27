@@ -7,23 +7,22 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
-import android.widget.Button
-import android.widget.EditText
 import com.woohyman.keyboard.base.EmulatorHolder.info
 import com.woohyman.keyboard.cheats.Cheat
 import com.woohyman.xml.R
 import com.woohyman.xml.base.BaseActivity
 import com.woohyman.xml.databinding.ActivityCheatsBinding
+import com.woohyman.xml.databinding.DialogNewCheatBinding
 import java.util.Locale
 
 class CheatsActivity : BaseActivity<ActivityCheatsBinding>(
     ActivityCheatsBinding::inflate
 ) {
-    var save: Button? = null
-    private var adapter: CheatsListAdapter? = null
+    private val adapter: CheatsListAdapter by lazy {
+        CheatsListAdapter(this, cheats)
+    }
     private var gameHash: String? = null
-    private var cheats: ArrayList<Cheat>? = null
+    private var cheats: ArrayList<Cheat> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +30,6 @@ class CheatsActivity : BaseActivity<ActivityCheatsBinding>(
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         gameHash = intent.getStringExtra(EXTRA_IN_GAME_HASH)
         cheats = Cheat.getAllCheats(this, gameHash)
-        adapter = CheatsListAdapter(this, cheats)
         binding.actCheatsList.adapter = adapter
     }
 
@@ -51,31 +49,21 @@ class CheatsActivity : BaseActivity<ActivityCheatsBinding>(
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onResume() {
-        super.onResume()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-    }
-
     private fun openCheatDetailDialog(idx: Int) {
         val dialog = Dialog(this, R.style.DialogTheme)
         val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val content = inflater.inflate(R.layout.dialog_new_cheat, null)
+        val binding = DialogNewCheatBinding.bind(content)
         dialog.setContentView(content)
-        val chars = content.findViewById<EditText>(R.id.dialog_new_cheat_chars)
-        val desc = content.findViewById<EditText>(R.id.dialog_new_cheat_desc)
-        save = content.findViewById(R.id.dialog_new_cheat_save)
         if (idx >= 0) {
-            val cheat = cheats!![idx]
-            chars.setText(cheat.chars)
-            desc.setText(cheat.desc)
+            val cheat = cheats[idx]
+            binding.dialogNewCheatChars.setText(cheat.chars)
+            binding.dialogNewCheatDesc.setText(cheat.desc)
         }
-        if (chars.text.toString() == "") {
-            save!!.setEnabled(false)
+        if (binding.dialogNewCheatChars.text.toString() == "") {
+            binding.dialogNewCheatSave.isEnabled = false
         }
-        chars.addTextChangedListener(object : TextWatcher {
+        binding.dialogNewCheatChars.addTextChangedListener(object : TextWatcher {
             override fun onTextChanged(arg0: CharSequence, arg1: Int, arg2: Int, arg3: Int) {}
             override fun beforeTextChanged(arg0: CharSequence, arg1: Int, arg2: Int, arg3: Int) {}
             override fun afterTextChanged(arg0: Editable) {
@@ -83,31 +71,37 @@ class CheatsActivity : BaseActivity<ActivityCheatsBinding>(
                 val locale = Locale.getDefault()
                 if (s != s.uppercase(locale)) {
                     s = s.uppercase(locale)
-                    chars.setSelection(s.length)
+                    binding.dialogNewCheatChars.setSelection(s.length)
                 }
                 var newText = s.replace("\\p{InCombiningDiacriticalMarks}+".toRegex(), "")
                 if (newText != s) {
-                    chars.setText(newText)
-                    chars.setSelection(newText.length)
+                    binding.dialogNewCheatChars.setText(newText)
+                    binding.dialogNewCheatChars.setSelection(newText.length)
                 }
                 s = newText
                 newText = s.replace(info!!.cheatInvalidCharsRegex!!.toRegex(), "")
                 if (newText != s) {
-                    chars.setText(newText)
-                    chars.setSelection(newText.length)
+                    binding.dialogNewCheatChars.setText(newText)
+                    binding.dialogNewCheatChars.setSelection(newText.length)
                 }
-                save?.isEnabled = newText != ""
+                binding.dialogNewCheatSave.isEnabled = newText != ""
             }
         })
-        save?.setOnClickListener { v: View? ->
+        binding.dialogNewCheatSave.setOnClickListener {
             if (idx == -1) {
-                cheats!!.add(Cheat(chars.text.toString(), desc.text.toString(), true))
+                cheats.add(
+                    Cheat(
+                        binding.dialogNewCheatChars.text.toString(),
+                        binding.dialogNewCheatDesc.text.toString(),
+                        true
+                    )
+                )
             } else {
-                val cheat = cheats!![idx]
-                cheat.chars = chars.text.toString()
-                cheat.desc = desc.text.toString()
+                val cheat = cheats[idx]
+                cheat.chars = binding.dialogNewCheatChars.text.toString()
+                cheat.desc = binding.dialogNewCheatDesc.text.toString()
             }
-            adapter!!.notifyDataSetChanged()
+            adapter.notifyDataSetChanged()
             Cheat.saveCheats(this, gameHash, cheats)
             dialog.cancel()
         }
@@ -115,8 +109,8 @@ class CheatsActivity : BaseActivity<ActivityCheatsBinding>(
     }
 
     fun removeCheat(idx: Int) {
-        cheats?.removeAt(idx)
-        adapter?.notifyDataSetChanged()
+        cheats.removeAt(idx)
+        adapter.notifyDataSetChanged()
         Cheat.saveCheats(this, gameHash, cheats)
     }
 

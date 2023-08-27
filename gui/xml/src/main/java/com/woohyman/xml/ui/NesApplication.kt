@@ -9,6 +9,7 @@ import javax.inject.Inject
 
 @HiltAndroidApp
 class NesApplication : BaseApplication() {
+
     @Inject
     lateinit var nesEmulator: NesEmulator
 

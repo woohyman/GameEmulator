@@ -129,10 +129,10 @@ internal class OpenGLView(
             val vp = loadOrComputeViewPort(
                 Utils.getApp(), emulator, width, height,
                 paddingLeft, paddingTop, false
-            )
+            )?:return
             viewPort = vp
             Matrix.orthoM(
-                projMatrix, 0, -vp!!.width / 2f, +vp.width / 2f, -vp.height / 2f,
+                projMatrix, 0, -vp.width / 2f, +vp.width / 2f, -vp.height / 2f,
                 +vp.height / 2f, -2f, 2f
             )
             val nvpy = height - vp.y - vp.height

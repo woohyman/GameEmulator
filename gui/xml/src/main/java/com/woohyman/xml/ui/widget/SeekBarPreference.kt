@@ -18,14 +18,14 @@ import android.widget.TextView
 open class SeekBarPreference(private val mContext: Context, attrs: AttributeSet) : DialogPreference(
     mContext, attrs
 ), OnSeekBarChangeListener {
-    var hack = false
+    private var hack = false
     private var mSeekBar: SeekBar? = null
     private var mSplashText: TextView? = null
     private var mValueText: TextView? = null
     private val mDialogMessage: String?
     private var mSuffix: String?
     private val mDefault: Int
-    var max: Int
+    private var max: Int
     private var mValue = 0
     private val mShowText = true
 
@@ -41,30 +41,37 @@ open class SeekBarPreference(private val mContext: Context, attrs: AttributeSet)
     }
 
     override fun onCreateDialogView(): View {
-        val params: LinearLayout.LayoutParams
         val layout = LinearLayout(mContext)
         layout.orientation = LinearLayout.VERTICAL
         layout.setPadding(6, 6, 6, 6)
-        mSplashText = TextView(mContext)
-        if (mDialogMessage != null) mSplashText!!.text = mDialogMessage
+
+        mSplashText = TextView(mContext).also {
+            if (mDialogMessage != null) it.text = mDialogMessage
+        }
+
         layout.addView(mSplashText)
-        mValueText = TextView(mContext)
-        mValueText!!.gravity = Gravity.CENTER_HORIZONTAL
-        mValueText!!.textSize = 32f
-        params = LinearLayout.LayoutParams(
+        mValueText = TextView(mContext).also {
+            it.gravity = Gravity.CENTER_HORIZONTAL
+            it.textSize = 32f
+        }
+
+        val params: LinearLayout.LayoutParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
         )
         layout.addView(mValueText, params)
-        mSeekBar = SeekBar(mContext)
-        mSeekBar!!.setOnSeekBarChangeListener(this)
-        layout.addView(
-            mSeekBar, LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
+
+        mSeekBar = SeekBar(mContext).also {
+            it.setOnSeekBarChangeListener(this)
+            layout.addView(
+                mSeekBar, LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
+                )
             )
-        )
-        if (shouldPersist()) mValue = getPersistedInt(mDefault)
-        mSeekBar!!.max = max
-        mSeekBar!!.progress = mValue
+            if (shouldPersist()) mValue = getPersistedInt(mDefault)
+            it.max = max
+            it.progress = mValue
+        }
+
         return layout
     }
 

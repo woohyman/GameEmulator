@@ -133,7 +133,7 @@ class MultitouchLayer : RelativeLayout, OnTouchListener {
     }
 
     private fun remapOldMTLprefToNew(pref: SharedPreferences, prefMap: Map<String, *>) {
-        val oldIdsToNewMap: HashMap<Int, Int>? = null
+        val oldIdsToNewMap: HashMap<Int, Int> = HashMap()
         val editor = pref.edit()
         val keysToRemove = HashSet<String>()
         var wrongFormat = false
@@ -141,7 +141,7 @@ class MultitouchLayer : RelativeLayout, OnTouchListener {
             val value = value1 as String
             keysToRemove.add(key)
             val oldBtnId = key.toInt()
-            val newBtnId = oldIdsToNewMap!![oldBtnId]
+            val newBtnId = oldIdsToNewMap[oldBtnId]
             val newKey = btnIdMap.indexOf(newBtnId)
             if (newBtnId == 0 || newKey == -1) {
                 e(TAG, "oldBtnId:$oldBtnId newBtnId:$newBtnId newKey:$newKey")
@@ -272,7 +272,7 @@ class MultitouchLayer : RelativeLayout, OnTouchListener {
                 val btnH = btn.measuredHeight
                 val btnX = getRelativeLeft(btn, this)
                 val btnY = getRelativeTop(btn, this)
-                boundingBoxs!![idx] = Rect(btnX, btnY, btnX + btnW, btnY + btnH)
+                boundingBoxs[idx] = Rect(btnX, btnY, btnX + btnW, btnY + btnH)
                 r.offsetTo(btnX, btnY)
                 if (btnW > 0 && btnH > 0) {
                     val buttonBitmap = Bitmap.createBitmap(btnW, btnH, Bitmap.Config.ARGB_8888)
@@ -307,7 +307,7 @@ class MultitouchLayer : RelativeLayout, OnTouchListener {
             val parent = touchLayer!!.parent as ViewGroup
             parent.removeView(touchLayer)
         }
-        touchLayer!!.setOnTouchListener(this)
+        touchLayer?.setOnTouchListener(this)
         removeAllViews()
         addView(touchLayer, LinearLayout.LayoutParams.MATCH_PARENT, measuredHeight)
         val hasSelect = info!!.keyMapping[EmulatorController.KEY_SELECT] != -1
@@ -352,7 +352,7 @@ class MultitouchLayer : RelativeLayout, OnTouchListener {
             var idx = 0
             for (btn in btns) {
                 if (btn.visibility != GONE) {
-                    val bb = boundingBoxs!![idx]
+                    val bb = boundingBoxs[idx]
                     if (btn.id == R.id.button_fast_forward) {
                         i(TAG, "fast f btn $idx bb $bb")
                     }
@@ -394,11 +394,11 @@ class MultitouchLayer : RelativeLayout, OnTouchListener {
     }
 
     private val isTouchMapsValid: Boolean
-        private get() {
+        get() {
             var idx = 0
             for (btn in btns) {
                 if (btn.visibility != GONE) {
-                    val bb = boundingBoxs!![idx]
+                    val bb = boundingBoxs[idx]
                     val len = bb!!.width() * bb.height()
                     val map = maps[idx]
                     if (map == null || map.size != len) {
@@ -537,14 +537,14 @@ class MultitouchLayer : RelativeLayout, OnTouchListener {
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         if (!isInEditMode && editMode == EDIT_MODE.NONE) {
-            for (idx in boundingBoxs!!.indices) {
+            for (idx in boundingBoxs.indices) {
                 val btn = btns[idx] as MultitouchBtnInterface
                 btn.removeRequestRepaint()
                 if (btn.getVisibility() == VISIBLE) {
                     val b =
                         if (btn.isPressed()) pressedButtonsBitmaps!![idx] else buttonsBitmaps!![idx]
                     if (b != null) {
-                        val bb = boundingBoxs!![idx]
+                        val bb = boundingBoxs[idx]
                         canvas.drawBitmap(b, bb!!.left.toFloat(), bb.top.toFloat(), paint)
                         if (editMode != EDIT_MODE.NONE) {
                             canvas.drawRect(bb, pp!!)
@@ -611,7 +611,7 @@ class MultitouchLayer : RelativeLayout, OnTouchListener {
                 counter++
             }
         }
-        for (idx in boundingBoxs!!.indices) {
+        for (idx in boundingBoxs.indices) {
             val btn = btns[idx] as MultitouchBtnInterface
             if (btn.getId() == R.id.button_menu) {
                 paint.alpha = 255
@@ -621,7 +621,7 @@ class MultitouchLayer : RelativeLayout, OnTouchListener {
             btn.removeRequestRepaint()
             val b = if (btn.isPressed()) pressedButtonsBitmaps!![idx] else buttonsBitmaps!![idx]
             if (b != null) {
-                val bb = boundingBoxs!![idx]
+                val bb = boundingBoxs[idx]
                 val bRect = Rect(0, 0, b.width, b.height)
                 canvas.drawBitmap(b, bRect, bb!!, paint)
             }
@@ -684,7 +684,7 @@ class MultitouchLayer : RelativeLayout, OnTouchListener {
                 e.resizeRects.clear()
                 for (i in e.ids.indices) {
                     val id = e.ids[i]
-                    e.resizeRects.add(RectF(boundingBoxs!![id]))
+                    e.resizeRects.add(RectF(boundingBoxs[id]))
                 }
             }
             val invalR = Rect()
@@ -716,8 +716,7 @@ class MultitouchLayer : RelativeLayout, OnTouchListener {
             }
 
             MotionEvent.ACTION_MOVE -> if (selectIdx != -1) {
-                val element: EditElement?
-                element = if (editMode == EDIT_MODE.TOUCH) {
+                val element: EditElement? = if (editMode == EDIT_MODE.TOUCH) {
                     editElements[selectIdx]
                 } else {
                     screenElement
@@ -792,7 +791,7 @@ class MultitouchLayer : RelativeLayout, OnTouchListener {
             offset.top *= scaleFactor
             element.offsets[i].set(offset)
             bb.offset(element.boundingbox.left, element.boundingbox.top)
-            bb.round(boundingBoxs!![id]!!)
+            bb.round(boundingBoxs[id]!!)
         }
     }
 
@@ -895,18 +894,10 @@ class MultitouchLayer : RelativeLayout, OnTouchListener {
     }
 
     private fun initScreenElement(reset: Boolean) {
-        pref
         val topPadding = resources.getDimensionPixelSize(R.dimen.top_panel_touch_controller_height)
-        var vport: ViewPort? = null
         var viewPorts: HashMap<String, ViewPort>? = null
-        if (reset) {
-            vport = computeInitViewPort(
-                context,
-                cacheW,
-                cacheH,
-                0,
-                if (cacheRotation == 0) topPadding else 0
-            )
+        val vport:ViewPort = if (reset) {
+
             viewPorts = computeAllInitViewPorts(
                 context,
                 cacheW,
@@ -914,16 +905,14 @@ class MultitouchLayer : RelativeLayout, OnTouchListener {
                 0,
                 if (cacheRotation == 0) topPadding else 0
             )
-        } else {
-            vport = loadOrComputeViewPort(
+            computeInitViewPort(
                 context,
-                null,
                 cacheW,
                 cacheH,
                 0,
-                if (cacheRotation == 0) topPadding else 0,
-                true
+                if (cacheRotation == 0) topPadding else 0
             )
+        } else {
             viewPorts = loadOrComputeAllViewPorts(
                 context,
                 cacheW,
@@ -931,9 +920,18 @@ class MultitouchLayer : RelativeLayout, OnTouchListener {
                 0,
                 if (cacheRotation == 0) topPadding else 0
             )
+            loadOrComputeViewPort(
+                context,
+                null,
+                cacheW,
+                cacheH,
+                0,
+                if (cacheRotation == 0) topPadding else 0,
+                true
+            )?:return
         }
         val viewPort =
-            Rect(vport!!.x + 1, vport.y, vport.x + vport.width - 1, vport.y + vport.height - 1)
+            Rect(vport.x + 1, vport.y, vport.x + vport.width - 1, vport.y + vport.height - 1)
         if (editMode != EDIT_MODE.NONE) {
             if (editMode == EDIT_MODE.SCREEN) {
                 for (port in viewPorts.values) {
@@ -1017,7 +1015,7 @@ class MultitouchLayer : RelativeLayout, OnTouchListener {
     }
 
     private val pref: SharedPreferences
-        private get() {
+        get() {
             if (cacheRotation == -1) {
                 val mWindowManager = context
                     .getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -1060,7 +1058,7 @@ class MultitouchLayer : RelativeLayout, OnTouchListener {
         val editor = pref.edit()
         for (i in btns.indices) {
             val btn = btns[i]
-            val offset = boundingBoxs!![i]
+            val offset = boundingBoxs[i]
             val s =
                 offset!!.left.toString() + "-" + offset.top + "-" + offset.right + "-" + offset.bottom
             val id = btnIdMap.indexOf(btn.id)
@@ -1131,49 +1129,47 @@ class MultitouchLayer : RelativeLayout, OnTouchListener {
     }
 
     private fun checkFastForwardButton() {
-        if (boundingBoxs != null) {
-            val idx = ridToIdxMap[R.id.button_fast_forward]
-            val ff_bb = boundingBoxs!![idx]
-            //NLog.i(TAG, "fast forward btn " + idx + " rect " + ff_bb);
-            for (bb2 in boundingBoxs!!) {
-                if (ff_bb !== bb2 && Rect.intersects(ff_bb!!, bb2!!)) {
-                    //NLog.i(TAG, "colision with " + bb2);
-                    val w = measuredWidth
-                    val h = measuredHeight
-                    var wrongPosition = false
-                    for (i in 0..299) {
-                        wrongPosition = false
-                        ff_bb.offset(10, 0)
-                        if (ff_bb.right >= w) {
-                            ff_bb.offsetTo(0, ff_bb.top + 10)
-                            if (ff_bb.bottom >= h) {
-                                break
-                            }
-                        }
-                        //NLog.i(TAG, i + " new rect " + ff_bb);
-                        for (bb3 in boundingBoxs!!) {
-                            if (ff_bb !== bb3 && Rect.intersects(ff_bb, bb3!!)) {
-                                //NLog.i(TAG, "colision with " + bb3);
-                                wrongPosition = true
-                                break
-                            }
-                        }
-                        if (!wrongPosition) {
+        val idx = ridToIdxMap[R.id.button_fast_forward]
+        val ff_bb = boundingBoxs[idx]
+        //NLog.i(TAG, "fast forward btn " + idx + " rect " + ff_bb);
+        for (bb2 in boundingBoxs) {
+            if (ff_bb !== bb2 && Rect.intersects(ff_bb!!, bb2!!)) {
+                //NLog.i(TAG, "colision with " + bb2);
+                val w = measuredWidth
+                val h = measuredHeight
+                var wrongPosition = false
+                for (i in 0..299) {
+                    wrongPosition = false
+                    ff_bb.offset(10, 0)
+                    if (ff_bb.right >= w) {
+                        ff_bb.offsetTo(0, ff_bb.top + 10)
+                        if (ff_bb.bottom >= h) {
                             break
                         }
                     }
-                    if (wrongPosition) {
-                        i(TAG, "Nepodarilo se najit vhodnou pozici")
-                        resetEditElement("")
-                    } else {
-                        i(
-                            TAG, "Podarilo se najit vhodnou pozici " + ff_bb + " "
-                                    + boundingBoxs!![btnIdMap.indexOf(R.id.button_fast_forward)]
-                        )
-                        for (elem in editElements) {
-                            elem.computeBoundingBox()
-                            elem.computeOffsets()
+                    //NLog.i(TAG, i + " new rect " + ff_bb);
+                    for (bb3 in boundingBoxs) {
+                        if (ff_bb !== bb3 && Rect.intersects(ff_bb, bb3!!)) {
+                            //NLog.i(TAG, "colision with " + bb3);
+                            wrongPosition = true
+                            break
                         }
+                    }
+                    if (!wrongPosition) {
+                        break
+                    }
+                }
+                if (wrongPosition) {
+                    i(TAG, "Nepodarilo se najit vhodnou pozici")
+                    resetEditElement("")
+                } else {
+                    i(
+                        TAG, "Podarilo se najit vhodnou pozici " + ff_bb + " "
+                                + boundingBoxs[btnIdMap.indexOf(R.id.button_fast_forward)]
+                    )
+                    for (elem in editElements) {
+                        elem.computeBoundingBox()
+                        elem.computeOffsets()
                     }
                 }
             }

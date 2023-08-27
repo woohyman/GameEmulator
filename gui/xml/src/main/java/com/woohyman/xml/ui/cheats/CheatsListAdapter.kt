@@ -12,8 +12,8 @@ import com.woohyman.keyboard.cheats.Cheat
 import com.woohyman.xml.R
 import com.woohyman.xml.databinding.RowCheatListItemBinding
 
-class CheatsListAdapter(private var cheatsActivity: CheatsActivity, objects: List<Cheat>?) :
-    ArrayAdapter<Cheat?>(cheatsActivity, 0, objects!!) {
+class CheatsListAdapter(private var cheatsActivity: CheatsActivity, objects: List<Cheat>) :
+    ArrayAdapter<Cheat?>(cheatsActivity, 0, objects) {
 
     private val inflater: LayoutInflater by lazy {
         cheatsActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
