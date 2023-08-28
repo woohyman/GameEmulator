@@ -2,6 +2,7 @@ package com.woohyman.xml.emulator
 
 import android.app.AlertDialog
 import android.preference.PreferenceManager
+import android.widget.Toast
 import androidx.annotation.MainThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LifecycleOwner
@@ -132,6 +133,10 @@ class EmulatorMediator constructor(
 
     fun quickSave() {
         emulatorManagerProxy.saveState(10)
+        Toast.makeText(
+            Utils.getApp(),
+            "state saved", Toast.LENGTH_SHORT
+        ).show()
     }
 
     fun quickLoad() {

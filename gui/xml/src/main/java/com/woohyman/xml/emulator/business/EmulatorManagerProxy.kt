@@ -21,14 +21,6 @@ class EmulatorManagerProxy constructor(
     private var isToggleFF = false
     private var isFFPressed = false
 
-    override fun saveState(slot: Int) {
-        Toast.makeText(
-            Utils.getApp(),
-            "state saved", Toast.LENGTH_SHORT
-        ).show()
-    }
-
-
     val needsBenchmark by lazy {
         val quality = PreferenceUtil.getEmulationQuality(Utils.getApp())
         val alreadyBenchmarked = PreferenceUtil.isBenchmarked(Utils.getApp())
@@ -61,10 +53,6 @@ class EmulatorManagerProxy constructor(
 
     override fun onPause(owner: LifecycleOwner) {
         super.onPause(owner)
-        try {
-            pauseEmulation()
-        } catch (ignored: EmulatorException) {
-        }
         try {
             stopGame()
         } catch (e: EmulatorException) {
