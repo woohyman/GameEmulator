@@ -1,4 +1,4 @@
-package com.woohyman.xml.ui
+package com.woohyman.xml.gamegallery
 
 import android.content.Intent
 import android.os.Bundle
@@ -9,7 +9,6 @@ import com.woohyman.keyboard.utils.PreferenceUtil.getFragmentShader
 import com.woohyman.keyboard.utils.PreferenceUtil.setFragmentShader
 import com.woohyman.xml.emulator.EmulatorActivity
 import com.woohyman.xml.emulator.NesEmulatorActivity
-import com.woohyman.xml.gamegallery.GalleryActivity
 import com.woohyman.xml.ui.opengl.OpenGLTestActivity
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject

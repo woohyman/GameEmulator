@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager.widget.PagerAdapter
 import com.woohyman.keyboard.data.database.GameDescription
 import com.woohyman.keyboard.utils.NLog
+import com.woohyman.xml.gamegallery.base.BaseGalleryAdapter
 import com.woohyman.xml.gamegallery.list.RomListView
 import com.woohyman.xml.gamegallery.model.SortType
 import com.woohyman.xml.gamegallery.model.TabInfo
@@ -18,21 +19,18 @@ class GalleryPagerAdapter(
 
     private val tabTypes = arrayOf(
         TabInfo.StoreRomList(SortType.SORT_BY_NAME_ALPHA),
-//        TabInfo.LocalRomList(SortType.SORT_BY_NAME_ALPHA),
+        TabInfo.LocalRomList(SortType.SORT_BY_NAME_ALPHA),
 //        TabInfo.LocalRomList(SortType.SORT_BY_LAST_PLAYED)
     )
 
-    private var yOffsets: IntArray? = IntArray(tabTypes.size)
-    private val lists = arrayOfNulls<RomListView>(tabTypes.size)
-    private val listAdapters = arrayOfNulls<GalleryAdapter>(tabTypes.size)
-
-    init {
-        for (i in tabTypes.indices) {
-            listAdapters[i] = GalleryAdapter(activity)
-            val adapter = listAdapters[i]
-            adapter?.setSortType(tabTypes[i])
+    private val listViews: ArrayList<RomListView> = ArrayList<RomListView>().also {
+        for (type in tabTypes) {
+            it.add(RomListView(activity, type))
         }
     }
+
+    private var yOffsets: IntArray? = IntArray(tabTypes.size)
+    private val lists = arrayOfNulls<RomListView>(tabTypes.size)
 
     override fun getCount(): Int {
         return tabTypes.size
@@ -47,7 +45,9 @@ class GalleryPagerAdapter(
     }
 
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
-        val list = RomListView(activity, tabTypes[position])
+
+        val list = listViews[position]
+
         list.setSelection(yOffsets!![position])
         list.registerScrollStateChangedListener { scrollState, firstVisiblePosition ->
             NLog.i("list", "$position:$scrollState")
@@ -65,29 +65,27 @@ class GalleryPagerAdapter(
     }
 
     fun setGames(games: ArrayList<GameDescription>) {
-        for (adapter in listAdapters) {
-            adapter?.games = games
+        for (listView in listViews) {
+            listView.setLocalData(games)
         }
     }
 
-    fun addGames(newGames: ArrayList<GameDescription>): Int {
-        var result = 0
-        for (adapter in listAdapters) {
-            result = adapter?.addGames(ArrayList(newGames)) ?: 0
+    fun addGames(newGames: ArrayList<GameDescription>) {
+        for (listView in listViews) {
+            listView.addLocalData(newGames)
         }
-        return result
     }
 
     fun setFilter(filter: String) {
-        for (adapter in listAdapters) {
-            adapter?.setFilter(filter)
+        for (listView in listViews) {
+            listView.setFilter(filter)
         }
     }
 
     override fun notifyDataSetChanged() {
         for (i in tabTypes.indices) {
-            val adapter = listAdapters[i]
-            adapter?.notifyDataSetChanged()
+            val adapter = listViews[i].adapter as BaseGalleryAdapter
+            adapter.notifyDataSetChanged()
             if (lists[i] != null) lists[i]?.setSelection(yOffsets?.get(i) ?: 0)
         }
         super.notifyDataSetChanged()
@@ -98,7 +96,7 @@ class GalleryPagerAdapter(
     }
 
     fun onRestoreInstanceState(inState: Bundle?) {
-        yOffsets = inState?.getIntArray(EXTRA_POSITIONS) ?: IntArray(listAdapters.size)
+        yOffsets = inState?.getIntArray(EXTRA_POSITIONS) ?: IntArray(listViews.size)
     }
 
     companion object {

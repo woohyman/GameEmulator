@@ -17,7 +17,8 @@ import com.woohyman.xml.gamegallery.model.SortType
 import com.woohyman.xml.gamegallery.model.TabInfo
 import java.util.Locale
 
-open class BaseGalleryAdapter(activity: AppCompatActivity) : BaseAdapter(), SectionIndexer {
+open class BaseGalleryAdapter(private val activity: AppCompatActivity) : BaseAdapter(),
+    SectionIndexer {
     private val alphaIndexer = HashMap<Char, Int>()
     private var filter = ""
     private var sections: Array<Char?> = emptyArray()
@@ -57,6 +58,7 @@ open class BaseGalleryAdapter(activity: AppCompatActivity) : BaseAdapter(), Sect
     }
 
     override fun getCount(): Int {
+        NLog.e("test11", "getCount ==> " + filterGames.size)
         return filterGames.size
     }
 
@@ -69,7 +71,10 @@ open class BaseGalleryAdapter(activity: AppCompatActivity) : BaseAdapter(), Sect
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+
         val (game) = filterGames[position]
+        NLog.e("test11", "getView ==> " + game?.name)
+
         val view = convertView ?: inflater.inflate(R.layout.row_game_list, null)
         val binding = RowGameListBinding.bind(view)
         binding.rowGameItemProgressBar.max = sumRuns
@@ -98,6 +103,7 @@ open class BaseGalleryAdapter(activity: AppCompatActivity) : BaseAdapter(), Sect
     }
 
     private fun filterGames() {
+        NLog.e("test11", "清空filterGames          +++++++++++++    " + filterGames.size)
         filterGames.clear()
         val containsFilter = " $filter"
         sumRuns = 0
@@ -124,7 +130,11 @@ open class BaseGalleryAdapter(activity: AppCompatActivity) : BaseAdapter(), Sect
                 }
             }
         }
-        super.notifyDataSetChanged()
+        NLog.e("test11", "filterGames.size ==> " + filterGames.size + ",adapter ==> " + this)
+
+        activity.runOnUiThread {
+            super.notifyDataSetChanged()
+        }
     }
 
     fun setSortType(sortType: TabInfo) {

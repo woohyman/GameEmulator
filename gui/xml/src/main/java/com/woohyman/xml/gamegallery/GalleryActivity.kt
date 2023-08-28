@@ -14,14 +14,17 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.woohyman.keyboard.data.database.GameDescription
 import com.woohyman.keyboard.rom.IRomLauncher
+import com.woohyman.keyboard.rom.RomsFinder
 import com.woohyman.keyboard.utils.DialogUtils.show
+import com.woohyman.keyboard.utils.NLog
 import com.woohyman.keyboard.utils.PreferenceUtil.getLastGalleryTab
 import com.woohyman.keyboard.utils.PreferenceUtil.saveLastGalleryTab
 import com.woohyman.xml.R
-import com.woohyman.xml.emulator.EmulatorActivity
 import com.woohyman.xml.databinding.ActivityGalleryBinding
+import com.woohyman.xml.emulator.EmulatorActivity
 import com.woohyman.xml.gamegallery.adapter.GalleryPagerAdapter
 import com.woohyman.xml.gamegallery.base.BaseGameGalleryActivity
+import com.woohyman.xml.permission.FileAccessPermissionDialogFragment
 import com.woohyman.xml.ui.preferences.GeneralPreferenceActivity
 import com.woohyman.xml.ui.preferences.GeneralPreferenceFragment
 import kotlinx.coroutines.launch
@@ -54,9 +57,9 @@ abstract class GalleryActivity :
         inZipExts = romExtensions
 
         lifecycleScope.launch {
-            romLauncher.romLauncherState.collect{
+            romLauncher.romLauncherState.collect {
 
-                it.onSuccess {game ->
+                it.onSuccess { game ->
                     onGameSelected(game, 0)
                 }
 
@@ -65,11 +68,15 @@ abstract class GalleryActivity :
                         .setMessage(getString(R.string.gallery_rom_not_found))
                         .setTitle(R.string.error)
                         .setPositiveButton(R.string.gallery_rom_not_found_reload) { dialog1: DialogInterface?, which: Int ->
-                            reloadGames(true, null)
+                            reloadGames(true)
                         }
                         .setCancelable(false)
                         .create()
-                    dialog.setOnDismissListener { dialog12: DialogInterface? -> reloadGames(true, null) }
+                    dialog.setOnDismissListener { dialog12: DialogInterface? ->
+                        reloadGames(
+                            true
+                        )
+                    }
                     dialog.show()
                 }
             }
@@ -95,7 +102,12 @@ abstract class GalleryActivity :
             }
 
             R.id.gallery_menu_reload -> {
-                reloadGames(true, null)
+                FileAccessPermissionDialogFragment.showFragment(
+                    supportFragmentManager,
+                    "RomSearch"
+                ) {
+                    reloadGames(true)
+                }
                 return true
             }
 
@@ -115,7 +127,7 @@ abstract class GalleryActivity :
         }
         adapter.notifyDataSetChanged()
         if (reloadGames && !importing) {
-            reloadGames(romLauncher.isDBEmpty, null)
+            reloadGames(romLauncher.isDBEmpty)
         }
     }
 
@@ -143,30 +155,33 @@ abstract class GalleryActivity :
 
     @MainThread
     private fun showSearchProgressDialog(zipMode: Boolean) {
-        searchDialog ?: ProgressDialog(this).also {
-            it.max = 100
-            it.setCancelable(false)
-            it.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL)
-            it.isIndeterminate = true
-            it.setProgressNumberFormat("")
-            it.setProgressPercentFormat(null)
-            it.setButton(
-                DialogInterface.BUTTON_NEGATIVE,
-                getString(R.string.cancel)
-            ) { dialog: DialogInterface?, which: Int -> stopRomsFinding() }
-        }.also {
-            it.setMessage(getString(if (zipMode) R.string.gallery_zip_search_label else R.string.gallery_sdcard_search_label))
-            show(it, false)
+        runOnUiThread {
+            searchDialog = ProgressDialog(this).also {
+                it.max = 100
+                it.setCancelable(false)
+                it.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL)
+                it.isIndeterminate = true
+                it.setProgressNumberFormat("")
+                it.setProgressPercentFormat(null)
+                it.setButton(
+                    DialogInterface.BUTTON_NEGATIVE,
+                    getString(R.string.cancel)
+                ) { dialog: DialogInterface?, which: Int -> stopRomsFinding() }
+            }.also {
+                it.setMessage(getString(if (zipMode) R.string.gallery_zip_search_label else R.string.gallery_sdcard_search_label))
+                show(it, false)
+            }
         }
-
     }
 
     @MainThread
     private fun onSearchingEnd(count: Int, showToast: Boolean) {
-        if (searchDialog != null) {
-            searchDialog!!.dismiss()
+        runOnUiThread {
+            NLog.i("RomsFinder", "searchDialog dismiss"+searchDialog)
+            searchDialog?.dismiss()
             searchDialog = null
         }
+
         if (showToast) {
             if (count > 0) {
                 Snackbar.make(
@@ -200,6 +215,7 @@ abstract class GalleryActivity :
 
     override fun onRomsFinderEnd(searchNew: Boolean) {
         super.onRomsFinderEnd(searchNew)
+        NLog.i("RomsFinder", "onSearchingEnd- done")
         onSearchingEnd(0, searchNew)
     }
 

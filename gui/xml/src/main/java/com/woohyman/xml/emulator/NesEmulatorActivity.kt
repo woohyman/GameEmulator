@@ -6,7 +6,7 @@ import androidx.activity.addCallback
 import com.blankj.utilcode.util.ActivityUtils
 import com.woohyman.keyboard.emulator.NesEmulator
 import com.woohyman.keyboard.utils.PreferenceUtil.getFragmentShader
-import com.woohyman.xml.ui.NesGalleryActivity
+import com.woohyman.xml.gamegallery.NesGalleryActivity
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 

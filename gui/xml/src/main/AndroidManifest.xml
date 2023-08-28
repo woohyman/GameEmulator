@@ -29,7 +29,7 @@
         tools:ignore="UnusedAttribute">
 
         <activity
-            android:name="com.woohyman.xml.ui.NesGalleryActivity"
+            android:name="com.woohyman.xml.gamegallery.NesGalleryActivity"
             android:exported="true"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>

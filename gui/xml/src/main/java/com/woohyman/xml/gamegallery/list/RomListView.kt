@@ -1,28 +1,17 @@
 package com.woohyman.xml.gamegallery.list
 
 import android.annotation.SuppressLint
-import android.view.View
 import android.widget.AbsListView
-import android.widget.AdapterView
-import android.widget.AdapterView.OnItemClickListener
 import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
-import com.woohyman.keyboard.data.entity.RowItem
+import com.woohyman.keyboard.data.database.GameDescription
 import com.woohyman.keyboard.rom.IRomLauncher
-import com.woohyman.keyboard.rom.RomDownloader
-import com.woohyman.keyboard.rom.RomLauncher
 import com.woohyman.xml.R
 import com.woohyman.xml.gamegallery.adapter.GalleryAdapter
-import com.woohyman.xml.gamegallery.adapter.GalleryPagerAdapter
 import com.woohyman.xml.gamegallery.adapter.StoreAdapter
+import com.woohyman.xml.gamegallery.base.BaseGalleryAdapter
 import com.woohyman.xml.gamegallery.model.TabInfo
-import com.woohyman.xml.gamegallery.viewmodel.DownLoadViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @SuppressLint("ViewConstructor")
@@ -35,6 +24,8 @@ class RomListView(
     @Inject
     lateinit var romLauncher: IRomLauncher
 
+    private var galleryAdapter: BaseGalleryAdapter
+
     init {
         cacheColorHint = 0x00000000
         isFastScrollEnabled = true
@@ -44,8 +35,30 @@ class RomListView(
                 activity,
                 romLauncher
             ) else GalleryAdapter(
-                activity
+                activity,
+                romLauncher
             )
+
+        galleryAdapter = adapter as BaseGalleryAdapter
+        galleryAdapter.setSortType(tabInfo)
+    }
+
+    fun setLocalData(games: ArrayList<GameDescription>) {
+        if (galleryAdapter is GalleryAdapter) {
+            galleryAdapter.games = games
+        }
+    }
+
+    fun addLocalData(games: ArrayList<GameDescription>) {
+        if (galleryAdapter is GalleryAdapter) {
+            galleryAdapter.addGames(games)
+        }
+    }
+
+    fun setFilter(filter: String) {
+        if (galleryAdapter is GalleryAdapter) {
+            galleryAdapter.setFilter(filter)
+        }
     }
 
     fun registerScrollStateChangedListener(callback: (scrollState: Int, firstVisiblePosition: Int) -> Unit) {

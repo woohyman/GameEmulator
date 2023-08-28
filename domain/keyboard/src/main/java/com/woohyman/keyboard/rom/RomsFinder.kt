@@ -270,6 +270,7 @@ class RomsFinder(
         }
         i(TAG, "compute checksum- done")
         if (running.get()) {
+            i(TAG, "onRomsFinderEnd- done")
             listener.onRomsFinderNewGames(games)
             listener.onRomsFinderEnd(true)
         }
