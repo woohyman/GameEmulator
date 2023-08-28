@@ -9,18 +9,19 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
+import androidx.appcompat.app.AppCompatActivity
 import com.woohyman.keyboard.utils.DialogUtils.show
 import com.woohyman.keyboard.utils.EmuUtils.getDisplayWidth
 import com.woohyman.xml.R
 import com.woohyman.xml.databinding.GameMenuItemBinding
 
 class GameMenu(
-    var context: Context,
+    var activity: AppCompatActivity,
     private var listener: OnGameMenuListener
 ) {
     private var items = ArrayList<GameMenuItem>()
     private var inflater: LayoutInflater =
-        context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
     private var dialog: Dialog? = null
 
     init {
@@ -38,13 +39,13 @@ class GameMenu(
     }
 
     fun add(labelRID: Int): GameMenuItem {
-        val item = add(context.getText(labelRID) as String, -1)
+        val item = add(activity.getText(labelRID) as String, -1)
         item.id = labelRID
         return item
     }
 
     fun add(labelRID: Int, iconRID: Int): GameMenuItem {
-        val item = add(context.getText(labelRID) as String, iconRID)
+        val item = add(activity.getText(labelRID) as String, iconRID)
         item.id = labelRID
         return item
     }
@@ -59,28 +60,28 @@ class GameMenu(
 
     fun open() {
         dialog?.dismiss()
-        dialog = Dialog(context, R.style.GameDialogTheme).also {
+        dialog = Dialog(activity, R.style.GameDialogTheme).also {
             listener.onGameMenuPrepare(this)
             val surroundContainer =
                 inflater.inflate(R.layout.game_menu_surround, null) as RelativeLayout
             surroundContainer.setOnClickListener { _ -> it.cancel() }
             val container = surroundContainer.findViewById<LinearLayout>(R.id.game_menu_container)
             val params = container.layoutParams as RelativeLayout.LayoutParams
-            val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+            val wm = activity.getSystemService(Context.WINDOW_SERVICE) as WindowManager
             val display = wm.defaultDisplay
             val width = getDisplayWidth(display)
             val px = width / 10
             params.setMargins(px, 0, px, 0)
             container.layoutParams = params
-            val padding = context.resources.getDimensionPixelSize(
+            val padding = activity.resources.getDimensionPixelSize(
                 R.dimen.dialog_back_padding
             )
             container.setPadding(padding, padding, padding, padding)
-            val margin = context.resources.getDimensionPixelSize(
+            val margin = activity.resources.getDimensionPixelSize(
                 R.dimen.dialog_button_margin
             )
             val landsacpe =
-                context.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+                activity.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
             var i = 0
             while (i < items.size) {
                 if (landsacpe) {
@@ -90,12 +91,12 @@ class GameMenu(
                         1f
                     )
                     pp.gravity = Gravity.CENTER_VERTICAL
-                    val menuRow = LinearLayout(context)
+                    val menuRow = LinearLayout(activity)
                     val item = items[i]
                     menuRow.addView(createButton(item, margin, it), pp)
                     i++
                     if (i < items.size) {
-                        val lineSeparator = LinearLayout(context)
+                        val lineSeparator = LinearLayout(activity)
                         lineSeparator.setBackgroundColor(-0x1)
                         menuRow.addView(lineSeparator, 1, LinearLayout.LayoutParams.MATCH_PARENT)
                         val item2 = items[i]
@@ -111,7 +112,7 @@ class GameMenu(
                     )
                 }
                 if (i < items.size - 1) {
-                    val linSeperator = LinearLayout(context)
+                    val linSeperator = LinearLayout(activity)
                     linSeperator.setBackgroundColor(-0x1)
                     container.addView(linSeperator, LinearLayout.LayoutParams.MATCH_PARENT, 1)
                 }

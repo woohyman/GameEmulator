@@ -38,19 +38,19 @@ class GameMenuDelegate constructor(
 ) : GameMenu.OnGameMenuListener, DefaultLifecycleObserver {
     private var runTimeMachine = false
 
-    val gameMenu: GameMenu by lazy {
-        GameMenu(Utils.getApp(), this)
+    val gameMenu: GameMenu? by lazy {
+        GameMenu(emulatorMediator.activity ?: return@lazy null, this)
     }
 
     override fun onPause(owner: LifecycleOwner) {
         super.onPause(owner)
-        if (gameMenu.isOpen) {
-            gameMenu.dismiss()
+        if (gameMenu?.isOpen ?: return) {
+            gameMenu?.dismiss()
         }
     }
 
     fun openGameMenu() {
-        gameMenu.open()
+        gameMenu?.open()
     }
 
     override fun onGameMenuCreate(menu: GameMenu) {

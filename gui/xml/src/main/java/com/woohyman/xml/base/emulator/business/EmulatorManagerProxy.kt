@@ -104,9 +104,9 @@ class EmulatorManagerProxy constructor(
                 EmulatorActivity.oldConfig and ActivityInfo.CONFIG_ORIENTATION == ActivityInfo.CONFIG_ORIENTATION
             EmulatorActivity.oldConfig = 0
             if (emulatorMediator.shouldPause() && !wasRotated) {
-                emulatorMediator.gameMenuProxy.gameMenu.open()
+                emulatorMediator.gameMenuProxy.gameMenu?.open()
             }
-            if (emulatorMediator.gameMenuProxy.gameMenu.isOpen) {
+            if (emulatorMediator.gameMenuProxy.gameMenu?.isOpen == true) {
                 pauseEmulation()
             }
             emulatorMediator.setShouldPauseOnResume(true)
