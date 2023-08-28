@@ -15,7 +15,10 @@ import androidx.appcompat.widget.Toolbar
  * Created by huzongyao on 17-10-17.
  */
 abstract class AppCompatPreferenceActivity : PreferenceActivity() {
-    private var mDelegate: AppCompatDelegate? = null
+    private val delegate: AppCompatDelegate by lazy {
+        AppCompatDelegate.create(this, null)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         delegate.installViewFactory()
         delegate.onCreate(savedInstanceState)
@@ -83,8 +86,4 @@ abstract class AppCompatPreferenceActivity : PreferenceActivity() {
         delegate.invalidateOptionsMenu()
     }
 
-    private val delegate: AppCompatDelegate
-        private get() {
-            return mDelegate ?: AppCompatDelegate.create(this, null)
-        }
 }
