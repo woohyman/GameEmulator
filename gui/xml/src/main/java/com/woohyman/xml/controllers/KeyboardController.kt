@@ -3,7 +3,7 @@ package com.woohyman.xml.controllers
 import android.content.Context
 import android.view.KeyEvent
 import android.view.View
-import com.woohyman.xml.base.emulator.EmulatorActivity
+import com.woohyman.xml.emulator.EmulatorActivity
 import com.woohyman.keyboard.controllers.EmulatorController
 import com.woohyman.keyboard.data.database.GameDescription
 import com.woohyman.keyboard.keyboard.KeyboardControllerKeys
@@ -21,7 +21,7 @@ import com.woohyman.keyboard.keyboard.KeyboardControllerKeys.Companion.PLAYER2_O
 import com.woohyman.keyboard.keyboard.KeyboardProfile
 import com.woohyman.keyboard.emulator.Emulator
 import com.woohyman.keyboard.utils.NLog
-import com.woohyman.xml.base.emulator.EmulatorMediator
+import com.woohyman.xml.emulator.EmulatorMediator
 
 class KeyboardController(
     private val emulator: Emulator,

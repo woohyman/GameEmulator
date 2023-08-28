@@ -1,4 +1,4 @@
-package com.woohyman.xml.base.emulator.business
+package com.woohyman.xml.emulator.business
 
 import android.view.KeyEvent
 import android.view.MotionEvent
@@ -14,7 +14,7 @@ import com.woohyman.keyboard.emulator.Emulator
 import com.woohyman.keyboard.emulator.EmulatorException
 import com.woohyman.keyboard.utils.EmuUtils
 import com.woohyman.keyboard.utils.PreferenceUtil
-import com.woohyman.xml.base.emulator.EmulatorMediator
+import com.woohyman.xml.emulator.EmulatorMediator
 import com.woohyman.xml.controllers.DynamicDPad
 import com.woohyman.xml.controllers.KeyboardController
 import com.woohyman.xml.controllers.QuickSaveController

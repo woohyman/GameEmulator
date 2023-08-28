@@ -9,7 +9,7 @@ import android.view.View
 import android.widget.ImageView
 import com.blankj.utilcode.util.Utils
 import com.woohyman.xml.R
-import com.woohyman.xml.base.emulator.EmulatorActivity
+import com.woohyman.xml.emulator.EmulatorActivity
 import com.woohyman.xml.ui.multitouchbutton.MultitouchBtnInterface
 import com.woohyman.xml.ui.multitouchbutton.MultitouchButton
 import com.woohyman.xml.ui.multitouchbutton.MultitouchImageButton
@@ -20,7 +20,7 @@ import com.woohyman.keyboard.data.database.GameDescription
 import com.woohyman.keyboard.emulator.Emulator
 import com.woohyman.keyboard.utils.EmuUtils
 import com.woohyman.keyboard.utils.PreferenceUtil
-import com.woohyman.xml.base.emulator.EmulatorMediator
+import com.woohyman.xml.emulator.EmulatorMediator
 import java.lang.ref.WeakReference
 
 class TouchController(

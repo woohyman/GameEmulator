@@ -1,4 +1,4 @@
-package com.woohyman.xml.ui
+package com.woohyman.xml.emulator
 
 import android.content.Intent
 import android.os.Bundle
@@ -6,7 +6,7 @@ import androidx.activity.addCallback
 import com.blankj.utilcode.util.ActivityUtils
 import com.woohyman.keyboard.emulator.NesEmulator
 import com.woohyman.keyboard.utils.PreferenceUtil.getFragmentShader
-import com.woohyman.xml.base.emulator.EmulatorActivity
+import com.woohyman.xml.ui.NesGalleryActivity
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 

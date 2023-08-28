@@ -3,12 +3,12 @@ package com.woohyman.xml.controllers
 import android.content.Context
 import android.view.MotionEvent
 import android.view.View
-import com.woohyman.xml.base.emulator.EmulatorActivity
+import com.woohyman.xml.emulator.EmulatorActivity
 import com.woohyman.keyboard.controllers.EmulatorController
 import com.woohyman.keyboard.data.database.GameDescription
 import com.woohyman.keyboard.emulator.Emulator
 import com.woohyman.keyboard.utils.PreferenceUtil.isZapperEnabled
-import com.woohyman.xml.base.emulator.EmulatorMediator
+import com.woohyman.xml.emulator.EmulatorMediator
 
 class ZapperGun(
     private var context: Context?,

@@ -1,4 +1,4 @@
-package com.woohyman.xml.ui.gamegallery
+package com.woohyman.xml.gamegallery
 
 import android.content.Intent
 import android.graphics.drawable.Drawable
@@ -12,12 +12,12 @@ import com.woohyman.xml.R
 import com.woohyman.xml.base.BaseActivity
 import com.woohyman.xml.databinding.ActivitySlotSelectionBinding
 import com.woohyman.xml.databinding.RowSlotItemBinding
-import com.woohyman.xml.ui.gamegallery.Constants.DIALOAG_TYPE_LOAD
-import com.woohyman.xml.ui.gamegallery.Constants.EXTRA_GAME
-import com.woohyman.xml.ui.gamegallery.Constants.EXTRA_SLOT
-import com.woohyman.xml.ui.gamegallery.Constants.SEND_SLOT
-import com.woohyman.xml.ui.gamegallery.uistate.SlotInfoUIState
-import com.woohyman.xml.ui.gamegallery.viewmodel.SlotSelectionViewModel
+import com.woohyman.xml.gamegallery.Constants.DIALOAG_TYPE_LOAD
+import com.woohyman.xml.gamegallery.Constants.EXTRA_GAME
+import com.woohyman.xml.gamegallery.Constants.EXTRA_SLOT
+import com.woohyman.xml.gamegallery.Constants.SEND_SLOT
+import com.woohyman.xml.gamegallery.uistate.SlotInfoUIState
+import com.woohyman.xml.gamegallery.viewmodel.SlotSelectionViewModel
 import com.woohyman.xml.ui.menu.PopupMenu
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach

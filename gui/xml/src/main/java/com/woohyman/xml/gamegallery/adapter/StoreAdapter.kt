@@ -1,4 +1,4 @@
-package com.woohyman.xml.ui.gamegallery.adapter
+package com.woohyman.xml.gamegallery.adapter
 
 import android.view.View
 import android.view.ViewGroup
@@ -13,9 +13,9 @@ import com.woohyman.keyboard.rom.RomDownloader
 import com.woohyman.keyboard.rom.RomLauncher
 import com.woohyman.keyboard.utils.NLog
 import com.woohyman.xml.databinding.RowGameListBinding
-import com.woohyman.xml.ui.gamegallery.base.BaseGalleryAdapter
-import com.woohyman.xml.ui.gamegallery.data.TestRemoteRomSource
-import com.woohyman.xml.ui.gamegallery.viewmodel.DownLoadViewModel
+import com.woohyman.xml.gamegallery.base.BaseGalleryAdapter
+import com.woohyman.xml.gamegallery.data.TestRemoteRomSource
+import com.woohyman.xml.gamegallery.viewmodel.DownLoadViewModel
 import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
 import java.util.WeakHashMap

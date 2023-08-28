@@ -1,4 +1,4 @@
-package com.woohyman.xml.ui.gamegallery.adapter
+package com.woohyman.xml.gamegallery.adapter
 
 import android.os.Bundle
 import android.view.View
@@ -8,9 +8,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager.widget.PagerAdapter
 import com.woohyman.keyboard.data.database.GameDescription
 import com.woohyman.keyboard.utils.NLog
-import com.woohyman.xml.ui.gamegallery.list.RomListView
-import com.woohyman.xml.ui.gamegallery.model.SortType
-import com.woohyman.xml.ui.gamegallery.model.TabInfo
+import com.woohyman.xml.gamegallery.list.RomListView
+import com.woohyman.xml.gamegallery.model.SortType
+import com.woohyman.xml.gamegallery.model.TabInfo
 
 class GalleryPagerAdapter(
     private val activity: AppCompatActivity,

@@ -1,4 +1,4 @@
-package com.woohyman.xml.ui.gamegallery.viewmodel
+package com.woohyman.xml.gamegallery.viewmodel
 
 import android.content.Intent
 import android.text.format.DateFormat
@@ -8,11 +8,11 @@ import androidx.lifecycle.viewModelScope
 import com.blankj.utilcode.util.Utils
 import com.woohyman.keyboard.base.SlotUtils
 import com.woohyman.keyboard.data.database.GameDescription
-import com.woohyman.xml.ui.gamegallery.Constants.DIALOAG_TYPE_LOAD
-import com.woohyman.xml.ui.gamegallery.Constants.EXTRA_BASE_DIRECTORY
-import com.woohyman.xml.ui.gamegallery.Constants.EXTRA_DIALOG_TYPE_INT
-import com.woohyman.xml.ui.gamegallery.Constants.EXTRA_GAME
-import com.woohyman.xml.ui.gamegallery.uistate.SlotInfoUIState
+import com.woohyman.xml.gamegallery.Constants.DIALOAG_TYPE_LOAD
+import com.woohyman.xml.gamegallery.Constants.EXTRA_BASE_DIRECTORY
+import com.woohyman.xml.gamegallery.Constants.EXTRA_DIALOG_TYPE_INT
+import com.woohyman.xml.gamegallery.Constants.EXTRA_GAME
+import com.woohyman.xml.gamegallery.uistate.SlotInfoUIState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow

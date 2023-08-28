@@ -1,4 +1,4 @@
-package com.woohyman.xml.ui.gamegallery
+package com.woohyman.xml.gamegallery
 
 import android.app.AlertDialog
 import android.app.ProgressDialog
@@ -17,10 +17,10 @@ import com.woohyman.keyboard.utils.DialogUtils.show
 import com.woohyman.keyboard.utils.PreferenceUtil.getLastGalleryTab
 import com.woohyman.keyboard.utils.PreferenceUtil.saveLastGalleryTab
 import com.woohyman.xml.R
-import com.woohyman.xml.base.emulator.EmulatorActivity
+import com.woohyman.xml.emulator.EmulatorActivity
 import com.woohyman.xml.databinding.ActivityGalleryBinding
-import com.woohyman.xml.ui.gamegallery.adapter.GalleryPagerAdapter
-import com.woohyman.xml.ui.gamegallery.base.BaseGameGalleryActivity
+import com.woohyman.xml.gamegallery.adapter.GalleryPagerAdapter
+import com.woohyman.xml.gamegallery.base.BaseGameGalleryActivity
 import com.woohyman.xml.ui.preferences.GeneralPreferenceActivity
 import com.woohyman.xml.ui.preferences.GeneralPreferenceFragment
 import kotlinx.coroutines.launch

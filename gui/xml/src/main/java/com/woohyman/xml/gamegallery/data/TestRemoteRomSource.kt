@@ -1,4 +1,4 @@
-package com.woohyman.xml.ui.gamegallery.data
+package com.woohyman.xml.gamegallery.data
 
 import com.woohyman.keyboard.data.database.GameDescription
 

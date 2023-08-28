@@ -1,4 +1,4 @@
-package com.woohyman.xml.ui.gamegallery.base
+package com.woohyman.xml.gamegallery.base
 
 import android.content.Context
 import android.view.Gravity
@@ -13,8 +13,8 @@ import com.woohyman.keyboard.data.entity.RowItem
 import com.woohyman.keyboard.utils.NLog
 import com.woohyman.xml.R
 import com.woohyman.xml.databinding.RowGameListBinding
-import com.woohyman.xml.ui.gamegallery.model.SortType
-import com.woohyman.xml.ui.gamegallery.model.TabInfo
+import com.woohyman.xml.gamegallery.model.SortType
+import com.woohyman.xml.gamegallery.model.TabInfo
 import java.util.Locale
 
 open class BaseGalleryAdapter(activity: AppCompatActivity) : BaseAdapter(), SectionIndexer {

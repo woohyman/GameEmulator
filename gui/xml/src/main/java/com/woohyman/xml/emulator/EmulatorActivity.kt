@@ -1,4 +1,4 @@
-package com.woohyman.xml.base.emulator
+package com.woohyman.xml.emulator
 
 import android.annotation.SuppressLint
 import android.content.Intent

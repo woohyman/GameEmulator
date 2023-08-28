@@ -1,4 +1,4 @@
-package com.woohyman.xml.ui.gamegallery.list
+package com.woohyman.xml.gamegallery.list
 
 import android.annotation.SuppressLint
 import android.view.View
@@ -14,11 +14,11 @@ import com.woohyman.keyboard.rom.IRomLauncher
 import com.woohyman.keyboard.rom.RomDownloader
 import com.woohyman.keyboard.rom.RomLauncher
 import com.woohyman.xml.R
-import com.woohyman.xml.ui.gamegallery.adapter.GalleryAdapter
-import com.woohyman.xml.ui.gamegallery.adapter.GalleryPagerAdapter
-import com.woohyman.xml.ui.gamegallery.adapter.StoreAdapter
-import com.woohyman.xml.ui.gamegallery.model.TabInfo
-import com.woohyman.xml.ui.gamegallery.viewmodel.DownLoadViewModel
+import com.woohyman.xml.gamegallery.adapter.GalleryAdapter
+import com.woohyman.xml.gamegallery.adapter.GalleryPagerAdapter
+import com.woohyman.xml.gamegallery.adapter.StoreAdapter
+import com.woohyman.xml.gamegallery.model.TabInfo
+import com.woohyman.xml.gamegallery.viewmodel.DownLoadViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach

@@ -7,8 +7,9 @@ import com.woohyman.keyboard.utils.EmuUtils.checkGL20Support
 import com.woohyman.keyboard.utils.NLog.e
 import com.woohyman.keyboard.utils.PreferenceUtil.getFragmentShader
 import com.woohyman.keyboard.utils.PreferenceUtil.setFragmentShader
-import com.woohyman.xml.base.emulator.EmulatorActivity
-import com.woohyman.xml.ui.gamegallery.GalleryActivity
+import com.woohyman.xml.emulator.EmulatorActivity
+import com.woohyman.xml.emulator.NesEmulatorActivity
+import com.woohyman.xml.gamegallery.GalleryActivity
 import com.woohyman.xml.ui.opengl.OpenGLTestActivity
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject

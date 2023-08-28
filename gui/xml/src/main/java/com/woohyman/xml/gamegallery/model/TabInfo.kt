@@ -1,4 +1,4 @@
-package com.woohyman.xml.ui.gamegallery.model
+package com.woohyman.xml.gamegallery.model
 
 import com.blankj.utilcode.util.Utils
 import com.woohyman.xml.R

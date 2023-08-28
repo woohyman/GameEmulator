@@ -1,4 +1,4 @@
-package com.woohyman.xml.ui.gamegallery.viewmodel
+package com.woohyman.xml.gamegallery.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.blankj.utilcode.util.FileUtils

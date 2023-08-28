@@ -1,4 +1,4 @@
-package com.woohyman.xml.ui.gamegallery.uistate
+package com.woohyman.xml.gamegallery.uistate
 
 import com.woohyman.keyboard.data.entity.SlotInfo
 

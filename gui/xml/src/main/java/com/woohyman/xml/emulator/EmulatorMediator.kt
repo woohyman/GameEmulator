@@ -1,4 +1,4 @@
-package com.woohyman.xml.base.emulator
+package com.woohyman.xml.emulator
 
 import android.app.AlertDialog
 import android.preference.PreferenceManager
@@ -14,10 +14,10 @@ import com.woohyman.keyboard.utils.DialogUtils
 import com.woohyman.keyboard.utils.NLog
 import com.woohyman.keyboard.utils.PreferenceUtil
 import com.woohyman.xml.R
-import com.woohyman.xml.base.emulator.business.EmulatorManagerProxy
-import com.woohyman.xml.base.emulator.business.EmulatorViewProxy
-import com.woohyman.xml.base.emulator.business.GameControlProxy
-import com.woohyman.xml.base.emulator.business.GameMenuDelegate
+import com.woohyman.xml.emulator.business.EmulatorManagerProxy
+import com.woohyman.xml.emulator.business.EmulatorViewProxy
+import com.woohyman.xml.emulator.business.GameControlProxy
+import com.woohyman.xml.emulator.business.GameMenuDelegate
 import com.woohyman.xml.ui.timetravel.TimeTravelDialog
 import kotlinx.atomicfu.atomic
 import kotlinx.atomicfu.getAndUpdate

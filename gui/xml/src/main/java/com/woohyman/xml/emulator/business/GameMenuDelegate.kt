@@ -1,4 +1,4 @@
-package com.woohyman.xml.base.emulator.business
+package com.woohyman.xml.emulator.business
 
 import android.content.DialogInterface
 import android.content.Intent
@@ -19,11 +19,11 @@ import com.woohyman.keyboard.utils.NLog
 import com.woohyman.keyboard.utils.PreferenceUtil
 import com.woohyman.xml.BaseApplication
 import com.woohyman.xml.R
-import com.woohyman.xml.base.emulator.EmulatorActivity
-import com.woohyman.xml.base.emulator.EmulatorMediator
+import com.woohyman.xml.emulator.EmulatorActivity
+import com.woohyman.xml.emulator.EmulatorMediator
 import com.woohyman.xml.ui.cheats.CheatsActivity
-import com.woohyman.xml.ui.gamegallery.Constants
-import com.woohyman.xml.ui.gamegallery.SlotSelectionActivity
+import com.woohyman.xml.gamegallery.Constants
+import com.woohyman.xml.gamegallery.SlotSelectionActivity
 import com.woohyman.xml.ui.menu.GameMenu
 import com.woohyman.xml.ui.preferences.GamePreferenceActivity
 import com.woohyman.xml.ui.preferences.GamePreferenceFragment

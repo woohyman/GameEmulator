@@ -14,8 +14,8 @@ import com.woohyman.keyboard.base.ViewUtils.loadOrComputeViewPort
 import com.woohyman.keyboard.emulator.Emulator
 import com.woohyman.keyboard.utils.NLog
 import com.woohyman.keyboard.emulator.EmulatorView
-import com.woohyman.xml.base.emulator.EmulatorActivity
-import com.woohyman.xml.base.emulator.EmulatorMediator
+import com.woohyman.xml.emulator.EmulatorActivity
+import com.woohyman.xml.emulator.EmulatorMediator
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer

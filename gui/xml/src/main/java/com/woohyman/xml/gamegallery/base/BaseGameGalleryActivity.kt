@@ -1,4 +1,4 @@
-package com.woohyman.xml.ui.gamegallery.base
+package com.woohyman.xml.gamegallery.base
 
 import android.app.AlertDialog
 import android.content.DialogInterface
@@ -21,7 +21,7 @@ import com.woohyman.keyboard.utils.FileUtils.isSDCardRWMounted
 import com.woohyman.keyboard.utils.NLog.i
 import com.woohyman.xml.R
 import com.woohyman.xml.base.BaseActivity
-import com.woohyman.xml.base.emulator.EmulatorActivity
+import com.woohyman.xml.emulator.EmulatorActivity
 import java.io.File
 
 abstract class BaseGameGalleryActivity<VB : ViewBinding>(bindingFactory: (LayoutInflater) -> VB) :
