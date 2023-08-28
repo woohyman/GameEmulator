@@ -7,6 +7,7 @@ import com.liulishuo.filedownloader.FileDownloader
 import com.woohyman.keyboard.data.database.GameDescription
 import com.woohyman.keyboard.utils.NLog
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import java.io.File
 import javax.inject.Inject
 
@@ -22,7 +23,7 @@ class RomDownloader @Inject constructor() {
     }
 
     private val _downLoadState = MutableStateFlow<DownLoadResult>(DownLoadResult.Idle)
-    val downLoadState = _downLoadState
+    val downLoadState:StateFlow<DownLoadResult> = _downLoadState
 
     fun startDownload(gameDescription: GameDescription) {
         FileDownloader.setup(Utils.getApp())

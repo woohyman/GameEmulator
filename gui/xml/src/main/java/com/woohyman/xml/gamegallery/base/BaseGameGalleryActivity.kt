@@ -95,12 +95,10 @@ abstract class BaseGameGalleryActivity<VB : ViewBinding>(bindingFactory: (Layout
     }
 
     override fun onRomsFinderFoundGamesInCache(oldRoms: ArrayList<GameDescription>) {
-        NLog.e("test333", "onRomsFinderFoundGamesInCache " + oldRoms.size)
         setLastGames(oldRoms)
     }
 
     override fun onRomsFinderNewGames(roms: ArrayList<GameDescription>) {
-        NLog.e("test333", "onRomsFinderNewGames " + roms.size)
         setNewGames(roms)
     }
 

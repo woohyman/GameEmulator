@@ -15,7 +15,6 @@ import androidx.lifecycle.lifecycleScope
 import com.blankj.utilcode.constant.PermissionConstants
 import com.blankj.utilcode.util.PermissionUtils
 import com.blankj.utilcode.util.UriUtils
-import com.blankj.utilcode.util.Utils
 import com.woohyman.xml.R
 import com.woohyman.xml.util.PermissionUtil.isStorageAccess
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -28,7 +27,9 @@ import javax.inject.Inject
 class PermissionManager @Inject constructor(
     activity: Activity,
 ) : IPermissionManager {
+
     val compatActivity = activity as AppCompatActivity
+    private var isReadyToRequestRomPermission = false
 
     init {
         compatActivity.lifecycle.addObserver(this)
@@ -49,9 +50,8 @@ class PermissionManager @Inject constructor(
             }
         }
 
-    private var isReadyToRequestRomPermission = false
-    private val requestAllFileAccessLaucher =
-        compatActivity.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+    private val requestAllFileAccessLauncher =
+        compatActivity.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { _ ->
             isReadyToRequestRomPermission = true
         }
 
@@ -62,18 +62,17 @@ class PermissionManager @Inject constructor(
             val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
             intent.addCategory(Intent.CATEGORY_DEFAULT)
             requestRomPathLauncher.launch(intent)
-            isReadyToRequestRomPermission = false
         }
+        isReadyToRequestRomPermission = false
     }
 
     private fun grantSuccess(uri: Uri) {
-        val dfile = DocumentFile.fromTreeUri(Utils.getApp(), uri)
-        val file = UriUtils.uri2File(dfile!!.uri)
-
-        val editor = compatActivity.getSharedPreferences("user", MODE_PRIVATE).edit()
-        editor?.putString("path", file.absolutePath)
-        editor?.apply()
-
+        DocumentFile.fromTreeUri(compatActivity, uri)?.also {
+            val file = UriUtils.uri2File(it.uri)
+            val editor = compatActivity.getSharedPreferences("user", MODE_PRIVATE).edit()
+            editor?.putString("path", file.absolutePath)
+            editor?.apply()
+        }
     }
 
     override fun fetchStoragePermission() {
@@ -81,10 +80,9 @@ class PermissionManager @Inject constructor(
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 val intent = Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                requestAllFileAccessLaucher.launch(intent)
+                requestAllFileAccessLauncher.launch(intent)
             } else {
-                val timer = Timer()
-                timer.schedule(object : TimerTask() {
+                Timer().schedule(object : TimerTask() {
                     override fun run() {
                         startWithPermission()
                     }
