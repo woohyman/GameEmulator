@@ -1,7 +1,5 @@
 package com.woohyman.keyboard.rom
 
-import android.app.AlertDialog
-import android.content.DialogInterface
 import com.blankj.utilcode.util.Utils
 import com.woohyman.keyboard.data.database.GameDescription
 import com.woohyman.keyboard.utils.DatabaseHelper
@@ -9,16 +7,15 @@ import com.woohyman.keyboard.utils.EmuUtils
 import com.woohyman.keyboard.utils.NLog
 import com.woohyman.keyboard.utils.ZipRomFile
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import java.io.File
 import java.io.IOException
 import javax.inject.Inject
 
-class RomLauncher @Inject constructor():IRomLauncher {
+class RomLauncher @Inject constructor() : IRomLauncher {
     private val TAG = javaClass.simpleName
 
-    private val _romLauncherState = MutableSharedFlow<Result<GameDescription>>(replay = 1)
+    private val _romLauncherState = MutableSharedFlow<Result<GameDescription>>(replay = 0)
     override val romLauncherState: SharedFlow<Result<GameDescription>> = _romLauncherState
 
     private val dbHelper by lazy {

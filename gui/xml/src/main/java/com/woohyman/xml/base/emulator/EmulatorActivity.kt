@@ -151,7 +151,7 @@ abstract class EmulatorActivity : AppCompatActivity() {
         }
         when (getDisplayRotation(this)) {
             ROTATION.AUTO -> this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
-            ROTATION.PORT -> this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            ROTATION.PORT -> this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
             ROTATION.LAND -> this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         }
         pm = packageManager
