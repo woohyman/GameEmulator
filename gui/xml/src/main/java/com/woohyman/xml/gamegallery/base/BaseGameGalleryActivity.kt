@@ -2,15 +2,12 @@ package com.woohyman.xml.gamegallery.base
 
 import android.app.AlertDialog
 import android.content.DialogInterface
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import androidx.annotation.MainThread
-import androidx.documentfile.provider.DocumentFile
+import androidx.lifecycle.lifecycleScope
 import androidx.viewbinding.ViewBinding
-import com.blankj.utilcode.util.UriUtils
-import com.blankj.utilcode.util.Utils
 import com.woohyman.keyboard.data.database.GameDescription
 import com.woohyman.keyboard.emulator.Emulator
 import com.woohyman.keyboard.rom.RomsFinder
@@ -23,7 +20,11 @@ import com.woohyman.keyboard.utils.NLog.i
 import com.woohyman.xml.R
 import com.woohyman.xml.base.BaseActivity
 import com.woohyman.xml.emulator.EmulatorActivity
-import com.woohyman.xml.permission.FileAccessPermissionDialogFragment
+import com.woohyman.xml.gamegallery.IPermissionManager
+import com.woohyman.xml.gamegallery.PermissionManager
+import com.woohyman.xml.util.PermissionUtil.romPathFile
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 abstract class BaseGameGalleryActivity<VB : ViewBinding>(bindingFactory: (LayoutInflater) -> VB) :
     BaseActivity<VB>(bindingFactory), OnRomsFinderListener {
@@ -34,8 +35,20 @@ abstract class BaseGameGalleryActivity<VB : ViewBinding>(bindingFactory: (Layout
     private var romsFinder: RomsFinder? = null
     private var dbHelper: DatabaseHelper? = null
 
+    @Inject
+    lateinit var permissionManager: IPermissionManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        lifecycleScope.launch {
+            permissionManager.fetchPermissionFlow.collect {
+                if (it) {
+                    reloadGames(true)
+                }
+            }
+        }
+
         val exts = HashSet(romExtensions)
         exts.addAll(archiveExtensions)
         dbHelper = DatabaseHelper(this)
@@ -53,39 +66,6 @@ abstract class BaseGameGalleryActivity<VB : ViewBinding>(bindingFactory: (Layout
         reloadGames = true
     }
 
-    override fun onStart() {
-        super.onStart()
-        if(requestCode  == FileAccessPermissionDialogFragment.GET_ALL_FILE_ACCESS && FileAccessPermissionDialogFragment.isStorageAccess){
-            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
-            intent.addCategory(Intent.CATEGORY_DEFAULT)
-            startActivityForResult(intent, FileAccessPermissionDialogFragment.GET_ROM_PATH_ACCESS)
-            requestCode = null
-        }
-    }
-
-    private var requestCode:Int? = null
-    override fun startActivityForResult(intent: Intent, requestCode: Int, options: Bundle?) {
-        super.startActivityForResult(intent, requestCode, options)
-        this.requestCode = requestCode
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        NLog.e("test111","isStorageAccess = "+FileAccessPermissionDialogFragment.isStorageAccess+",requestCode = "+requestCode)
-        if (resultCode == RESULT_OK && requestCode == FileAccessPermissionDialogFragment.GET_ROM_PATH_ACCESS) {
-            val dfile = DocumentFile.fromTreeUri(Utils.getApp(), data!!.data!!)
-            val file = UriUtils.uri2File(dfile!!.uri)
-
-            NLog.e("test999","file ===> "+file)
-
-            val editor = Utils.getApp().getSharedPreferences("user", MODE_PRIVATE).edit()
-            editor?.putString("path", file.absolutePath)
-            editor?.commit()
-
-            reloadGames(true)
-        }
-    }
-
     override fun onResume() {
         super.onResume()
         if (!isSDCardRWMounted) {
@@ -99,7 +79,7 @@ abstract class BaseGameGalleryActivity<VB : ViewBinding>(bindingFactory: (Layout
     }
 
     protected fun reloadGames(searchNew: Boolean) {
-        if (FileAccessPermissionDialogFragment.romPathFile == null) {
+        if (romPathFile == null) {
             return
         }
         romsFinder = RomsFinder(
@@ -108,19 +88,19 @@ abstract class BaseGameGalleryActivity<VB : ViewBinding>(bindingFactory: (Layout
             { showSDCardFailed() },
             this,
             searchNew,
-            FileAccessPermissionDialogFragment.romPathFile
+            romPathFile
         )
         reloadGames = false
         romsFinder?.start()
     }
 
     override fun onRomsFinderFoundGamesInCache(oldRoms: ArrayList<GameDescription>) {
-        NLog.e("test333","onRomsFinderFoundGamesInCache "+oldRoms.size)
+        NLog.e("test333", "onRomsFinderFoundGamesInCache " + oldRoms.size)
         setLastGames(oldRoms)
     }
 
     override fun onRomsFinderNewGames(roms: ArrayList<GameDescription>) {
-        NLog.e("test333","onRomsFinderNewGames "+roms.size)
+        NLog.e("test333", "onRomsFinderNewGames " + roms.size)
         setNewGames(roms)
     }
 
