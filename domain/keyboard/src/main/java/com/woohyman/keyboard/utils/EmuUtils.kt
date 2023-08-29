@@ -16,11 +16,8 @@ import android.view.Display
 import com.blankj.utilcode.util.Utils
 import com.woohyman.keyboard.base.EmulatorUtils
 import com.woohyman.keyboard.base.SlotUtils
-import com.woohyman.keyboard.data.database.GameDescription
-import com.woohyman.keyboard.data.entity.EmulatorInfo
 import com.woohyman.keyboard.di.EmulatorEntryPoint
-import com.woohyman.keyboard.di.SingleComponent
-import com.woohyman.keyboard.emulator.NesEmulator
+import com.woohyman.keyboard.di.FetchProxyEntryPoint
 import com.woohyman.keyboard.utils.NLog.e
 import com.woohyman.keyboard.utils.NLog.i
 import dagger.hilt.android.EntryPointAccessors
@@ -47,6 +44,13 @@ object EmuUtils {
     private const val MD5_BYTES_COUNT = 10240
     private val size = Point()
 
+    //获取当前游戏信息
+    val fetchProxy = EntryPointAccessors.fromApplication(
+        Utils.getApp(),
+        FetchProxyEntryPoint::class.java
+    ).getFetchProxy()
+
+    //获取当前模拟器对象
     val emulator =
         EntryPointAccessors.fromApplication(Utils.getApp(), EmulatorEntryPoint::class.java)
             .getEmulator()
@@ -293,8 +297,12 @@ object EmuUtils {
     }
 
     @JvmStatic
-    fun createScreenshotBitmap(context: Context?, game: GameDescription): Bitmap {
-        val path = SlotUtils.getScreenshotPath(EmulatorUtils.getBaseDir(context), game.checksum, 0)
+    fun createScreenshotBitmap(context: Context?): Bitmap {
+        val path = SlotUtils.getScreenshotPath(
+            EmulatorUtils.getBaseDir(context),
+            fetchProxy.game.checksum,
+            0
+        )
         val bitmap = BitmapFactory.decodeFile(path)
         val w = bitmap.width
         val h = bitmap.height

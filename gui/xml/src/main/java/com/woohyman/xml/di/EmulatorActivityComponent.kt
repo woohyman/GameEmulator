@@ -2,8 +2,6 @@ package com.woohyman.xml.di
 
 import com.woohyman.xml.emulator.EmulatorMediator
 import com.woohyman.xml.emulator.IEmulatorMediator
-import com.woohyman.xml.emulator.business.FetchProxy
-import com.woohyman.xml.emulator.business.IFetchProxy
 import com.woohyman.xml.gamegallery.IPermissionManager
 import com.woohyman.xml.gamegallery.PermissionManager
 import dagger.Binds

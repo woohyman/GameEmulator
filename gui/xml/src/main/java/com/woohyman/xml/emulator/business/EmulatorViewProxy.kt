@@ -36,7 +36,7 @@ class EmulatorViewProxy(
                 emulatorMediator.activity?.resources?.getDimensionPixelSize(R.dimen.top_panel_touchcontroler_height)
                     ?: 0
         }
-        val shader = emulatorMediator.fragmentShader
+        val shader = EmuUtils.fetchProxy.fragmentShader
         var openGLView: OpenGLView? = null
         val hasOpenGL20 = EmuUtils.checkGL20Support(Utils.getApp())
 

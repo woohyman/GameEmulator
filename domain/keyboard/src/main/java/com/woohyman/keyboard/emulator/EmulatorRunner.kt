@@ -8,6 +8,7 @@ import com.woohyman.keyboard.base.Benchmark
 import com.woohyman.keyboard.base.EmulatorUtils
 import com.woohyman.keyboard.data.database.GameDescription
 import com.woohyman.keyboard.data.entity.SfxProfile
+import com.woohyman.keyboard.utils.EmuUtils
 import com.woohyman.keyboard.utils.EmuUtils.emulator
 import com.woohyman.keyboard.utils.FileUtils
 import com.woohyman.keyboard.utils.NLog
@@ -116,7 +117,7 @@ open class EmulatorRunner(context: Context) {
         synchronized(lock) { emulator.reset() }
     }
 
-    fun startGame(game: GameDescription) {
+    fun startGame() {
         isPaused.set(false)
         if (updater != null) {
             updater!!.destroy()
@@ -125,14 +126,14 @@ open class EmulatorRunner(context: Context) {
             audioPlayer!!.destroy()
         }
         synchronized(lock) {
-            val gfx = PreferenceUtil.getVideoProfile(context, emulator, game)
+            val gfx = PreferenceUtil.getVideoProfile(context, emulator, EmuUtils.fetchProxy.game)
             PreferenceUtil.setLastGfxProfile(context, gfx!!)
             val settings = EmulatorSettings()
-            settings.zapperEnabled = PreferenceUtil.isZapperEnabled(context, game.checksum)
+            settings.zapperEnabled = PreferenceUtil.isZapperEnabled(context, EmuUtils.fetchProxy.game.checksum)
             settings.historyEnabled = PreferenceUtil.isTimeshiftEnabled(context)
             settings.loadSavFiles = PreferenceUtil.isLoadSavFiles(context)
             settings.saveSavFiles = PreferenceUtil.isSaveSavFiles(context)
-            val profiles = emulator.info!!.availableSfxProfiles
+            val profiles = emulator.info.availableSfxProfiles
             var sfx: SfxProfile?
             var desiredQuality = PreferenceUtil.getEmulationQuality(context)
             settings.quality = desiredQuality
@@ -145,19 +146,19 @@ open class EmulatorRunner(context: Context) {
             emulator.start(gfx, sfx!!, settings)
             val battery = context.externalCacheDir!!.absolutePath
             NLog.e("bat", battery)
-            BatterySaveUtils.createSavFileCopyIfNeeded(context, game.path)
-            val batteryDir = BatterySaveUtils.getBatterySaveDir(context, game.path)
+            BatterySaveUtils.createSavFileCopyIfNeeded(context, EmuUtils.fetchProxy.game.path)
+            val batteryDir = BatterySaveUtils.getBatterySaveDir(context, EmuUtils.fetchProxy.game.path)
             val possibleBatteryFileFullPath = (batteryDir + "/"
-                    + FileUtils.getFileNameWithoutExt(File(game.path))
+                    + FileUtils.getFileNameWithoutExt(File(EmuUtils.fetchProxy.game.path))
                     + ".sav")
             emulator.loadGame(
-                game.path, batteryDir,
+                EmuUtils.fetchProxy.game.path, batteryDir,
                 possibleBatteryFileFullPath
             )
             emulator.emulateFrame(0)
         }
         updater = EmulatorThread()
-        updater!!.setFps(emulator.activeGfxProfile!!.fps)
+        updater!!.setFps(emulator.activeGfxProfile.fps)
         updater!!.start()
         if (audioEnabled) {
             audioPlayer = AudioPlayer()

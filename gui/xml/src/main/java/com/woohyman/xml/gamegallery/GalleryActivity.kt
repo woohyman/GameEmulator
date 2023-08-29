@@ -14,8 +14,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.woohyman.keyboard.data.database.GameDescription
 import com.woohyman.keyboard.rom.IRomLauncher
-import com.woohyman.keyboard.rom.RomsFinder
 import com.woohyman.keyboard.utils.DialogUtils.show
+import com.woohyman.keyboard.utils.EmuUtils
 import com.woohyman.keyboard.utils.NLog
 import com.woohyman.keyboard.utils.PreferenceUtil.getLastGalleryTab
 import com.woohyman.keyboard.utils.PreferenceUtil.saveLastGalleryTab
@@ -136,9 +136,9 @@ abstract class GalleryActivity :
         saveLastGalleryTab(this, binding.gameGalleryPager.currentItem)
     }
 
-    private fun onGameSelected(game: GameDescription?, slot: Int): Boolean {
+    private fun onGameSelected(game: GameDescription, slot: Int): Boolean {
         val intent = Intent(this, emulatorActivityClass)
-        intent.putExtra(EmulatorActivity.EXTRA_GAME, game)
+        EmuUtils.fetchProxy.game = game
         intent.putExtra(EmulatorActivity.EXTRA_SLOT, slot)
         intent.putExtra(EmulatorActivity.EXTRA_FROM_GALLERY, true)
         startActivity(intent)

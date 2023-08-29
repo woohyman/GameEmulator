@@ -30,9 +30,9 @@ public interface EmulatorController {
 
     void onWindowFocusChanged(boolean hasFocus);
 
-    void onGameStarted(GameDescription game);
+    void onGameStarted();
 
-    void onGamePaused(GameDescription game);
+    void onGamePaused();
 
     void connectToEmulator(int port);
 

@@ -11,8 +11,6 @@ import android.view.MotionEvent
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import com.woohyman.keyboard.base.EmulatorUtils
-import com.woohyman.keyboard.data.database.GameDescription
-import com.woohyman.keyboard.emulator.Emulator
 import com.woohyman.keyboard.emulator.EmulatorException
 import com.woohyman.keyboard.utils.NLog.d
 import com.woohyman.keyboard.utils.NLog.i
@@ -22,15 +20,10 @@ import com.woohyman.xml.ui.control.RestarterActivity
 
 abstract class EmulatorActivity : AppCompatActivity() {
 
-    abstract val fragmentShader: String
     private var exceptionOccurred = false
 
     val emulatorMediator: EmulatorMediator by lazy {
-        EmulatorMediator(this, fragmentShader)
-    }
-
-    val game: GameDescription by lazy {
-        intent.getSerializableExtra(EXTRA_GAME) as GameDescription
+        EmulatorMediator(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -162,7 +155,7 @@ abstract class EmulatorActivity : AppCompatActivity() {
         if (exceptionOccurred) {
             return
         }
-        emulatorMediator.gameControlProxy.onGameStarted(game)
+        emulatorMediator.gameControlProxy.onGameStarted()
     }
 
     override fun startActivity(intent: Intent) {
@@ -228,7 +221,6 @@ abstract class EmulatorActivity : AppCompatActivity() {
     }
 
     companion object {
-        const val EXTRA_GAME = "game"
         const val EXTRA_SLOT = "slot"
         const val EXTRA_FROM_GALLERY = "fromGallery"
         const val TAG = "EmulatorActivity"

@@ -180,15 +180,15 @@ class TouchController(
         emulator!!.setKeyPressed(port, cc, false)
     }
 
-    override fun onGameStarted(game: GameDescription) {
-        val gfxProfile = emulator!!.activeGfxProfile
+    override fun onGameStarted() {
+        val gfxProfile = emulator.activeGfxProfile
         zapperIc!!.visibility = if (PreferenceUtil.isZapperEnabled(
                 Utils.getApp(),
-                game.checksum
+                EmuUtils.fetchProxy.game.checksum
             )
         ) View.VISIBLE else View.GONE
         palIc!!.visibility =
-            if (gfxProfile!!.name == "PAL") View.VISIBLE else View.GONE
+            if (gfxProfile.name == "PAL") View.VISIBLE else View.GONE
         ntscIc!!.visibility =
             if (gfxProfile.name == "NTSC") View.VISIBLE else View.GONE
         val remoteVisible = (PreferenceUtil.isWifiServerEnable(Utils.getApp())
@@ -221,7 +221,7 @@ class TouchController(
         multitouchLayer!!.invalidate()
     }
 
-    override fun onGamePaused(game: GameDescription) {}
+    override fun onGamePaused() {}
 
     fun hide() {
         if (!hidden) {

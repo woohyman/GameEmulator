@@ -1,6 +1,7 @@
 package com.woohyman.keyboard.di
 
 import com.woohyman.keyboard.emulator.NesEmulator
+import com.woohyman.keyboard.rom.INesGameDataProvider
 import com.woohyman.keyboard.rom.IRomLauncher
 import com.woohyman.keyboard.rom.RomLauncher
 import dagger.Binds
@@ -26,4 +27,10 @@ abstract class SingleComponent {
 @InstallIn(SingletonComponent::class)
 interface EmulatorEntryPoint {
     fun getEmulator(): NesEmulator
+}
+
+@EntryPoint
+@InstallIn(SingletonComponent::class)
+interface FetchProxyEntryPoint {
+    fun getFetchProxy(): INesGameDataProvider
 }

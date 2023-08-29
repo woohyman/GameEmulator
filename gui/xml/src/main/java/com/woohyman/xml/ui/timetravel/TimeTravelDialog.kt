@@ -10,7 +10,6 @@ import com.woohyman.keyboard.base.Manager
 import com.woohyman.keyboard.emulator.EmulatorException
 import com.woohyman.xml.R
 import com.woohyman.xml.databinding.DialogTimeTravelBinding
-import com.woohyman.xml.util.EmulatorUtil
 import java.util.Locale
 
 class TimeTravelDialog(
@@ -35,10 +34,10 @@ class TimeTravelDialog(
         (binding.dialogTimeSeek as SeekBar).max = max
         (binding.dialogTimeSeek as SeekBar).progress = max
         binding.dialogTimeWheelBtnOk.setOnClickListener {
-            manager.startGame(EmulatorUtil.fetchProxy.game)
+            manager.startGame()
             manager.loadHistoryState(max - (binding.dialogTimeSeek as SeekBar).progress)
             try {
-                manager.enableCheats(context, EmulatorUtil.fetchProxy.game)
+                manager.enableCheats(context)
             } catch (ignored: EmulatorException) {
             }
             dismiss()

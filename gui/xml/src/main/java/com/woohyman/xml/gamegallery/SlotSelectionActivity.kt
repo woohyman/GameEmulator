@@ -13,7 +13,6 @@ import com.woohyman.xml.base.BaseActivity
 import com.woohyman.xml.databinding.ActivitySlotSelectionBinding
 import com.woohyman.xml.databinding.RowSlotItemBinding
 import com.woohyman.xml.gamegallery.Constants.DIALOAG_TYPE_LOAD
-import com.woohyman.xml.gamegallery.Constants.EXTRA_GAME
 import com.woohyman.xml.gamegallery.Constants.EXTRA_SLOT
 import com.woohyman.xml.gamegallery.Constants.SEND_SLOT
 import com.woohyman.xml.gamegallery.uistate.SlotInfoUIState
@@ -53,7 +52,7 @@ class SlotSelectionActivity : BaseActivity<ActivitySlotSelectionBinding>
             slotView.rowSlotMessage.text = messageS
             slotView.rowSlotDate.text = dateS
             slotView.rowSlotTime.text = timeS
-            slotView.root.setOnClickListener { onSelected(viewModel.game, idx + 1, isUsed) }
+            slotView.root.setOnClickListener { onSelected(idx + 1, isUsed) }
             if (isUsed) {
                 slotView.root.setOnLongClickListener {
                     val menu = PopupMenu(this@SlotSelectionActivity)
@@ -70,12 +69,11 @@ class SlotSelectionActivity : BaseActivity<ActivitySlotSelectionBinding>
         }
     }
 
-    private fun onSelected(game: GameDescription?, slot: Int, isUsed: Boolean) {
+    private fun onSelected(slot: Int, isUsed: Boolean) {
         if (viewModel.type == DIALOAG_TYPE_LOAD && !isUsed) {
             return
         }
         val data = Intent()
-        data.putExtra(EXTRA_GAME, game)
         data.putExtra(EXTRA_SLOT, slot)
         setResult(RESULT_OK, data)
         finish()
@@ -114,7 +112,6 @@ class SlotSelectionActivity : BaseActivity<ActivitySlotSelectionBinding>
 }
 
 object Constants{
-    val EXTRA_GAME = "EXTRA_GAME"
     val EXTRA_BASE_DIRECTORY = "EXTRA_BASE_DIR"
     val EXTRA_SLOT = "EXTRA_SLOT"
     val EXTRA_DIALOG_TYPE_INT = "EXTRA_DIALOG_TYPE_INT"

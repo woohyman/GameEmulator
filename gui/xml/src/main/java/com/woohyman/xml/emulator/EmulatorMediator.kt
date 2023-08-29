@@ -26,7 +26,6 @@ import javax.inject.Inject
 
 class EmulatorMediator constructor(
     private val appCompatActivity: AppCompatActivity,
-    val fragmentShader: String,
 ) : IEmulatorMediator, EmulatorRunner.OnNotRespondingListener {
 
     val gameMenuProxy: GameMenuDelegate = GameMenuDelegate(this)

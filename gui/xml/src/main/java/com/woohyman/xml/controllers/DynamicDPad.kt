@@ -58,8 +58,8 @@ class DynamicDPad(
 
     override fun onPause() {}
     override fun onWindowFocusChanged(hasFocus: Boolean) {}
-    override fun onGameStarted(game: GameDescription) {}
-    override fun onGamePaused(game: GameDescription) {}
+    override fun onGameStarted() {}
+    override fun onGamePaused() {}
     override fun connectToEmulator(port: Int) {
         this.emulator = emulator
         this.port = port

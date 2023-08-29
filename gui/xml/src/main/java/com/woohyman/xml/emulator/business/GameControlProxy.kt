@@ -9,8 +9,6 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.blankj.utilcode.util.Utils
 import com.woohyman.keyboard.controllers.EmulatorController
-import com.woohyman.keyboard.data.database.GameDescription
-import com.woohyman.keyboard.emulator.Emulator
 import com.woohyman.keyboard.emulator.EmulatorException
 import com.woohyman.keyboard.utils.EmuUtils
 import com.woohyman.keyboard.utils.PreferenceUtil
@@ -20,7 +18,6 @@ import com.woohyman.xml.controllers.KeyboardController
 import com.woohyman.xml.controllers.QuickSaveController
 import com.woohyman.xml.controllers.TouchController
 import com.woohyman.xml.controllers.ZapperGun
-import com.woohyman.xml.util.EmulatorUtil
 
 class GameControlProxy constructor(
     private val emulatorMediator: EmulatorMediator,
@@ -68,7 +65,7 @@ class GameControlProxy constructor(
 
         val kc = KeyboardController(
             Utils.getApp(),
-            EmulatorUtil.fetchProxy.game.checksum,
+            EmuUtils.fetchProxy.game.checksum,
             emulatorMediator
         )
         controllers.add(kc)
@@ -108,7 +105,7 @@ class GameControlProxy constructor(
         }
         try {
             for (controller in controllers) {
-                controller.onGameStarted(EmulatorUtil.fetchProxy.game)
+                controller.onGameStarted()
             }
         } catch (e: EmulatorException) {
             emulatorMediator.handleException(e)
@@ -120,7 +117,7 @@ class GameControlProxy constructor(
         super.onPause(owner)
         for (controller in controllers) {
             controller.onPause()
-            controller.onGamePaused(EmulatorUtil.fetchProxy.game)
+            controller.onGamePaused()
         }
     }
 
@@ -152,15 +149,15 @@ class GameControlProxy constructor(
         }
     }
 
-    override fun onGameStarted(game: GameDescription?) {
+    override fun onGameStarted() {
         controllers.forEach {
-            it.onGameStarted(game)
+            it.onGameStarted()
         }
     }
 
-    override fun onGamePaused(game: GameDescription?) {
+    override fun onGamePaused() {
         controllers.forEach {
-            it.onGamePaused(game)
+            it.onGamePaused()
         }
     }
 

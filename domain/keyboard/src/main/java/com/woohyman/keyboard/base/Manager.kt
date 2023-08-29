@@ -2,18 +2,15 @@ package com.woohyman.keyboard.base
 
 import android.content.Context
 import com.woohyman.keyboard.cheats.Cheat
-import com.woohyman.keyboard.data.database.GameDescription
-import com.woohyman.keyboard.emulator.Emulator
 import com.woohyman.keyboard.emulator.EmulatorException
 import com.woohyman.keyboard.emulator.EmulatorRunner
-import com.woohyman.keyboard.emulator.NesEmulator
+import com.woohyman.keyboard.utils.EmuUtils
 import com.woohyman.keyboard.utils.EmuUtils.emulator
-import com.woohyman.mylibrary.R
 import com.woohyman.keyboard.utils.FileUtils
 import com.woohyman.keyboard.utils.NLog
+import com.woohyman.mylibrary.R
 import java.io.File
 import java.util.Locale
-import javax.inject.Inject
 
 open class Manager(context: Context) : EmulatorRunner(
     context
@@ -47,9 +44,9 @@ open class Manager(context: Context) : EmulatorRunner(
         }
     }
 
-    fun enableCheats(ctx: Context?, game: GameDescription): Int {
+    fun enableCheats(ctx: Context?): Int {
         var numCheats = 0
-        for (cheatChars in Cheat.getAllEnableCheats(ctx, game.checksum)) {
+        for (cheatChars in Cheat.getAllEnableCheats(ctx, EmuUtils.fetchProxy.game.checksum)) {
             if (cheatChars.contains(":")) {
                 if (emulator.info.supportsRawCheats()) {
                     var rawValues: IntArray? = null
@@ -60,7 +57,7 @@ open class Manager(context: Context) : EmulatorRunner(
                             R.string.act_emulator_invalid_cheat, cheatChars
                         )
                     }
-                    enableRawCheat(rawValues?.get(0)!!, rawValues?.get(1)!!, rawValues?.get(2)!!)
+                    enableRawCheat(rawValues?.get(0)!!, rawValues[1]!!, rawValues?.get(2)!!)
                 } else {
                     throw EmulatorException(R.string.act_emulator_invalid_cheat, cheatChars)
                 }

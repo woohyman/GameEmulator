@@ -12,7 +12,6 @@ import com.woohyman.keyboard.utils.EmuUtils
 import com.woohyman.keyboard.utils.EmuUtils.emulator
 
 class GamePreferenceActivity : AppCompatPreferenceActivity() {
-    private var game: GameDescription? = null
     override fun isValidFragment(fragmentName: String): Boolean {
         return true
     }
@@ -21,7 +20,6 @@ class GamePreferenceActivity : AppCompatPreferenceActivity() {
         super.onCreate(savedInstanceState)
         val actionBar = supportActionBar
         actionBar?.setDisplayHomeAsUpEnabled(true)
-        game = intent.getSerializableExtra(EXTRA_GAME) as GameDescription?
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -46,7 +44,6 @@ class GamePreferenceActivity : AppCompatPreferenceActivity() {
     }
 
     companion object {
-        const val EXTRA_GAME = "EXTRA_GAME"
         fun initZapper(zapper: Preference?, zapperCategory: PreferenceCategory) {
             if (!emulator.info.hasZapper()) {
                 zapperCategory.removePreference(zapper)

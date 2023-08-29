@@ -7,11 +7,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.blankj.utilcode.util.Utils
 import com.woohyman.keyboard.base.SlotUtils
-import com.woohyman.keyboard.data.database.GameDescription
+import com.woohyman.keyboard.utils.EmuUtils
 import com.woohyman.xml.gamegallery.Constants.DIALOAG_TYPE_LOAD
 import com.woohyman.xml.gamegallery.Constants.EXTRA_BASE_DIRECTORY
 import com.woohyman.xml.gamegallery.Constants.EXTRA_DIALOG_TYPE_INT
-import com.woohyman.xml.gamegallery.Constants.EXTRA_GAME
 import com.woohyman.xml.gamegallery.uistate.SlotInfoUIState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -33,15 +32,13 @@ class SlotSelectionViewModel @Inject constructor(
     val curShareFlow: SharedFlow<SlotInfoUIState> = _curShareFlow
 
     var baseDir: String? = null
-    var game: GameDescription? = null
     var type: Int = 0
 
     fun onCreate(intent: Intent) {
-        game = intent.getSerializableExtra(EXTRA_GAME) as GameDescription?
         baseDir = intent.getStringExtra(EXTRA_BASE_DIRECTORY)
         type = intent.getIntExtra(EXTRA_DIALOG_TYPE_INT, DIALOAG_TYPE_LOAD)
 
-        val slotInfos = SlotUtils.getSlots(baseDir, game?.checksum)
+        val slotInfos = SlotUtils.getSlots(baseDir, EmuUtils.fetchProxy.game.checksum)
         val dateFormat = DateFormat.getDateFormat(Utils.getApp())
         val timeFormat = DateFormat.getTimeFormat(Utils.getApp())
         val dd = Calendar.getInstance()

@@ -3,10 +3,9 @@ package com.woohyman.xml.controllers
 import android.content.Context
 import android.view.MotionEvent
 import android.view.View
-import com.woohyman.xml.emulator.EmulatorActivity
 import com.woohyman.keyboard.controllers.EmulatorController
-import com.woohyman.keyboard.data.database.GameDescription
 import com.woohyman.keyboard.emulator.Emulator
+import com.woohyman.keyboard.utils.EmuUtils
 import com.woohyman.keyboard.utils.PreferenceUtil.isZapperEnabled
 import com.woohyman.xml.emulator.EmulatorMediator
 
@@ -78,9 +77,9 @@ class ZapperGun(
         emulator = null
     }
 
-    override fun onGameStarted(game: GameDescription) {
-        isEnabled = isZapperEnabled(context!!, game.checksum)
+    override fun onGameStarted() {
+        isEnabled = isZapperEnabled(context!!, EmuUtils.fetchProxy.game.checksum)
     }
 
-    override fun onGamePaused(game: GameDescription) {}
+    override fun onGamePaused() {}
 }

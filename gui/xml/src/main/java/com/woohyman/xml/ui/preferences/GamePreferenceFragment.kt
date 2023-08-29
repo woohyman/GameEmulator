@@ -5,15 +5,13 @@ import android.preference.ListPreference
 import android.preference.PreferenceCategory
 import android.preference.PreferenceFragment
 import com.woohyman.xml.R
-import com.woohyman.keyboard.data.database.GameDescription
+import com.woohyman.keyboard.utils.EmuUtils
 
 class GamePreferenceFragment : PreferenceFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val game = activity.intent
-            .getSerializableExtra(GamePreferenceActivity.Companion.EXTRA_GAME) as GameDescription?
         val prefMgr = preferenceManager
-        prefMgr.sharedPreferencesName = game!!.checksum + ".gamepref"
+        prefMgr.sharedPreferencesName = EmuUtils.fetchProxy.game.checksum + ".gamepref"
         addPreferencesFromResource(R.xml.game_preferences)
         val videoProfile = findPreference("game_pref_ui_pal_ntsc_switch") as ListPreference
         val videoProfileCategory =

@@ -9,11 +9,11 @@ import com.woohyman.keyboard.base.Benchmark
 import com.woohyman.keyboard.base.Manager
 import com.woohyman.keyboard.base.SlotUtils
 import com.woohyman.keyboard.emulator.EmulatorException
+import com.woohyman.keyboard.utils.EmuUtils
 import com.woohyman.keyboard.utils.PreferenceUtil
 import com.woohyman.xml.R
 import com.woohyman.xml.emulator.EmulatorActivity
 import com.woohyman.xml.emulator.EmulatorMediator
-import com.woohyman.xml.util.EmulatorUtil
 
 class EmulatorManagerProxy constructor(
     private val emulatorMediator: EmulatorMediator,
@@ -73,14 +73,14 @@ class EmulatorManagerProxy constructor(
         isFFPressed = false
 
         try {
-            startGame(EmulatorUtil.fetchProxy.game)
+            startGame()
 
             if (emulatorMediator.slotToRun != -1) {
                 loadState(emulatorMediator.slotToRun)
             } else {
                 if (SlotUtils.autoSaveExists(
                         emulatorMediator.baseDir,
-                        EmulatorUtil.fetchProxy.game.checksum
+                        EmuUtils.fetchProxy.game.checksum
                     )
                 ) {
                     loadState(0)
@@ -126,7 +126,7 @@ class EmulatorManagerProxy constructor(
     fun enableCheats() {
         var numCheats = 0
         try {
-            numCheats = enableCheats(Utils.getApp(), EmulatorUtil.fetchProxy.game)
+            numCheats = enableCheats(Utils.getApp())
         } catch (e: EmulatorException) {
             Toast.makeText(
                 Utils.getApp(), e.getMessage(Utils.getApp()),
