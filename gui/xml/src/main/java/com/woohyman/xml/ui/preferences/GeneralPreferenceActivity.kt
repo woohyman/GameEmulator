@@ -14,8 +14,8 @@ import android.view.MenuItem
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import com.woohyman.xml.R
-import com.woohyman.keyboard.base.EmulatorHolder.info
 import com.woohyman.keyboard.keyboard.KeyboardProfile.Companion.getProfilesNames
+import com.woohyman.keyboard.utils.EmuUtils
 
 class GeneralPreferenceActivity : AppCompatPreferenceActivity() {
     override fun isValidFragment(fragmentName: String): Boolean {
@@ -130,7 +130,7 @@ class GeneralPreferenceActivity : AppCompatPreferenceActivity() {
 
         fun initFastForward(ff: CheckBoxPreference?, activity: Activity?) {}
         fun initQuality(cat: PreferenceCategory, pref: Preference?) {
-            if (info!!.numQualityLevels == 0) {
+            if (EmuUtils.getEmulatorInfo().numQualityLevels == 0) {
                 cat.removePreference(pref)
             }
         }

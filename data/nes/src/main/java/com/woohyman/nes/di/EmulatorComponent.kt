@@ -4,7 +4,6 @@ import com.woohyman.keyboard.emulator.NesEmulator
 import com.woohyman.nes.NesEmulatorImpl
 import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton

@@ -13,11 +13,17 @@ import android.graphics.Rect
 import android.net.ConnectivityManager
 import android.net.wifi.WifiManager
 import android.view.Display
+import com.blankj.utilcode.util.Utils
 import com.woohyman.keyboard.base.EmulatorUtils
 import com.woohyman.keyboard.base.SlotUtils
 import com.woohyman.keyboard.data.database.GameDescription
+import com.woohyman.keyboard.data.entity.EmulatorInfo
+import com.woohyman.keyboard.di.EmulatorEntryPoint
+import com.woohyman.keyboard.di.SingleComponent
+import com.woohyman.keyboard.emulator.NesEmulator
 import com.woohyman.keyboard.utils.NLog.e
 import com.woohyman.keyboard.utils.NLog.i
+import dagger.hilt.android.EntryPointAccessors
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -40,6 +46,12 @@ object EmuUtils {
     private const val TAG = "utils.EmuUtils"
     private const val MD5_BYTES_COUNT = 10240
     private val size = Point()
+
+    fun getEmulatorInfo(): EmulatorInfo {
+        val emulator = EntryPointAccessors.fromApplication(Utils.getApp(), EmulatorEntryPoint::class.java)
+        return emulator.getEmulator().info
+    }
+
     @JvmStatic
     fun stripExtension(str: String?): String? {
         if (str == null) return null

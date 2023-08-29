@@ -3,7 +3,6 @@ package com.woohyman.keyboard.utils
 import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
-import com.woohyman.keyboard.base.EmulatorHolder.info
 import com.woohyman.keyboard.base.ViewPort
 import com.woohyman.keyboard.data.database.GameDescription
 import com.woohyman.keyboard.data.entity.GfxProfile
@@ -313,7 +312,7 @@ object PreferenceUtil {
         val gfxProfileName = getVideoMode(context, emulator, game.checksum)
         var gfx: GfxProfile? = null
         if (gfxProfileName != null) {
-            for (profile in info!!.availableGfxProfiles!!) {
+            for (profile in EmuUtils.getEmulatorInfo().availableGfxProfiles!!) {
                 if (profile!!.name!!.lowercase() ==
                     gfxProfileName.lowercase()
                 ) {
@@ -329,11 +328,11 @@ object PreferenceUtil {
     }
 
     @JvmStatic
-    fun getLastGfxProfile(context: Context?): GfxProfile? {
+    fun getLastGfxProfile(context: Context?): GfxProfile {
         val pref = PreferenceManager.getDefaultSharedPreferences(context)
         val name = pref.getString("_lastGfx", null)
         try {
-            val profiles = info!!.availableGfxProfiles
+            val profiles = EmuUtils.getEmulatorInfo().availableGfxProfiles
             for (profile in profiles!!) {
                 if (profile!!.name == name) {
                     return profile
@@ -341,7 +340,7 @@ object PreferenceUtil {
             }
         } catch (ignored: Exception) {
         }
-        return info!!.defaultGfxProfile
+        return EmuUtils.getEmulatorInfo().defaultGfxProfile
     }
 
     fun setLastGfxProfile(context: Context?, profile: GfxProfile) {

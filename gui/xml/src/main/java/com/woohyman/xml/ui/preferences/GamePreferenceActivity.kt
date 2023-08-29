@@ -7,8 +7,8 @@ import android.preference.PreferenceCategory
 import android.preference.PreferenceScreen
 import android.view.MenuItem
 import com.woohyman.xml.R
-import com.woohyman.keyboard.base.EmulatorHolder.info
 import com.woohyman.keyboard.data.database.GameDescription
+import com.woohyman.keyboard.utils.EmuUtils
 
 class GamePreferenceActivity : AppCompatPreferenceActivity() {
     private var game: GameDescription? = null
@@ -47,7 +47,7 @@ class GamePreferenceActivity : AppCompatPreferenceActivity() {
     companion object {
         const val EXTRA_GAME = "EXTRA_GAME"
         fun initZapper(zapper: Preference?, zapperCategory: PreferenceCategory) {
-            if (!info!!.hasZapper()) {
+            if (!EmuUtils.getEmulatorInfo().hasZapper()) {
                 zapperCategory.removePreference(zapper)
             }
         }
@@ -56,10 +56,10 @@ class GamePreferenceActivity : AppCompatPreferenceActivity() {
             preference: ListPreference,
             category: PreferenceCategory, screen: PreferenceScreen
         ) {
-            val profiles = info!!.availableGfxProfiles
+            val profiles = EmuUtils.getEmulatorInfo().availableGfxProfiles
             if (profiles!!.size > 1) {
                 val res = arrayOfNulls<CharSequence>(
-                    info!!.availableSfxProfiles!!.size + 1
+                    EmuUtils.getEmulatorInfo().availableSfxProfiles!!.size + 1
                 )
                 res[0] = "Auto"
                 var i = 1

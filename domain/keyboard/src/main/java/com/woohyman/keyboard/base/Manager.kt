@@ -6,11 +6,13 @@ import com.woohyman.keyboard.data.database.GameDescription
 import com.woohyman.keyboard.emulator.Emulator
 import com.woohyman.keyboard.emulator.EmulatorException
 import com.woohyman.keyboard.emulator.EmulatorRunner
+import com.woohyman.keyboard.emulator.NesEmulator
 import com.woohyman.mylibrary.R
 import com.woohyman.keyboard.utils.FileUtils
 import com.woohyman.keyboard.utils.NLog
 import java.io.File
 import java.util.Locale
+import javax.inject.Inject
 
 open class Manager(emulator: Emulator, context: Context) : EmulatorRunner(
     emulator, context
@@ -48,7 +50,7 @@ open class Manager(emulator: Emulator, context: Context) : EmulatorRunner(
         var numCheats = 0
         for (cheatChars in Cheat.getAllEnableCheats(ctx, game.checksum)) {
             if (cheatChars.contains(":")) {
-                if (EmulatorHolder.info!!.supportsRawCheats()) {
+                if (emulator.info.supportsRawCheats()) {
                     var rawValues: IntArray? = null
                     rawValues = try {
                         Cheat.rawToValues(cheatChars)

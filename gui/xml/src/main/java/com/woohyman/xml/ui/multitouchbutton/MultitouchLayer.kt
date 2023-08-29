@@ -22,13 +22,13 @@ import android.view.WindowManager
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import com.woohyman.xml.R
-import com.woohyman.keyboard.base.EmulatorHolder.info
 import com.woohyman.keyboard.base.ViewPort
 import com.woohyman.keyboard.base.ViewUtils.computeAllInitViewPorts
 import com.woohyman.keyboard.base.ViewUtils.computeInitViewPort
 import com.woohyman.keyboard.base.ViewUtils.loadOrComputeAllViewPorts
 import com.woohyman.keyboard.base.ViewUtils.loadOrComputeViewPort
 import com.woohyman.keyboard.controllers.EmulatorController
+import com.woohyman.keyboard.utils.EmuUtils
 import com.woohyman.keyboard.utils.EmuUtils.getDisplayHeight
 import com.woohyman.keyboard.utils.EmuUtils.getDisplayWidth
 import com.woohyman.keyboard.utils.EmuUtils.isDebuggable
@@ -181,7 +181,7 @@ class MultitouchLayer : RelativeLayout, OnTouchListener {
         btnIdMap.add(R.id.button_b)
         btnIdMap.add(R.id.button_b_turbo)
         btnIdMap.add(R.id.button_ab)
-        if (info!!.keyMapping[EmulatorController.KEY_SELECT] != -1) {
+        if (EmuUtils.getEmulatorInfo().keyMapping[EmulatorController.KEY_SELECT] != -1) {
             btnIdMap.add(R.id.button_select)
         }
         btnIdMap.add(R.id.button_start)
@@ -310,7 +310,7 @@ class MultitouchLayer : RelativeLayout, OnTouchListener {
         touchLayer?.setOnTouchListener(this)
         removeAllViews()
         addView(touchLayer, LinearLayout.LayoutParams.MATCH_PARENT, measuredHeight)
-        val hasSelect = info!!.keyMapping[EmulatorController.KEY_SELECT] != -1
+        val hasSelect = EmuUtils.getEmulatorInfo().keyMapping[EmulatorController.KEY_SELECT] != -1
         if (hasSelect) {
             editElements.add(EditElement(R.id.button_select, true, buttonMinSizePx).saveHistory())
         }
@@ -970,7 +970,7 @@ class MultitouchLayer : RelativeLayout, OnTouchListener {
         viewPort.top -= if (cacheRotation == 0) topOffset else 0
         viewPort.bottom -= if (cacheRotation == 0) topOffset else 0
         i(
-            TAG, "init screenlayout " + info!!.defaultGfxProfile.name
+            TAG, "init screenlayout " + EmuUtils.getEmulatorInfo().defaultGfxProfile.name
                     + " vp:" + viewPort.left + "," + viewPort.top + "," + viewPort.width()
                     + "," + viewPort.height()
         )
@@ -1030,7 +1030,7 @@ class MultitouchLayer : RelativeLayout, OnTouchListener {
     fun saveScreenElement() {
         endMovementCheck()
         val bb = screenElement!!.boundingbox
-        val env = viewPortsEnvelops[info!!.defaultGfxProfile.name]
+        val env = viewPortsEnvelops[EmuUtils.getEmulatorInfo().defaultGfxProfile.name]
         val rect = Rect()
         rect.left = Math.round(bb.left + env!!.left * bb.width())
         rect.top = Math.round(bb.top + env.top * bb.height())
@@ -1046,7 +1046,7 @@ class MultitouchLayer : RelativeLayout, OnTouchListener {
         vp.width = rect.width()
         vp.height = rect.height()
         i(
-            TAG, "save screenlayout " + info!!.defaultGfxProfile.name
+            TAG, "save screenlayout " + EmuUtils.getEmulatorInfo().defaultGfxProfile.name
                     + " vp:" + vp.x + "," + vp.y + "," + vp.width + "," + vp.height
         )
         setViewPort(context, vp, cacheW, cacheH)

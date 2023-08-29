@@ -24,9 +24,9 @@ import android.widget.EditText
 import android.widget.ListView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.woohyman.keyboard.base.EmulatorHolder
 import com.woohyman.keyboard.keyboard.KeyboardControllerKeys
 import com.woohyman.keyboard.keyboard.KeyboardProfile
+import com.woohyman.keyboard.utils.EmuUtils
 import com.woohyman.keyboard.utils.NLog
 import com.woohyman.xml.R
 import java.util.regex.Pattern
@@ -70,7 +70,7 @@ class KeyboardSettingsActivity : AppCompatActivity(), AdapterView.OnItemClickLis
         list?.setAdapter(adapter)
         list?.setOnItemClickListener(this)
         val plv = findViewById<PlayersLabelView>(R.id.act_keyboard_settings_plv)
-        if (EmulatorHolder.info!!.isMultiPlayerSupported) {
+        if (EmuUtils.getEmulatorInfo().isMultiPlayerSupported) {
             plv.offsets = adapter?.playersOffset!!
             list?.setOnScrollListener(object : AbsListView.OnScrollListener {
                 override fun onScrollStateChanged(view: AbsListView, scrollState: Int) {}

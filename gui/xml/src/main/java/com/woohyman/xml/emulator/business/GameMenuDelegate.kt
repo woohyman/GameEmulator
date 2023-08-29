@@ -11,7 +11,6 @@ import androidx.lifecycle.LifecycleOwner
 import com.blankj.utilcode.constant.PermissionConstants
 import com.blankj.utilcode.util.PermissionUtils
 import com.blankj.utilcode.util.Utils
-import com.woohyman.keyboard.base.EmulatorHolder
 import com.woohyman.keyboard.emulator.EmulatorException
 import com.woohyman.keyboard.utils.DialogUtils
 import com.woohyman.keyboard.utils.EmuUtils
@@ -181,7 +180,7 @@ class GameMenuDelegate constructor(
         val name = emulatorMediator.game.cleanName + "-screenshot"
         val dir = File(
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
-            EmulatorHolder.info?.name?.replace(' ', '_').toString()
+            EmuUtils.getEmulatorInfo().name?.replace(' ', '_').toString()
         )
         if (!dir.exists()) {
             dir.mkdirs()

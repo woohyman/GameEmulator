@@ -7,8 +7,8 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
-import com.woohyman.keyboard.base.EmulatorHolder.info
 import com.woohyman.keyboard.cheats.Cheat
+import com.woohyman.keyboard.utils.EmuUtils
 import com.woohyman.xml.R
 import com.woohyman.xml.base.BaseActivity
 import com.woohyman.xml.databinding.ActivityCheatsBinding
@@ -79,7 +79,7 @@ class CheatsActivity : BaseActivity<ActivityCheatsBinding>(
                     binding.dialogNewCheatChars.setSelection(newText.length)
                 }
                 s = newText
-                newText = s.replace(info!!.cheatInvalidCharsRegex!!.toRegex(), "")
+                newText = s.replace(EmuUtils.getEmulatorInfo().cheatInvalidCharsRegex!!.toRegex(), "")
                 if (newText != s) {
                     binding.dialogNewCheatChars.setText(newText)
                     binding.dialogNewCheatChars.setSelection(newText.length)

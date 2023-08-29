@@ -3,6 +3,7 @@ package com.woohyman.keyboard.base
 import android.content.Context
 import com.woohyman.keyboard.emulator.Emulator
 import com.woohyman.keyboard.data.entity.GfxProfile
+import com.woohyman.keyboard.utils.EmuUtils
 import com.woohyman.keyboard.utils.PreferenceUtil
 
 object ViewUtils {
@@ -14,7 +15,7 @@ object ViewUtils {
         gfx = if (emulator != null) {
             emulator.activeGfxProfile
         } else {
-            com.woohyman.keyboard.base.EmulatorHolder.info?.defaultGfxProfile
+            EmuUtils.getEmulatorInfo().defaultGfxProfile
         }
         return computeViewPort(
             gfx, screenWidth, screenHeight, paddingLeft,
@@ -27,7 +28,7 @@ object ViewUtils {
         context: Context?, w: Int, h: Int,
         paddingLeft: Int, paddingTop: Int
     ): ViewPort {
-        val gfx = com.woohyman.keyboard.base.EmulatorHolder.info?.defaultGfxProfile
+        val gfx = EmuUtils.getEmulatorInfo().defaultGfxProfile
         return computeViewPort(gfx, w, h, paddingLeft, paddingTop)
     }
 
@@ -36,12 +37,12 @@ object ViewUtils {
         context: Context?, w: Int, h: Int, paddingLeft: Int, paddingTop: Int
     ): HashMap<String, ViewPort> {
         val res = HashMap<String, ViewPort>()
-        for (profile in com.woohyman.keyboard.base.EmulatorHolder.info?.availableGfxProfiles!!) {
+        for (profile in EmuUtils.getEmulatorInfo().availableGfxProfiles!!) {
             val vp = computeViewPort(
                 profile, w, h, paddingLeft,
                 paddingTop
             )
-            res[profile!!.name!!] = vp
+            res[profile!!.name] = vp
         }
         return res
     }
@@ -54,7 +55,7 @@ object ViewUtils {
             context, w, h,
             paddingLeft, paddingTop
         )
-        for (profile in com.woohyman.keyboard.base.EmulatorHolder.info?.availableGfxProfiles!!) {
+        for (profile in EmuUtils.getEmulatorInfo().availableGfxProfiles!!) {
             val vp = loadViewPort(context, w, h, profile)
             if (vp != null) {
                 res[profile!!.name!!] = vp
@@ -74,7 +75,7 @@ object ViewUtils {
         profile = if (emulator != null) {
             emulator.activeGfxProfile
         } else {
-            com.woohyman.keyboard.base.EmulatorHolder.info?.defaultGfxProfile
+            EmuUtils.getEmulatorInfo().defaultGfxProfile
         }
         if (!ignoreFullscreenSettings
             && PreferenceUtil.isFullScreenEnabled(context)
@@ -100,7 +101,7 @@ object ViewUtils {
         profile: GfxProfile?
     ): ViewPort? {
         val vp = PreferenceUtil.getViewPort(context, w, h)
-        val defaultProfile = com.woohyman.keyboard.base.EmulatorHolder.info?.defaultGfxProfile
+        val defaultProfile = EmuUtils.getEmulatorInfo().defaultGfxProfile
         if (vp != null && profile !== defaultProfile) {
             var vpw = vp.width
             var vph = vp.height
@@ -127,7 +128,7 @@ object ViewUtils {
     ): ViewPort {
         var gfx = gfx
         if (gfx == null) {
-            gfx = com.woohyman.keyboard.base.EmulatorHolder.info?.defaultGfxProfile
+            gfx = EmuUtils.getEmulatorInfo().defaultGfxProfile
         }
         val w = screenWidth - paddingLeft
         val h = screenHeight - paddingTop
