@@ -26,7 +26,7 @@ abstract class EmulatorActivity : AppCompatActivity() {
     private var exceptionOccurred = false
 
     val emulatorMediator: EmulatorMediator by lazy {
-        EmulatorMediator(this, game, fragmentShader)
+        EmulatorMediator(this, fragmentShader)
     }
 
     val game: GameDescription by lazy {

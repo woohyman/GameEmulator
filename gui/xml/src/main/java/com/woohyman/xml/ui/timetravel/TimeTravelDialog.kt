@@ -7,16 +7,15 @@ import android.view.LayoutInflater
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import com.woohyman.keyboard.base.Manager
-import com.woohyman.keyboard.data.database.GameDescription
 import com.woohyman.keyboard.emulator.EmulatorException
 import com.woohyman.xml.R
 import com.woohyman.xml.databinding.DialogTimeTravelBinding
+import com.woohyman.xml.util.EmulatorUtil
 import java.util.Locale
 
 class TimeTravelDialog(
     context: Context,
     private val manager: Manager,
-    private val game: GameDescription
 ) : Dialog(context, android.R.style.Theme_Translucent_NoTitleBar), OnSeekBarChangeListener {
 
     private val bitmap: Bitmap = Bitmap.createBitmap(256, 256, Bitmap.Config.ARGB_8888)
@@ -36,10 +35,10 @@ class TimeTravelDialog(
         (binding.dialogTimeSeek as SeekBar).max = max
         (binding.dialogTimeSeek as SeekBar).progress = max
         binding.dialogTimeWheelBtnOk.setOnClickListener {
-            manager.startGame(game)
+            manager.startGame(EmulatorUtil.fetchProxy.game)
             manager.loadHistoryState(max - (binding.dialogTimeSeek as SeekBar).progress)
             try {
-                manager.enableCheats(context, game)
+                manager.enableCheats(context, EmulatorUtil.fetchProxy.game)
             } catch (ignored: EmulatorException) {
             }
             dismiss()
@@ -51,7 +50,8 @@ class TimeTravelDialog(
     }
 
     override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-        binding.dialogTimeLabel.text = String.format(Locale.getDefault(), "-%02.2fs", (max - progress) / 4f)
+        binding.dialogTimeLabel.text =
+            String.format(Locale.getDefault(), "-%02.2fs", (max - progress) / 4f)
         manager.renderHistoryScreenshot(bitmap, max - progress)
         binding.dialogTimeImg.setImageBitmap(bitmap)
         binding.dialogTimeImg.invalidate()

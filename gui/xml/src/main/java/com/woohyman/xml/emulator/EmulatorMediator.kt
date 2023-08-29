@@ -8,7 +8,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LifecycleOwner
 import com.blankj.utilcode.util.Utils
 import com.woohyman.keyboard.data.database.GameDescription
-import com.woohyman.keyboard.emulator.Emulator
 import com.woohyman.keyboard.emulator.EmulatorException
 import com.woohyman.keyboard.emulator.EmulatorRunner
 import com.woohyman.keyboard.utils.DialogUtils
@@ -23,10 +22,10 @@ import com.woohyman.xml.ui.timetravel.TimeTravelDialog
 import kotlinx.atomicfu.atomic
 import kotlinx.atomicfu.getAndUpdate
 import java.lang.ref.WeakReference
+import javax.inject.Inject
 
 class EmulatorMediator constructor(
     private val appCompatActivity: AppCompatActivity,
-    val game: GameDescription,
     val fragmentShader: String,
 ) : IEmulatorMediator, EmulatorRunner.OnNotRespondingListener {
 
@@ -55,7 +54,7 @@ class EmulatorMediator constructor(
     }
 
     val dialog: TimeTravelDialog by lazy {
-        TimeTravelDialog(Utils.getApp(), emulatorManagerProxy, game)
+        TimeTravelDialog(Utils.getApp(), emulatorManagerProxy)
     }
 
     override fun onCreate(owner: LifecycleOwner) {

@@ -13,6 +13,7 @@ import com.woohyman.keyboard.utils.PreferenceUtil
 import com.woohyman.xml.R
 import com.woohyman.xml.emulator.EmulatorActivity
 import com.woohyman.xml.emulator.EmulatorMediator
+import com.woohyman.xml.util.EmulatorUtil
 
 class EmulatorManagerProxy constructor(
     private val emulatorMediator: EmulatorMediator,
@@ -72,14 +73,14 @@ class EmulatorManagerProxy constructor(
         isFFPressed = false
 
         try {
-            startGame(emulatorMediator.game)
+            startGame(EmulatorUtil.fetchProxy.game)
 
             if (emulatorMediator.slotToRun != -1) {
                 loadState(emulatorMediator.slotToRun)
             } else {
                 if (SlotUtils.autoSaveExists(
                         emulatorMediator.baseDir,
-                        emulatorMediator.game.checksum
+                        EmulatorUtil.fetchProxy.game.checksum
                     )
                 ) {
                     loadState(0)
@@ -125,7 +126,7 @@ class EmulatorManagerProxy constructor(
     fun enableCheats() {
         var numCheats = 0
         try {
-            numCheats = enableCheats(Utils.getApp(), emulatorMediator.game)
+            numCheats = enableCheats(Utils.getApp(), EmulatorUtil.fetchProxy.game)
         } catch (e: EmulatorException) {
             Toast.makeText(
                 Utils.getApp(), e.getMessage(Utils.getApp()),

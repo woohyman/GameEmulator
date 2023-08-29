@@ -20,6 +20,7 @@ import com.woohyman.xml.controllers.KeyboardController
 import com.woohyman.xml.controllers.QuickSaveController
 import com.woohyman.xml.controllers.TouchController
 import com.woohyman.xml.controllers.ZapperGun
+import com.woohyman.xml.util.EmulatorUtil
 
 class GameControlProxy constructor(
     private val emulatorMediator: EmulatorMediator,
@@ -67,7 +68,7 @@ class GameControlProxy constructor(
 
         val kc = KeyboardController(
             Utils.getApp(),
-            emulatorMediator.game.checksum,
+            EmulatorUtil.fetchProxy.game.checksum,
             emulatorMediator
         )
         controllers.add(kc)
@@ -107,7 +108,7 @@ class GameControlProxy constructor(
         }
         try {
             for (controller in controllers) {
-                controller.onGameStarted(emulatorMediator.game)
+                controller.onGameStarted(EmulatorUtil.fetchProxy.game)
             }
         } catch (e: EmulatorException) {
             emulatorMediator.handleException(e)
@@ -119,7 +120,7 @@ class GameControlProxy constructor(
         super.onPause(owner)
         for (controller in controllers) {
             controller.onPause()
-            controller.onGamePaused(emulatorMediator.game)
+            controller.onGamePaused(EmulatorUtil.fetchProxy.game)
         }
     }
 
