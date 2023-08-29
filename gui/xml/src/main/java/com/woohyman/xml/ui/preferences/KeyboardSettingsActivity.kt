@@ -24,11 +24,11 @@ import android.widget.EditText
 import android.widget.ListView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.woohyman.xml.R
-import com.woohyman.keyboard.keyboard.KeyboardProfile
 import com.woohyman.keyboard.base.EmulatorHolder
 import com.woohyman.keyboard.keyboard.KeyboardControllerKeys
+import com.woohyman.keyboard.keyboard.KeyboardProfile
 import com.woohyman.keyboard.utils.NLog
+import com.woohyman.xml.R
 import java.util.regex.Pattern
 
 class KeyboardSettingsActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
@@ -39,6 +39,7 @@ class KeyboardSettingsActivity : AppCompatActivity(), AdapterView.OnItemClickLis
     private var adapter: Adapter? = null
     private var newProfile = false
     private var deleted = false
+
     @Suppress("deprecation")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -258,30 +259,29 @@ class KeyboardSettingsActivity : AppCompatActivity(), AdapterView.OnItemClickLis
             inflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         }
 
-        override fun getView(position: Int, convertView: View, parent: ViewGroup): View {
-            var convertView = convertView
-            if (convertView == null) {
-                convertView = inflater.inflate(R.layout.row_keyboard_settings, null)
+        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+            return (convertView ?: inflater.inflate(R.layout.row_keyboard_settings, null)).also {
+                val name = it.findViewById<TextView>(R.id.row_keyboard_name)
+                val desc = it.findViewById<TextView>(R.id.row_keyboard_desc)
+                val keyName = it.findViewById<TextView>(R.id.row_keyboard_key_name)
+                it.isEnabled = true
+                if (position < KeyboardProfile.BUTTON_NAMES!!.size) {
+                    name.text = KeyboardProfile.BUTTON_NAMES!![position]
+                    val keyCode = inverseMap[KeyboardProfile.BUTTON_KEY_EVENT_CODES!![position]]
+                    val label = getKeyLabel(keyCode)
+                    keyName.text = label
+                    keyName.visibility = View.VISIBLE
+                } else {
+                    name.text =
+                        if (KeyboardProfile.isDefaultProfile(profile!!.name!!)) {
+                            getText(R.string.pref_keyboard_settings_restore_def)
+                        } else {
+                            getText(R.string.pref_keyboard_settings_delete_prof)
+                        }
+                    desc.visibility = View.GONE
+                    keyName.visibility = View.GONE
+                }
             }
-            val name = convertView.findViewById<TextView>(R.id.row_keyboard_name)
-            val desc = convertView.findViewById<TextView>(R.id.row_keyboard_desc)
-            val keyName = convertView.findViewById<TextView>(R.id.row_keyboard_key_name)
-            convertView.isEnabled = true
-            if (position < KeyboardProfile.BUTTON_NAMES!!.size) {
-                name.text = KeyboardProfile.BUTTON_NAMES!![position]
-                val keyCode = inverseMap[KeyboardProfile.BUTTON_KEY_EVENT_CODES!![position]]
-                val label = getKeyLabel(keyCode)
-                keyName.text = label
-                keyName.visibility = View.VISIBLE
-            } else {
-                name.text =
-                    if (KeyboardProfile.isDefaultProfile(profile!!.name!!)) getText(R.string.pref_keyboard_settings_restore_def) else getText(
-                        R.string.pref_keyboard_settings_delete_prof
-                    )
-                desc.visibility = View.GONE
-                keyName.visibility = View.GONE
-            }
-            return convertView
         }
 
         override fun getItemId(position: Int): Long {

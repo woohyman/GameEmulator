@@ -63,7 +63,7 @@ open class SeekBarPreference(private val mContext: Context, attrs: AttributeSet)
         mSeekBar = SeekBar(mContext).also {
             it.setOnSeekBarChangeListener(this)
             layout.addView(
-                mSeekBar, LinearLayout.LayoutParams(
+                it, LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
                 )
             )
@@ -81,7 +81,7 @@ open class SeekBarPreference(private val mContext: Context, attrs: AttributeSet)
         mSeekBar!!.progress = mValue
     }
 
-    override fun onSetInitialValue(restore: Boolean, defaultValue: Any) {
+    override fun onSetInitialValue(restore: Boolean, defaultValue: Any?) {
         super.onSetInitialValue(restore, defaultValue)
         mValue =
             if (restore) (if (shouldPersist()) getPersistedInt(mDefault) else 0) else (defaultValue as Int)

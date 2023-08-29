@@ -105,6 +105,7 @@
                     android:padding="16dp"
                     android:text="@string/about_content"
                     android:textColor="#de000000"
+                    android:visibility="invisible"
                     android:textSize="14sp" />
 
             </androidx.cardview.widget.CardView>

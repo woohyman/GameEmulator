@@ -15,8 +15,8 @@ interface EmulatorInfo {
     val availableSfxProfiles: List<SfxProfile?>?
     val keyMapping: Map<Int, Int>
     val numQualityLevels: Int
-    val deviceKeyboardCodes: IntArray?
-    val deviceKeyboardNames: Array<String>?
-    val deviceKeyboardDescriptions: Array<String>?
+    val deviceKeyboardCodes: IntArray
+    val deviceKeyboardNames: Array<String>
+    val deviceKeyboardDescriptions: Array<String>
     val isMultiPlayerSupported: Boolean
 }

@@ -5,6 +5,7 @@ import android.content.Context
 import android.preference.PreferenceManager
 import android.util.SparseIntArray
 import android.view.KeyEvent
+import com.woohyman.keyboard.base.EmulatorHolder
 import com.woohyman.keyboard.controllers.EmulatorController
 import com.woohyman.keyboard.utils.NLog
 import java.io.Serializable
@@ -57,9 +58,9 @@ class KeyboardProfile : Serializable {
         private const val KEYBOARD_PROFILES_SETTINGS = "keyboard_profiles_pref"
         private const val KEYBOARD_PROFILE_POSTFIX = "_keyboard_profile"
         private const val TAG = "KeyboardProfile"
-        var BUTTON_NAMES: Array<String>? = null
-        var BUTTON_DESCRIPTIONS: Array<String>? = null
-        var BUTTON_KEY_EVENT_CODES: IntArray? = null
+        val BUTTON_NAMES: Array<String> get() = EmulatorHolder.info.deviceKeyboardNames
+        val BUTTON_DESCRIPTIONS: Array<String> get() = EmulatorHolder.info.deviceKeyboardDescriptions
+        val BUTTON_KEY_EVENT_CODES: IntArray get() = EmulatorHolder.info.deviceKeyboardCodes
 
         @JvmStatic
         fun createDefaultProfile(): KeyboardProfile {

@@ -21,8 +21,4 @@ class SeekBarVibrationPreference(context: Context?, attrs: AttributeSet?) : Seek
         super.onStopTrackingTouch(seek)
         vibrator.vibrate((seek.progress * 10).toLong())
     }
-
-    override fun showDialog(state: Bundle) {
-        super.showDialog(state)
-    }
 }

@@ -6,16 +6,16 @@ import android.media.AudioFormat
 import android.media.AudioManager
 import android.media.AudioTrack
 import com.woohyman.keyboard.data.database.GameDescription
-import com.woohyman.mylibrary.R
+import com.woohyman.keyboard.data.entity.GameInfo
+import com.woohyman.keyboard.data.entity.GfxProfile
+import com.woohyman.keyboard.data.entity.SfxProfile
 import com.woohyman.keyboard.emulator.Emulator
 import com.woohyman.keyboard.emulator.EmulatorException
 import com.woohyman.keyboard.emulator.EmulatorSettings
 import com.woohyman.keyboard.keyboard.KeyboardProfile
-import com.woohyman.keyboard.data.entity.GameInfo
-import com.woohyman.keyboard.data.entity.GfxProfile
-import com.woohyman.keyboard.data.entity.SfxProfile
 import com.woohyman.keyboard.utils.EmuUtils
 import com.woohyman.keyboard.utils.NLog
+import com.woohyman.mylibrary.R
 import okhttp3.internal.notifyAll
 import okhttp3.internal.wait
 import java.io.File
@@ -49,13 +49,6 @@ abstract class JniEmulator : Emulator {
     private var turbos = 0.inv()
     private var viewPortWidth = 0
     private var viewPortHeight = 0
-
-    init {
-        val info = info
-        KeyboardProfile.BUTTON_NAMES = info?.deviceKeyboardNames
-        KeyboardProfile.BUTTON_KEY_EVENT_CODES = info?.deviceKeyboardCodes
-        KeyboardProfile.BUTTON_DESCRIPTIONS = info?.deviceKeyboardDescriptions
-    }
 
     abstract val bridge: JniBridge
     abstract override fun autoDetectGfx(game: GameDescription): GfxProfile

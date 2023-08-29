@@ -1,4 +1,3 @@
-include ':framework', ':appnes', ':appgbc', ':appgg'
 include ':data'
 include ':gui'
 include ':domain:keyboard'
