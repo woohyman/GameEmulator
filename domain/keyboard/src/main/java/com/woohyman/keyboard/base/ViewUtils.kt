@@ -1,9 +1,10 @@
 package com.woohyman.keyboard.base
 
 import android.content.Context
-import com.woohyman.keyboard.emulator.Emulator
 import com.woohyman.keyboard.data.entity.GfxProfile
+import com.woohyman.keyboard.emulator.Emulator
 import com.woohyman.keyboard.utils.EmuUtils
+import com.woohyman.keyboard.utils.EmuUtils.emulator
 import com.woohyman.keyboard.utils.PreferenceUtil
 
 object ViewUtils {
@@ -15,7 +16,7 @@ object ViewUtils {
         gfx = if (emulator != null) {
             emulator.activeGfxProfile
         } else {
-            EmuUtils.getEmulatorInfo().defaultGfxProfile
+            EmuUtils.emulator.info.defaultGfxProfile
         }
         return computeViewPort(
             gfx, screenWidth, screenHeight, paddingLeft,
@@ -28,7 +29,7 @@ object ViewUtils {
         context: Context?, w: Int, h: Int,
         paddingLeft: Int, paddingTop: Int
     ): ViewPort {
-        val gfx = EmuUtils.getEmulatorInfo().defaultGfxProfile
+        val gfx = emulator.info.defaultGfxProfile
         return computeViewPort(gfx, w, h, paddingLeft, paddingTop)
     }
 
@@ -37,7 +38,7 @@ object ViewUtils {
         context: Context?, w: Int, h: Int, paddingLeft: Int, paddingTop: Int
     ): HashMap<String, ViewPort> {
         val res = HashMap<String, ViewPort>()
-        for (profile in EmuUtils.getEmulatorInfo().availableGfxProfiles!!) {
+        for (profile in emulator.info.availableGfxProfiles!!) {
             val vp = computeViewPort(
                 profile, w, h, paddingLeft,
                 paddingTop
@@ -55,7 +56,7 @@ object ViewUtils {
             context, w, h,
             paddingLeft, paddingTop
         )
-        for (profile in EmuUtils.getEmulatorInfo().availableGfxProfiles!!) {
+        for (profile in emulator.info.availableGfxProfiles!!) {
             val vp = loadViewPort(context, w, h, profile)
             if (vp != null) {
                 res[profile!!.name!!] = vp
@@ -75,7 +76,7 @@ object ViewUtils {
         profile = if (emulator != null) {
             emulator.activeGfxProfile
         } else {
-            EmuUtils.getEmulatorInfo().defaultGfxProfile
+            EmuUtils.emulator.info.defaultGfxProfile
         }
         if (!ignoreFullscreenSettings
             && PreferenceUtil.isFullScreenEnabled(context)
@@ -101,7 +102,7 @@ object ViewUtils {
         profile: GfxProfile?
     ): ViewPort? {
         val vp = PreferenceUtil.getViewPort(context, w, h)
-        val defaultProfile = EmuUtils.getEmulatorInfo().defaultGfxProfile
+        val defaultProfile = emulator.info.defaultGfxProfile
         if (vp != null && profile !== defaultProfile) {
             var vpw = vp.width
             var vph = vp.height
@@ -128,7 +129,7 @@ object ViewUtils {
     ): ViewPort {
         var gfx = gfx
         if (gfx == null) {
-            gfx = EmuUtils.getEmulatorInfo().defaultGfxProfile
+            gfx = emulator.info.defaultGfxProfile
         }
         val w = screenWidth - paddingLeft
         val h = screenHeight - paddingTop

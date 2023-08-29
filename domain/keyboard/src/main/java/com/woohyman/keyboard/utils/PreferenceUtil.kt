@@ -312,7 +312,7 @@ object PreferenceUtil {
         val gfxProfileName = getVideoMode(context, emulator, game.checksum)
         var gfx: GfxProfile? = null
         if (gfxProfileName != null) {
-            for (profile in EmuUtils.getEmulatorInfo().availableGfxProfiles!!) {
+            for (profile in EmuUtils.emulator.info.availableGfxProfiles!!) {
                 if (profile!!.name!!.lowercase() ==
                     gfxProfileName.lowercase()
                 ) {
@@ -332,7 +332,7 @@ object PreferenceUtil {
         val pref = PreferenceManager.getDefaultSharedPreferences(context)
         val name = pref.getString("_lastGfx", null)
         try {
-            val profiles = EmuUtils.getEmulatorInfo().availableGfxProfiles
+            val profiles = EmuUtils.emulator.info.availableGfxProfiles
             for (profile in profiles!!) {
                 if (profile!!.name == name) {
                     return profile
@@ -340,7 +340,7 @@ object PreferenceUtil {
             }
         } catch (ignored: Exception) {
         }
-        return EmuUtils.getEmulatorInfo().defaultGfxProfile
+        return EmuUtils.emulator.info.defaultGfxProfile
     }
 
     fun setLastGfxProfile(context: Context?, profile: GfxProfile) {

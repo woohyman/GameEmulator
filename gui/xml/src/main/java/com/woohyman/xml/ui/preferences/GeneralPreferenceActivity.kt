@@ -130,7 +130,7 @@ class GeneralPreferenceActivity : AppCompatPreferenceActivity() {
 
         fun initFastForward(ff: CheckBoxPreference?, activity: Activity?) {}
         fun initQuality(cat: PreferenceCategory, pref: Preference?) {
-            if (EmuUtils.getEmulatorInfo().numQualityLevels == 0) {
+            if (EmuUtils.emulator.info.numQualityLevels == 0) {
                 cat.removePreference(pref)
             }
         }

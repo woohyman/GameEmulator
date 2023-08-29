@@ -22,12 +22,11 @@ import com.woohyman.xml.ui.control.RestarterActivity
 
 abstract class EmulatorActivity : AppCompatActivity() {
 
-    abstract val emulatorInstance: Emulator
     abstract val fragmentShader: String
     private var exceptionOccurred = false
 
     val emulatorMediator: EmulatorMediator by lazy {
-        EmulatorMediator(this, game, emulatorInstance, fragmentShader)
+        EmulatorMediator(this, game, fragmentShader)
     }
 
     val game: GameDescription by lazy {

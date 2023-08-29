@@ -32,7 +32,7 @@ class QuickSaveController(
     override fun onWindowFocusChanged(hasFocus: Boolean) {}
     override fun onGameStarted(game: GameDescription) {}
     override fun onGamePaused(game: GameDescription) {}
-    override fun connectToEmulator(port: Int, emulator: Emulator) {}
+    override fun connectToEmulator(port: Int) {}
     override fun getView(): View {
         return object : View(Utils.getApp()) {
             override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {

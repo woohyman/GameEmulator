@@ -79,7 +79,7 @@ class CheatsActivity : BaseActivity<ActivityCheatsBinding>(
                     binding.dialogNewCheatChars.setSelection(newText.length)
                 }
                 s = newText
-                newText = s.replace(EmuUtils.getEmulatorInfo().cheatInvalidCharsRegex!!.toRegex(), "")
+                newText = s.replace(EmuUtils.emulator.info.cheatInvalidCharsRegex!!.toRegex(), "")
                 if (newText != s) {
                     binding.dialogNewCheatChars.setText(newText)
                     binding.dialogNewCheatChars.setSelection(newText.length)

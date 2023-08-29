@@ -27,7 +27,6 @@ import java.lang.ref.WeakReference
 class EmulatorMediator constructor(
     private val appCompatActivity: AppCompatActivity,
     val game: GameDescription,
-    val emulatorInstance: Emulator,
     val fragmentShader: String,
 ) : IEmulatorMediator, EmulatorRunner.OnNotRespondingListener {
 

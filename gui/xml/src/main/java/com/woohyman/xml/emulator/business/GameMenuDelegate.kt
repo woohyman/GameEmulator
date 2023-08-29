@@ -180,7 +180,7 @@ class GameMenuDelegate constructor(
         val name = emulatorMediator.game.cleanName + "-screenshot"
         val dir = File(
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
-            EmuUtils.getEmulatorInfo().name?.replace(' ', '_').toString()
+            EmuUtils.emulator.info.name?.replace(' ', '_').toString()
         )
         if (!dir.exists()) {
             dir.mkdirs()

@@ -34,7 +34,7 @@ public interface EmulatorController {
 
     void onGamePaused(GameDescription game);
 
-    void connectToEmulator(int port, Emulator emulator);
+    void connectToEmulator(int port);
 
     View getView();
 

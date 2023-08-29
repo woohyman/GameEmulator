@@ -30,7 +30,7 @@ class ZapperGun(
     override fun onResume() {}
     override fun onWindowFocusChanged(hasFocus: Boolean) {}
     override fun onPause() {}
-    override fun connectToEmulator(port: Int, emulator: Emulator) {
+    override fun connectToEmulator(port: Int) {
         this.emulator = emulator
     }
 

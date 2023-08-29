@@ -19,6 +19,7 @@ import com.woohyman.keyboard.controllers.EmulatorController
 import com.woohyman.keyboard.data.database.GameDescription
 import com.woohyman.keyboard.emulator.Emulator
 import com.woohyman.keyboard.utils.EmuUtils
+import com.woohyman.keyboard.utils.EmuUtils.emulator
 import com.woohyman.keyboard.utils.PreferenceUtil
 import com.woohyman.xml.emulator.EmulatorMediator
 import java.lang.ref.WeakReference
@@ -27,7 +28,6 @@ class TouchController(
     private var emulatorMediator: EmulatorMediator
 ) : EmulatorController,
     OnMultitouchEventListener {
-    private var emulator: Emulator? = null
     private var port = 0
     private var mapping: Map<Int, Int> = emptyMap()
     private val resIdMapping = SparseIntArray()
@@ -60,8 +60,7 @@ class TouchController(
         multitouchLayer = null
     }
 
-    override fun connectToEmulator(port: Int, emulator: Emulator) {
-        this.emulator = emulator
+    override fun connectToEmulator(port: Int) {
         this.port = port
         mapping = emulator.info.keyMapping
     }

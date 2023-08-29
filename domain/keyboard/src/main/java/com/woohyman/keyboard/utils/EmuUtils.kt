@@ -47,10 +47,9 @@ object EmuUtils {
     private const val MD5_BYTES_COUNT = 10240
     private val size = Point()
 
-    fun getEmulatorInfo(): EmulatorInfo {
-        val emulator = EntryPointAccessors.fromApplication(Utils.getApp(), EmulatorEntryPoint::class.java)
-        return emulator.getEmulator().info
-    }
+    val emulator =
+        EntryPointAccessors.fromApplication(Utils.getApp(), EmulatorEntryPoint::class.java)
+            .getEmulator()
 
     @JvmStatic
     fun stripExtension(str: String?): String? {

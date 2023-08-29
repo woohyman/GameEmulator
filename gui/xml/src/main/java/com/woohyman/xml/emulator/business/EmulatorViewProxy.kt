@@ -43,7 +43,6 @@ class EmulatorViewProxy(
         if (hasOpenGL20) {
             openGLView = OpenGLView(
                 emulatorMediator,
-                emulatorMediator.emulatorInstance,
                 paddingLeft,
                 paddingTop,
                 shader
@@ -60,7 +59,6 @@ class EmulatorViewProxy(
         }
         openGLView ?: UnacceleratedView(
             emulatorMediator.activity,
-            emulatorMediator.emulatorInstance,
             paddingLeft,
             paddingTop
         )

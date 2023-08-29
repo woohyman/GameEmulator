@@ -39,7 +39,7 @@ class GameControlProxy constructor(
     }
 
     private val dynamic: DynamicDPad? by lazy {
-        touchController.connectToEmulator(0, emulatorMediator.emulatorInstance)
+        touchController.connectToEmulator(0)
         val display = emulatorMediator.activity?.windowManager?.defaultDisplay ?: return@lazy null
         DynamicDPad(Utils.getApp(), display, touchController)
     }
@@ -55,18 +55,17 @@ class GameControlProxy constructor(
         dynamic?.let {
             controllers.add(it)
 
-            it.connectToEmulator(0, emulatorMediator.emulatorInstance)
+            it.connectToEmulator(0)
         }
 
         val qsc = QuickSaveController(emulatorMediator, touchController)
         controllers.add(qsc)
 
         val zapper = ZapperGun(Utils.getApp(), emulatorMediator)
-        zapper.connectToEmulator(1, emulatorMediator.emulatorInstance)
+        zapper.connectToEmulator(1)
         controllers.add(zapper)
 
         val kc = KeyboardController(
-            emulatorMediator.emulatorInstance,
             Utils.getApp(),
             emulatorMediator.game.checksum,
             emulatorMediator
@@ -164,9 +163,9 @@ class GameControlProxy constructor(
         }
     }
 
-    override fun connectToEmulator(port: Int, emulator: Emulator?) {
+    override fun connectToEmulator(port: Int) {
         controllers.forEach {
-            it.connectToEmulator(port, emulator)
+            it.connectToEmulator(port)
         }
     }
 

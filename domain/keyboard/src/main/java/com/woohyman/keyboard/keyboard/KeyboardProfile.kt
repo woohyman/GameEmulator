@@ -58,9 +58,9 @@ class KeyboardProfile : Serializable {
         private const val KEYBOARD_PROFILES_SETTINGS = "keyboard_profiles_pref"
         private const val KEYBOARD_PROFILE_POSTFIX = "_keyboard_profile"
         private const val TAG = "KeyboardProfile"
-        val BUTTON_NAMES: Array<String> get() = EmuUtils.getEmulatorInfo().deviceKeyboardNames
-        val BUTTON_DESCRIPTIONS: Array<String> get() = EmuUtils.getEmulatorInfo().deviceKeyboardDescriptions
-        val BUTTON_KEY_EVENT_CODES: IntArray get() = EmuUtils.getEmulatorInfo().deviceKeyboardCodes
+        val BUTTON_NAMES: Array<String> get() = EmuUtils.emulator.info.deviceKeyboardNames
+        val BUTTON_DESCRIPTIONS: Array<String> get() = EmuUtils.emulator.info.deviceKeyboardDescriptions
+        val BUTTON_KEY_EVENT_CODES: IntArray get() = EmuUtils.emulator.info.deviceKeyboardCodes
 
         @JvmStatic
         fun createDefaultProfile(): KeyboardProfile {

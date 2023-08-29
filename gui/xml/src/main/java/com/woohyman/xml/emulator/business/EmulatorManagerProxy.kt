@@ -16,7 +16,7 @@ import com.woohyman.xml.emulator.EmulatorMediator
 
 class EmulatorManagerProxy constructor(
     private val emulatorMediator: EmulatorMediator,
-) : DefaultLifecycleObserver, Manager(emulatorMediator.emulatorInstance, Utils.getApp()) {
+) : DefaultLifecycleObserver, Manager(Utils.getApp()) {
     private var isFF = false
     private var isToggleFF = false
     private var isFFPressed = false

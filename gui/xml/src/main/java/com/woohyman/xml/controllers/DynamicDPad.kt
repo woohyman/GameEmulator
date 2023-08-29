@@ -11,10 +11,12 @@ import android.util.DisplayMetrics
 import android.view.Display
 import android.view.MotionEvent
 import android.view.View
+import com.woohyman.keyboard.base.EmulatorUtils
 import com.woohyman.xml.R
 import com.woohyman.keyboard.controllers.EmulatorController
 import com.woohyman.keyboard.data.database.GameDescription
 import com.woohyman.keyboard.emulator.Emulator
+import com.woohyman.keyboard.utils.EmuUtils
 import com.woohyman.keyboard.utils.PreferenceUtil
 
 class DynamicDPad(
@@ -58,10 +60,10 @@ class DynamicDPad(
     override fun onWindowFocusChanged(hasFocus: Boolean) {}
     override fun onGameStarted(game: GameDescription) {}
     override fun onGamePaused(game: GameDescription) {}
-    override fun connectToEmulator(port: Int, emulator: Emulator) {
+    override fun connectToEmulator(port: Int) {
         this.emulator = emulator
         this.port = port
-        mapping = emulator.info.keyMapping
+        mapping = EmuUtils.emulator.info.keyMapping
         leftMapped = mapping[EmulatorController.KEY_LEFT]!!
         rightMapped = mapping[EmulatorController.KEY_RIGHT]!!
         downMapped = mapping[EmulatorController.KEY_DOWN]!!

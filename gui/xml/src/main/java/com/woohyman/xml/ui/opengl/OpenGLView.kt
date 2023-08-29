@@ -14,6 +14,7 @@ import com.woohyman.keyboard.base.ViewUtils.loadOrComputeViewPort
 import com.woohyman.keyboard.emulator.Emulator
 import com.woohyman.keyboard.utils.NLog
 import com.woohyman.keyboard.emulator.EmulatorView
+import com.woohyman.keyboard.utils.EmuUtils.emulator
 import com.woohyman.xml.emulator.EmulatorActivity
 import com.woohyman.xml.emulator.EmulatorMediator
 import java.nio.ByteBuffer
@@ -26,7 +27,6 @@ import javax.microedition.khronos.opengles.GL10
 @SuppressLint("ViewConstructor")
 internal class OpenGLView(
     emulatorMediator: EmulatorMediator,
-    emulator: Emulator,
     paddingLeft: Int,
     paddingTop: Int, shader: String
 ) : GLSurfaceView(Utils.getApp()), EmulatorView {
@@ -34,7 +34,7 @@ internal class OpenGLView(
 
     init {
         setEGLContextClientVersion(2)
-        renderer = Renderer(emulatorMediator, emulator, paddingLeft, paddingTop, shader)
+        renderer = Renderer(emulatorMediator, paddingLeft, paddingTop, shader)
         renderer.textureSize = emulatorMediator.emulatorView.gLTextureSize
         setRenderer(renderer)
         renderMode = RENDERMODE_CONTINUOUSLY
@@ -64,7 +64,6 @@ internal class OpenGLView(
 
     internal class Renderer(
         emulatorMediator: EmulatorMediator,
-        private val emulator: Emulator,
         private val paddingLeft: Int,
         private val paddingTop: Int, shader: String
     ) : GLSurfaceView.Renderer {

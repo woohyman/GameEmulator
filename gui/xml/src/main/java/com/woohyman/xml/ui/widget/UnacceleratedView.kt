@@ -9,10 +9,10 @@ import com.woohyman.keyboard.base.ViewPort
 import com.woohyman.keyboard.base.ViewUtils.loadOrComputeViewPort
 import com.woohyman.keyboard.emulator.Emulator
 import com.woohyman.keyboard.emulator.EmulatorView
+import com.woohyman.keyboard.utils.EmuUtils.emulator
 
 internal class UnacceleratedView(
     context: Activity?,
-    private val emulator: Emulator?,
     paddingLeft: Int,
     paddingTop: Int
 ) : SurfaceView(context), EmulatorView {
@@ -45,16 +45,13 @@ internal class UnacceleratedView(
         )
         x = vp!!.x
         y = vp.y
-        emulator!!.setViewPortSize(vp.width, vp.height)
+        emulator.setViewPortSize(vp.width, vp.height)
         startTime = System.currentTimeMillis()
         viewPort = vp
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        if (emulator == null) {
-            return
-        }
         val endTime = System.currentTimeMillis()
         val delay = DELAY_PER_FRAME - (endTime - startTime)
         if (delay > 0) {

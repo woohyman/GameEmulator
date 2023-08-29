@@ -8,6 +8,7 @@ import com.woohyman.keyboard.base.Benchmark
 import com.woohyman.keyboard.base.EmulatorUtils
 import com.woohyman.keyboard.data.database.GameDescription
 import com.woohyman.keyboard.data.entity.SfxProfile
+import com.woohyman.keyboard.utils.EmuUtils.emulator
 import com.woohyman.keyboard.utils.FileUtils
 import com.woohyman.keyboard.utils.NLog
 import com.woohyman.keyboard.utils.PreferenceUtil
@@ -19,8 +20,9 @@ import java.util.Locale
 import java.util.concurrent.atomic.AtomicBoolean
 
 /*管理模拟器运行*/
-open class EmulatorRunner(@JvmField protected var emulator: Emulator, context: Context) {
+open class EmulatorRunner(context: Context) {
     protected val lock = Any()
+
     @JvmField
     protected var context: Context
     private val pauseLock = Any()
@@ -196,7 +198,7 @@ open class EmulatorRunner(@JvmField protected var emulator: Emulator, context: C
     }
 
     fun loadState(slot: Int?) {
-        if(slot == null){
+        if (slot == null) {
             return
         }
         checkGameLoaded()

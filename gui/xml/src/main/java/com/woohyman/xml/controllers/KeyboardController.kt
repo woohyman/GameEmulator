@@ -20,11 +20,11 @@ import com.woohyman.keyboard.keyboard.KeyboardControllerKeys.Companion.KEY_XPERI
 import com.woohyman.keyboard.keyboard.KeyboardControllerKeys.Companion.PLAYER2_OFFSET
 import com.woohyman.keyboard.keyboard.KeyboardProfile
 import com.woohyman.keyboard.emulator.Emulator
+import com.woohyman.keyboard.utils.EmuUtils.emulator
 import com.woohyman.keyboard.utils.NLog
 import com.woohyman.xml.emulator.EmulatorMediator
 
 class KeyboardController(
-    private val emulator: Emulator,
     private var context: Context?,
     var gameHash: String,
     private var emulatorMediator: EmulatorMediator
@@ -50,7 +50,7 @@ class KeyboardController(
     override fun onWindowFocusChanged(hasFocus: Boolean) {}
     override fun onGameStarted(game: GameDescription) {}
     override fun onGamePaused(game: GameDescription) {}
-    override fun connectToEmulator(port: Int, emulator: Emulator) {
+    override fun connectToEmulator(port: Int) {
         throw UnsupportedOperationException()
     }
 
