@@ -1,5 +1,6 @@
 package com.woohyman.xml.controllers
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -17,6 +18,7 @@ import com.woohyman.keyboard.controllers.EmulatorController
 import com.woohyman.keyboard.data.database.GameDescription
 import com.woohyman.keyboard.emulator.Emulator
 import com.woohyman.keyboard.utils.EmuUtils
+import com.woohyman.keyboard.utils.EmuUtils.emulator
 import com.woohyman.keyboard.utils.PreferenceUtil
 
 class DynamicDPad(
@@ -30,7 +32,6 @@ class DynamicDPad(
     private var downMapped = 0
     private var mapping: Map<Int, Int> = emptyMap()
     private var port = 0
-    private var emulator: Emulator? = null
     private var view: View? = null
     private var dpadCenterX = -1f
     private var dpadCenterY = -1f
@@ -61,9 +62,8 @@ class DynamicDPad(
     override fun onGameStarted() {}
     override fun onGamePaused() {}
     override fun connectToEmulator(port: Int) {
-        this.emulator = emulator
         this.port = port
-        mapping = EmuUtils.emulator.info.keyMapping
+        mapping = emulator.info.keyMapping
         leftMapped = mapping[EmulatorController.KEY_LEFT]!!
         rightMapped = mapping[EmulatorController.KEY_RIGHT]!!
         downMapped = mapping[EmulatorController.KEY_DOWN]!!
@@ -130,10 +130,10 @@ class DynamicDPad(
         }
 
         private fun release() {
-            emulator!!.setKeyPressed(port, rightMapped, false)
-            emulator!!.setKeyPressed(port, leftMapped, false)
-            emulator!!.setKeyPressed(port, upMapped, false)
-            emulator!!.setKeyPressed(port, downMapped, false)
+            emulator.setKeyPressed(port, rightMapped, false)
+            emulator.setKeyPressed(port, leftMapped, false)
+            emulator.setKeyPressed(port, upMapped, false)
+            emulator.setKeyPressed(port, downMapped, false)
             dpadCenterX = -1f
             dpadCenterY = -1f
             currentX = -1f
@@ -143,6 +143,7 @@ class DynamicDPad(
             invalidate()
         }
 
+        @SuppressLint("ClickableViewAccessibility")
         override fun onTouchEvent(event: MotionEvent): Boolean {
             val actionMasked = event.actionMasked
             if (actionMasked == MotionEvent.ACTION_MOVE) {
@@ -205,10 +206,10 @@ class DynamicDPad(
                                     right = false
                                     left = false
                                 }
-                                emulator!!.setKeyPressed(port, rightMapped, right)
-                                emulator!!.setKeyPressed(port, leftMapped, left)
-                                emulator!!.setKeyPressed(port, upMapped, up)
-                                emulator!!.setKeyPressed(port, downMapped, down)
+                                emulator.setKeyPressed(port, rightMapped, right)
+                                emulator.setKeyPressed(port, leftMapped, left)
+                                emulator.setKeyPressed(port, upMapped, up)
+                                emulator.setKeyPressed(port, downMapped, down)
                                 if (right) {
                                     directionIdx = if (down) {
                                         7

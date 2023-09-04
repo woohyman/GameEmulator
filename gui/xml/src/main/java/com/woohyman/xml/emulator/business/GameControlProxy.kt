@@ -59,12 +59,11 @@ class GameControlProxy constructor(
         val qsc = QuickSaveController(emulatorMediator, touchController)
         controllers.add(qsc)
 
-        val zapper = ZapperGun(Utils.getApp(), emulatorMediator)
+        val zapper = ZapperGun(emulatorMediator)
         zapper.connectToEmulator(1)
         controllers.add(zapper)
 
         val kc = KeyboardController(
-            Utils.getApp(),
             EmuUtils.fetchProxy.game.checksum,
             emulatorMediator
         )

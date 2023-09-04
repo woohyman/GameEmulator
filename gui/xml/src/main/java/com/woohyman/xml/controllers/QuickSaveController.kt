@@ -1,14 +1,12 @@
 package com.woohyman.xml.controllers
 
+import android.annotation.SuppressLint
 import android.view.GestureDetector.SimpleOnGestureListener
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.view.GestureDetectorCompat
 import com.blankj.utilcode.util.Utils
-import com.woohyman.xml.emulator.EmulatorActivity
 import com.woohyman.keyboard.controllers.EmulatorController
-import com.woohyman.keyboard.data.database.GameDescription
-import com.woohyman.keyboard.emulator.Emulator
 import com.woohyman.keyboard.utils.PreferenceUtil.isQuickSaveEnabled
 import com.woohyman.xml.emulator.EmulatorMediator
 
@@ -40,6 +38,7 @@ class QuickSaveController(
                 screenCenterX = w / 2
             }
 
+            @SuppressLint("ClickableViewAccessibility")
             override fun onTouchEvent(event: MotionEvent): Boolean {
                 if (!isEnabled) {
                     return true

@@ -8,20 +8,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
 import com.blankj.utilcode.util.Utils
+import com.woohyman.keyboard.controllers.EmulatorController
+import com.woohyman.keyboard.utils.EmuUtils
+import com.woohyman.keyboard.utils.EmuUtils.emulator
+import com.woohyman.keyboard.utils.PreferenceUtil
 import com.woohyman.xml.R
-import com.woohyman.xml.emulator.EmulatorActivity
+import com.woohyman.xml.emulator.EmulatorMediator
 import com.woohyman.xml.ui.multitouchbutton.MultitouchBtnInterface
 import com.woohyman.xml.ui.multitouchbutton.MultitouchButton
 import com.woohyman.xml.ui.multitouchbutton.MultitouchImageButton
 import com.woohyman.xml.ui.multitouchbutton.MultitouchLayer
 import com.woohyman.xml.ui.multitouchbutton.OnMultitouchEventListener
-import com.woohyman.keyboard.controllers.EmulatorController
-import com.woohyman.keyboard.data.database.GameDescription
-import com.woohyman.keyboard.emulator.Emulator
-import com.woohyman.keyboard.utils.EmuUtils
-import com.woohyman.keyboard.utils.EmuUtils.emulator
-import com.woohyman.keyboard.utils.PreferenceUtil
-import com.woohyman.xml.emulator.EmulatorMediator
 import java.lang.ref.WeakReference
 
 class TouchController(
@@ -46,10 +43,10 @@ class TouchController(
     private val keyHandler = KeyHandler(this)
     override fun onResume() {
         multitouchLayer?.setVibrationDuration(PreferenceUtil.getVibrationDuration(Utils.getApp()))
-        emulator!!.resetKeys()
-        multitouchLayer!!.reloadTouchProfile()
-        multitouchLayer!!.setOpacity(PreferenceUtil.getControlsOpacity(Utils.getApp()))
-        multitouchLayer!!.setEnableStaticDPAD(!PreferenceUtil.isDynamicDPADEnable(Utils.getApp()))
+        emulator.resetKeys()
+        multitouchLayer?.reloadTouchProfile()
+        multitouchLayer?.setOpacity(PreferenceUtil.getControlsOpacity(Utils.getApp()))
+        multitouchLayer?.setEnableStaticDPAD(!PreferenceUtil.isDynamicDPADEnable(Utils.getApp()))
     }
 
     override fun onPause() {}
@@ -79,25 +76,25 @@ class TouchController(
         resIdMapping.put(R.id.button_up, mapping[EmulatorController.KEY_UP]!!)
         val down = multitouchLayer?.findViewById<MultitouchImageButton>(R.id.button_down)
         down?.setOnMultitouchEventlistener(this)
-        resIdMapping.put(R.id.button_down, mapping!![EmulatorController.KEY_DOWN]!!)
+        resIdMapping.put(R.id.button_down, mapping[EmulatorController.KEY_DOWN]!!)
         val left = multitouchLayer?.findViewById<MultitouchImageButton>(R.id.button_left)
         left?.setOnMultitouchEventlistener(this)
-        resIdMapping.put(R.id.button_left, mapping!![EmulatorController.KEY_LEFT]!!)
+        resIdMapping.put(R.id.button_left, mapping[EmulatorController.KEY_LEFT]!!)
         val right = multitouchLayer?.findViewById<MultitouchImageButton>(R.id.button_right)
         right?.setOnMultitouchEventlistener(this)
-        resIdMapping.put(R.id.button_right, mapping!![EmulatorController.KEY_RIGHT]!!)
+        resIdMapping.put(R.id.button_right, mapping[EmulatorController.KEY_RIGHT]!!)
         val a = multitouchLayer?.findViewById<MultitouchImageButton>(R.id.button_a)
         a?.setOnMultitouchEventlistener(this)
-        resIdMapping.put(R.id.button_a, mapping!![EmulatorController.KEY_A]!!)
+        resIdMapping.put(R.id.button_a, mapping[EmulatorController.KEY_A]!!)
         val b = multitouchLayer?.findViewById<MultitouchImageButton>(R.id.button_b)
         b?.setOnMultitouchEventlistener(this)
-        resIdMapping.put(R.id.button_b, mapping!![EmulatorController.KEY_B]!!)
+        resIdMapping.put(R.id.button_b, mapping[EmulatorController.KEY_B]!!)
         aTurbo = multitouchLayer?.findViewById(R.id.button_a_turbo)
         aTurbo?.setOnMultitouchEventlistener(this)
-        resIdMapping.put(R.id.button_a_turbo, mapping!![EmulatorController.KEY_A_TURBO]!!)
+        resIdMapping.put(R.id.button_a_turbo, mapping[EmulatorController.KEY_A_TURBO]!!)
         bTurbo = multitouchLayer?.findViewById(R.id.button_b_turbo)
         bTurbo?.setOnMultitouchEventlistener(this)
-        resIdMapping.put(R.id.button_b_turbo, mapping!![EmulatorController.KEY_B_TURBO]!!)
+        resIdMapping.put(R.id.button_b_turbo, mapping[EmulatorController.KEY_B_TURBO]!!)
         abButton = multitouchLayer?.findViewById(R.id.button_ab)
         fastForward = multitouchLayer?.findViewById(R.id.button_fast_forward)
         fastForward?.setOnMultitouchEventlistener(object : OnMultitouchEventListener {
@@ -171,13 +168,13 @@ class TouchController(
     }
 
     private fun sendKey(code: Int) {
-        val cc = mapping!![code]!!
-        emulator!!.setKeyPressed(port, cc, true)
+        val cc = mapping[code]!!
+        emulator.setKeyPressed(port, cc, true)
         keyHandler.sendEmptyMessageDelayed(cc, 200)
     }
 
     fun handleKey(cc: Int) {
-        emulator!!.setKeyPressed(port, cc, false)
+        emulator.setKeyPressed(port, cc, false)
     }
 
     override fun onGameStarted() {

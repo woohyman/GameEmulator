@@ -1,23 +1,23 @@
 package com.woohyman.xml.controllers
 
-import android.content.Context
+import android.annotation.SuppressLint
 import android.view.MotionEvent
 import android.view.View
+import com.blankj.utilcode.util.Utils
 import com.woohyman.keyboard.controllers.EmulatorController
-import com.woohyman.keyboard.emulator.Emulator
+import com.woohyman.keyboard.di.EmulatorEntryPoint
 import com.woohyman.keyboard.utils.EmuUtils
+import com.woohyman.keyboard.utils.EmuUtils.emulator
 import com.woohyman.keyboard.utils.PreferenceUtil.isZapperEnabled
 import com.woohyman.xml.emulator.EmulatorMediator
+import dagger.hilt.android.EntryPointAccessors
 
 class ZapperGun(
-    private var context: Context?,
     private var emulatorMediator: EmulatorMediator
-) :
-    EmulatorController {
+) : EmulatorController {
     private val startX = 0f
     private val startY = 0f
     private var startedInside = false
-    private var emulator: Emulator? = null
     private var minX = 0f
     private var maxX = 0f
     private var minY = 0f
@@ -26,15 +26,15 @@ class ZapperGun(
     private var vph = 0f
     private var inited = false
     private var isEnabled = false
+
     override fun onResume() {}
     override fun onWindowFocusChanged(hasFocus: Boolean) {}
     override fun onPause() {}
-    override fun connectToEmulator(port: Int) {
-        this.emulator = emulator
-    }
+    override fun connectToEmulator(port: Int) {}
 
     override fun getView(): View {
-        return object : View(context) {
+        return object : View(Utils.getApp()) {
+            @SuppressLint("ClickableViewAccessibility")
             override fun onTouchEvent(event: MotionEvent): Boolean {
                 if (!isEnabled) {
                     return true
@@ -43,7 +43,7 @@ class ZapperGun(
                     val x = event.x
                     val y = event.y
                     if (!startedInside && x >= minX && y >= minY && x <= maxX && y <= maxY) {
-                        emulator!!.fireZapper(-1f, -1f)
+                        emulator.fireZapper(-1f, -1f)
                     }
                 }
                 if (event.action == MotionEvent.ACTION_DOWN) {
@@ -64,7 +64,7 @@ class ZapperGun(
                         startedInside = true
                         val tx = (x - minX) / vpw
                         val ty = (y - minY) / vph
-                        emulator!!.fireZapper(tx, ty)
+                        emulator.fireZapper(tx, ty)
                     }
                 }
                 return true
@@ -72,13 +72,10 @@ class ZapperGun(
         }
     }
 
-    override fun onDestroy() {
-        context = null
-        emulator = null
-    }
+    override fun onDestroy() {}
 
     override fun onGameStarted() {
-        isEnabled = isZapperEnabled(context!!, EmuUtils.fetchProxy.game.checksum)
+        isEnabled = isZapperEnabled(Utils.getApp(), EmuUtils.fetchProxy.game.checksum)
     }
 
     override fun onGamePaused() {}
