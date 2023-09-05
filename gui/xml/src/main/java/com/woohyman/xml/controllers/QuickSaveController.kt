@@ -31,22 +31,20 @@ class QuickSaveController(
     override fun onGameStarted() {}
     override fun onGamePaused() {}
     override fun connectToEmulator(port: Int) {}
-    override fun getView(): View {
-        return object : View(Utils.getApp()) {
-            override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-                super.onSizeChanged(w, h, oldw, oldh)
-                screenCenterX = w / 2
-            }
+    override val view: View = object : View(Utils.getApp()) {
+        override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+            super.onSizeChanged(w, h, oldw, oldh)
+            screenCenterX = w / 2
+        }
 
-            @SuppressLint("ClickableViewAccessibility")
-            override fun onTouchEvent(event: MotionEvent): Boolean {
-                if (!isEnabled) {
-                    return true
-                }
-                val pointerId = event.getPointerId(event.actionIndex)
-                return (touchController!!.isPointerHandled(pointerId)
-                        || gestureDetector.onTouchEvent(event))
+        @SuppressLint("ClickableViewAccessibility")
+        override fun onTouchEvent(event: MotionEvent): Boolean {
+            if (!isEnabled) {
+                return true
             }
+            val pointerId = event.getPointerId(event.actionIndex)
+            return (touchController!!.isPointerHandled(pointerId)
+                    || gestureDetector.onTouchEvent(event))
         }
     }
 

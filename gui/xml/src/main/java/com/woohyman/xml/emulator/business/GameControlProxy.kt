@@ -12,12 +12,12 @@ import com.woohyman.keyboard.controllers.EmulatorController
 import com.woohyman.keyboard.emulator.EmulatorException
 import com.woohyman.keyboard.utils.EmuUtils
 import com.woohyman.keyboard.utils.PreferenceUtil
-import com.woohyman.xml.emulator.EmulatorMediator
 import com.woohyman.xml.controllers.DynamicDPad
 import com.woohyman.xml.controllers.KeyboardController
 import com.woohyman.xml.controllers.QuickSaveController
 import com.woohyman.xml.controllers.TouchController
 import com.woohyman.xml.controllers.ZapperGun
+import com.woohyman.xml.emulator.EmulatorMediator
 
 class GameControlProxy constructor(
     private val emulatorMediator: EmulatorMediator,
@@ -166,11 +166,11 @@ class GameControlProxy constructor(
         }
     }
 
-    override fun getView(): View {
+    override val view: View = kotlin.run {
         controllers.forEach {
             it.view
         }
-        return group
+        group
     }
 
     override fun onDestroy() {

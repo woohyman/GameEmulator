@@ -12,27 +12,23 @@ import android.util.DisplayMetrics
 import android.view.Display
 import android.view.MotionEvent
 import android.view.View
-import com.woohyman.keyboard.base.EmulatorUtils
-import com.woohyman.xml.R
 import com.woohyman.keyboard.controllers.EmulatorController
-import com.woohyman.keyboard.data.database.GameDescription
-import com.woohyman.keyboard.emulator.Emulator
-import com.woohyman.keyboard.utils.EmuUtils
+import com.woohyman.keyboard.controllers.KeyAction
 import com.woohyman.keyboard.utils.EmuUtils.emulator
 import com.woohyman.keyboard.utils.PreferenceUtil
+import com.woohyman.xml.R
 
 class DynamicDPad(
     private var context: Context?,
     display: Display,
     private var touchController: TouchController?
 ) : EmulatorController {
+
     private var leftMapped = 0
     private var rightMapped = 0
     private var upMapped = 0
     private var downMapped = 0
-    private var mapping: Map<Int, Int> = emptyMap()
     private var port = 0
-    private var view: View? = null
     private var dpadCenterX = -1f
     private var dpadCenterY = -1f
     private var currentX = 0f
@@ -63,16 +59,13 @@ class DynamicDPad(
     override fun onGamePaused() {}
     override fun connectToEmulator(port: Int) {
         this.port = port
-        mapping = emulator.info.keyMapping
-        leftMapped = mapping[EmulatorController.KEY_LEFT]!!
-        rightMapped = mapping[EmulatorController.KEY_RIGHT]!!
-        downMapped = mapping[EmulatorController.KEY_DOWN]!!
-        upMapped = mapping[EmulatorController.KEY_UP]!!
+        leftMapped = emulator.info.getMappingValue(KeyAction.KEY_LEFT)
+        rightMapped = emulator.info.getMappingValue(KeyAction.KEY_RIGHT)
+        downMapped = emulator.info.getMappingValue(KeyAction.KEY_DOWN)
+        upMapped = emulator.info.getMappingValue(KeyAction.KEY_UP)
     }
 
-    override fun getView(): View {
-        return view ?: DPadView(context)
-    }
+    override val view: View = DPadView(context)
 
     override fun onDestroy() {
         context = null

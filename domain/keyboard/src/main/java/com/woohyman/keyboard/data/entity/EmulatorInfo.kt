@@ -1,6 +1,6 @@
 package com.woohyman.keyboard.data.entity
 
-import android.util.SparseIntArray
+import com.woohyman.keyboard.controllers.KeyAction
 import com.woohyman.keyboard.keyboard.KeyboardProfile
 
 interface EmulatorInfo {
@@ -13,7 +13,8 @@ interface EmulatorInfo {
     val defaultKeyboardProfile: KeyboardProfile?
     val availableGfxProfiles: List<GfxProfile?>?
     val availableSfxProfiles: List<SfxProfile?>?
-    val keyMapping: Map<Int, Int>
+    fun getMappingValue(action: Int): Int
+    fun getMappingValue(action: KeyAction): Int
     val numQualityLevels: Int
     val deviceKeyboardCodes: IntArray
     val deviceKeyboardNames: Array<String>

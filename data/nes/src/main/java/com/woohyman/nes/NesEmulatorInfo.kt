@@ -1,9 +1,9 @@
 package com.woohyman.nes
 
+import com.woohyman.keyboard.controllers.KeyAction
 import com.woohyman.keyboard.data.entity.GfxProfile
 import com.woohyman.keyboard.data.entity.SfxProfile
 import com.woohyman.keyboard.keyboard.BasicEmulatorInfo
-import com.woohyman.nes.util.EmulatorConst
 import com.woohyman.nes.util.EmulatorConst.high
 import com.woohyman.nes.util.EmulatorConst.low
 import com.woohyman.nes.util.EmulatorConst.medium
@@ -16,12 +16,29 @@ class NesEmulatorInfo @Inject constructor() : BasicEmulatorInfo() {
 
     private val gfxProfiles: List<GfxProfile> = listOf(defaultGfxProfile, pal)
     private val sfxProfiles: List<SfxProfile> = listOf(low, medium, high)
+    override fun getMappingValue(action: Int): Int {
+        return when (action) {
+            KeyAction.KEY_A.key -> 0x01
+            KeyAction.KEY_B.key -> 0x02
+            KeyAction.KEY_SELECT.key -> 0x04
+            KeyAction.KEY_START.key -> 0x08
+            KeyAction.KEY_UP.key -> 0x10
+            KeyAction.KEY_DOWN.key -> 0x20
+            KeyAction.KEY_LEFT.key -> 0x40
+            KeyAction.KEY_RIGHT.key -> 0x80
+            KeyAction.KEY_A_TURBO.key -> 0x01 + 1000
+            KeyAction.KEY_B_TURBO.key -> 0x02 + 1000
+            else -> -1
+        }
+    }
+
+    override fun getMappingValue(action: KeyAction): Int {
+        return getMappingValue(action.key)
+    }
 
     override fun hasZapper(): Boolean {
         return true
     }
-
-    override val keyMapping = EmulatorConst.keyMapping
 
     override val name: String = "Nostalgia.NES"
     override val defaultSfxProfile: SfxProfile = sfxProfiles[0]

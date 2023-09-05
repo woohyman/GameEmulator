@@ -1,6 +1,6 @@
 package com.woohyman.keyboard.keyboard
 
-import com.woohyman.keyboard.controllers.EmulatorController
+import com.woohyman.keyboard.controllers.KeyAction
 
 class KeyboardControllerKeys {
     companion object {
@@ -19,19 +19,19 @@ class KeyboardControllerKeys {
 
         @JvmField
         var KEYS_RIGHT_AND_UP =
-            keysToMultiCode(EmulatorController.KEY_RIGHT, EmulatorController.KEY_UP)
+            keysToMultiCode(KeyAction.KEY_RIGHT.key, KeyAction.KEY_UP.key)
 
         @JvmField
         var KEYS_RIGHT_AND_DOWN =
-            keysToMultiCode(EmulatorController.KEY_RIGHT, EmulatorController.KEY_DOWN)
+            keysToMultiCode(KeyAction.KEY_RIGHT.key, KeyAction.KEY_DOWN.key)
 
         @JvmField
         var KEYS_LEFT_AND_DOWN =
-            keysToMultiCode(EmulatorController.KEY_LEFT, EmulatorController.KEY_DOWN)
+            keysToMultiCode(KeyAction.KEY_LEFT.key, KeyAction.KEY_DOWN.key)
 
         @JvmField
         var KEYS_LEFT_AND_UP =
-            keysToMultiCode(EmulatorController.KEY_LEFT, EmulatorController.KEY_UP)
+            keysToMultiCode(KeyAction.KEY_LEFT.key, KeyAction.KEY_UP.key)
 
         private fun keysToMultiCode(key1: Int, key2: Int): Int {
             return key1 * 1000 + key2 + 10000

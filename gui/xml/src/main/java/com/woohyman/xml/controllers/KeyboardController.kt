@@ -22,13 +22,12 @@ import com.woohyman.keyboard.utils.NLog
 import com.woohyman.xml.emulator.EmulatorMediator
 
 class KeyboardController(
-    var gameHash: String,
+    private var gameHash: String,
     private var emulatorMediator: EmulatorMediator
 ) : EmulatorController {
     private val tmpKeys = IntArray(2)
     private val loadingOrSaving = BooleanArray(4)
     private var profile: KeyboardProfile? = null
-    private val keyMapping: Map<Int, Int> = emulator.info.keyMapping
 
     override fun onResume() {
         profile = KeyboardProfile.getSelectedProfile(gameHash, Utils.getApp())
@@ -53,48 +52,46 @@ class KeyboardController(
         keys[1] = key2
     }
 
-    override fun getView(): View {
-        return object : View(Utils.getApp()) {
-            override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-                var mapValue = 0
-                keyCode.let {
-                    if (keyCode == KeyEvent.KEYCODE_BACK) {
-                        if (event.isAltPressed) {
-                            return@let KEY_XPERIA_CIRCLE
-                        }
-                    }
-                    keyCode
-                }.let {
-                    return if (profile != null && profile!!.keyMap[it, -1].also {
-                            mapValue = it
-                        } != -1) {
-                        processKey(mapValue, true)
-                        true
-                    } else {
-                        super.onKeyDown(it, event)
+    override val view: View = object : View(Utils.getApp()) {
+        override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+            var mapValue = 0
+            keyCode.let {
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    if (event.isAltPressed) {
+                        return@let KEY_XPERIA_CIRCLE
                     }
                 }
+                keyCode
+            }.let {
+                return if (profile != null && profile!!.keyMap[it, -1].also {
+                        mapValue = it
+                    } != -1) {
+                    processKey(mapValue, true)
+                    true
+                } else {
+                    super.onKeyDown(it, event)
+                }
             }
+        }
 
-            override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
-                var mapValue = 0
-                keyCode.let {
-                    if (keyCode == KeyEvent.KEYCODE_BACK) {
-                        if (event.isAltPressed) {
-                            return@let KEY_XPERIA_CIRCLE
-                        }
+        override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
+            var mapValue = 0
+            keyCode.let {
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    if (event.isAltPressed) {
+                        return@let KEY_XPERIA_CIRCLE
                     }
-                    keyCode
-                }.let {
-                    return if (profile != null && profile!!.keyMap[it, -1].also {
-                            mapValue = it
-                        } != -1) {
-                        processKey(mapValue, false)
-                        emulatorMediator.hideTouchController()
-                        true
-                    } else {
-                        super.onKeyUp(it, event)
-                    }
+                }
+                keyCode
+            }.let {
+                return if (profile != null && profile!!.keyMap[it, -1].also {
+                        mapValue = it
+                    } != -1) {
+                    processKey(mapValue, false)
+                    emulatorMediator.hideTouchController()
+                    true
+                } else {
+                    super.onKeyUp(it, event)
                 }
             }
         }
@@ -157,13 +154,12 @@ class KeyboardController(
 
                 KeyboardControllerKeys.isMulti(it) -> {
                     multiToKeys(it, tmpKeys)
-                    emulator.setKeyPressed(port, keyMapping[tmpKeys[0]]!!, pressed)
-                    emulator.setKeyPressed(port, keyMapping[tmpKeys[1]]!!, pressed)
+                    emulator.setKeyPressed(port, emulator.info.getMappingValue(tmpKeys[0]), pressed)
+                    emulator.setKeyPressed(port, emulator.info.getMappingValue(tmpKeys[1]), pressed)
                 }
 
                 else -> {
-                    NLog.i(TAG, "process key $it $keyMapping")
-                    val value = keyMapping[it]!!
+                    val value = emulator.info.getMappingValue(it)
                     emulator.setKeyPressed(port, value, pressed)
                 }
             }

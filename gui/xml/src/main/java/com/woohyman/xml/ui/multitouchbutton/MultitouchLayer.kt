@@ -21,14 +21,12 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
-import com.woohyman.xml.R
 import com.woohyman.keyboard.base.ViewPort
 import com.woohyman.keyboard.base.ViewUtils.computeAllInitViewPorts
 import com.woohyman.keyboard.base.ViewUtils.computeInitViewPort
 import com.woohyman.keyboard.base.ViewUtils.loadOrComputeAllViewPorts
 import com.woohyman.keyboard.base.ViewUtils.loadOrComputeViewPort
-import com.woohyman.keyboard.controllers.EmulatorController
-import com.woohyman.keyboard.utils.EmuUtils
+import com.woohyman.keyboard.controllers.KeyAction
 import com.woohyman.keyboard.utils.EmuUtils.emulator
 import com.woohyman.keyboard.utils.EmuUtils.getDisplayHeight
 import com.woohyman.keyboard.utils.EmuUtils.getDisplayWidth
@@ -39,6 +37,7 @@ import com.woohyman.keyboard.utils.NLog.i
 import com.woohyman.keyboard.utils.NLog.wtf
 import com.woohyman.keyboard.utils.PreferenceUtil.removeViewPortSave
 import com.woohyman.keyboard.utils.PreferenceUtil.setViewPort
+import com.woohyman.xml.R
 import java.util.Timer
 import java.util.TimerTask
 
@@ -182,7 +181,7 @@ class MultitouchLayer : RelativeLayout, OnTouchListener {
         btnIdMap.add(R.id.button_b)
         btnIdMap.add(R.id.button_b_turbo)
         btnIdMap.add(R.id.button_ab)
-        if (emulator.info.keyMapping[EmulatorController.KEY_SELECT] != -1) {
+        if (emulator.info.getMappingValue(KeyAction.KEY_SELECT) != -1) {
             btnIdMap.add(R.id.button_select)
         }
         btnIdMap.add(R.id.button_start)
@@ -311,7 +310,7 @@ class MultitouchLayer : RelativeLayout, OnTouchListener {
         touchLayer?.setOnTouchListener(this)
         removeAllViews()
         addView(touchLayer, LinearLayout.LayoutParams.MATCH_PARENT, measuredHeight)
-        val hasSelect = emulator.info.keyMapping[EmulatorController.KEY_SELECT] != -1
+        val hasSelect = emulator.info.getMappingValue(KeyAction.KEY_SELECT) != -1
         if (hasSelect) {
             editElements.add(EditElement(R.id.button_select, true, buttonMinSizePx).saveHistory())
         }
@@ -850,39 +849,39 @@ class MultitouchLayer : RelativeLayout, OnTouchListener {
         val btn = btns[btnIdx] as MultitouchBtnInterface
         btn.onTouchEnter(event)
         btn.requestRepaint()
-        invalidate(boundingBoxs!![btnIdx])
+        invalidate(boundingBoxs[btnIdx])
         if (btn is MultitouchTwoButtonArea) {
             val mtba = btn
             val idx1 = ridToIdxMap[mtba.firstBtnRID]
             val idx2 = ridToIdxMap[mtba.secondBtnRID]
-            invalidate(boundingBoxs!![idx1])
-            invalidate(boundingBoxs!![idx2])
+            invalidate(boundingBoxs[idx1])
+            invalidate(boundingBoxs[idx2])
         } else if (btn is MultitouchTwoButton) {
             val mtba = btn
             val idx1 = ridToIdxMap[mtba.firstBtnRID]
             val idx2 = ridToIdxMap[mtba.secondBtnRID]
-            invalidate(boundingBoxs!![idx1])
-            invalidate(boundingBoxs!![idx2])
+            invalidate(boundingBoxs[idx1])
+            invalidate(boundingBoxs[idx2])
         }
     }
 
     private fun onTouchExit(btnIdx: Int, event: MotionEvent) {
         val btn = btns[btnIdx] as MultitouchBtnInterface
         btn.onTouchExit(event)
-        invalidate(boundingBoxs!![btnIdx])
+        invalidate(boundingBoxs[btnIdx])
         btn.requestRepaint()
         if (btn is MultitouchTwoButtonArea) {
             val mtba = btn
             val idx1 = ridToIdxMap[mtba.firstBtnRID]
             val idx2 = ridToIdxMap[mtba.secondBtnRID]
-            invalidate(boundingBoxs!![idx1])
-            invalidate(boundingBoxs!![idx2])
+            invalidate(boundingBoxs[idx1])
+            invalidate(boundingBoxs[idx2])
         } else if (btn is MultitouchTwoButton) {
             val mtba = btn
             val idx1 = ridToIdxMap[mtba.firstBtnRID]
             val idx2 = ridToIdxMap[mtba.secondBtnRID]
-            invalidate(boundingBoxs!![idx1])
-            invalidate(boundingBoxs!![idx2])
+            invalidate(boundingBoxs[idx1])
+            invalidate(boundingBoxs[idx2])
         }
     }
 
@@ -897,7 +896,7 @@ class MultitouchLayer : RelativeLayout, OnTouchListener {
     private fun initScreenElement(reset: Boolean) {
         val topPadding = resources.getDimensionPixelSize(R.dimen.top_panel_touch_controller_height)
         var viewPorts: HashMap<String, ViewPort>? = null
-        val vport:ViewPort = if (reset) {
+        val vport: ViewPort = if (reset) {
 
             viewPorts = computeAllInitViewPorts(
                 context,
@@ -929,7 +928,7 @@ class MultitouchLayer : RelativeLayout, OnTouchListener {
                 0,
                 if (cacheRotation == 0) topPadding else 0,
                 true
-            )?:return
+            ) ?: return
         }
         val viewPort =
             Rect(vport.x + 1, vport.y, vport.x + vport.width - 1, vport.y + vport.height - 1)
@@ -986,7 +985,7 @@ class MultitouchLayer : RelativeLayout, OnTouchListener {
         for (element in editElements) {
             element.boundingbox.set(element.boundingboxHistory)
             for (i in element.ids.indices) {
-                val bb = boundingBoxs!![element.ids[i]]
+                val bb = boundingBoxs[element.ids[i]]
                 bb!!.set(element.boundingboxsHistory[i])
                 element.offsets[i].set(element.offsetshistory[i])
             }
@@ -1007,7 +1006,7 @@ class MultitouchLayer : RelativeLayout, OnTouchListener {
         for (element in editElements) {
             element.boundingbox.set(element.boundingboxHistory)
             for (i in element.ids.indices) {
-                val bb = boundingBoxs!![element.ids[i]]
+                val bb = boundingBoxs[element.ids[i]]
                 bb!!.set(element.boundingboxsHistory[i])
                 element.offsets[i].set(element.offsetshistory[i])
             }
@@ -1106,7 +1105,7 @@ class MultitouchLayer : RelativeLayout, OnTouchListener {
                     if (s != "") {
                         val sa =
                             s!!.split("-".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-                        val bb = boundingBoxs!![ridToIdxMap[btn.id]]
+                        val bb = boundingBoxs[ridToIdxMap[btn.id]]
                         val left = sa[0].toInt()
                         val top = sa[1].toInt()
                         val right = sa[2].toInt()
@@ -1243,7 +1242,7 @@ class MultitouchLayer : RelativeLayout, OnTouchListener {
             val idx = ridToIdxMap[rid]
             ids.add(idx)
             val tmp = RectF()
-            tmp.set(boundingBoxs!![idx]!!)
+            tmp.set(boundingBoxs[idx]!!)
             boundingbox.union(tmp)
             boundingboxHistory.set(boundingbox)
             computeOffsets()
@@ -1256,7 +1255,7 @@ class MultitouchLayer : RelativeLayout, OnTouchListener {
                 offsets.add(offset)
             } else {
                 for (id in ids) {
-                    val r = boundingBoxs!![id]
+                    val r = boundingBoxs[id]
                     val offset = RectF(r!!.left - boundingbox.left, r.top - boundingbox.top, 0f, 0f)
                     offsets.add(offset)
                 }
@@ -1265,9 +1264,9 @@ class MultitouchLayer : RelativeLayout, OnTouchListener {
 
         fun computeBoundingBox() {
             if (!isScreenElement) {
-                boundingbox.set(boundingBoxs!![ids[0]]!!)
+                boundingbox.set(boundingBoxs[ids[0]]!!)
                 for (id in ids) {
-                    val r = boundingBoxs!![id]
+                    val r = boundingBoxs[id]
                     val tmp = RectF()
                     tmp.set(r!!)
                     boundingbox.union(tmp)
@@ -1282,7 +1281,7 @@ class MultitouchLayer : RelativeLayout, OnTouchListener {
             } else {
                 for (i in offsets.indices) {
                     val id = ids[i]
-                    boundingboxsHistory.add(Rect(boundingBoxs!![id]))
+                    boundingboxsHistory.add(Rect(boundingBoxs[id]))
                     offsetshistory.add(RectF(offsets[i]))
                 }
             }

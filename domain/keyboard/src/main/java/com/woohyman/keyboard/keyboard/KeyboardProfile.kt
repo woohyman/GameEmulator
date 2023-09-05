@@ -5,7 +5,7 @@ import android.content.Context
 import android.preference.PreferenceManager
 import android.util.SparseIntArray
 import android.view.KeyEvent
-import com.woohyman.keyboard.controllers.EmulatorController
+import com.woohyman.keyboard.controllers.KeyAction
 import com.woohyman.keyboard.utils.EmuUtils
 import com.woohyman.keyboard.utils.NLog
 import java.io.Serializable
@@ -66,16 +66,16 @@ class KeyboardProfile : Serializable {
         fun createDefaultProfile(): KeyboardProfile {
             val profile = KeyboardProfile()
             profile.name = "default"
-            profile.keyMap.put(KeyEvent.KEYCODE_DPAD_LEFT, EmulatorController.KEY_LEFT)
-            profile.keyMap.put(KeyEvent.KEYCODE_DPAD_RIGHT, EmulatorController.KEY_RIGHT)
-            profile.keyMap.put(KeyEvent.KEYCODE_DPAD_UP, EmulatorController.KEY_UP)
-            profile.keyMap.put(KeyEvent.KEYCODE_DPAD_DOWN, EmulatorController.KEY_DOWN)
-            profile.keyMap.put(KeyEvent.KEYCODE_ENTER, EmulatorController.KEY_START)
-            profile.keyMap.put(KeyEvent.KEYCODE_SPACE, EmulatorController.KEY_SELECT)
-            profile.keyMap.put(KeyEvent.KEYCODE_Q, EmulatorController.KEY_A)
-            profile.keyMap.put(KeyEvent.KEYCODE_W, EmulatorController.KEY_B)
-            profile.keyMap.put(KeyEvent.KEYCODE_A, EmulatorController.KEY_A_TURBO)
-            profile.keyMap.put(KeyEvent.KEYCODE_S, EmulatorController.KEY_B_TURBO)
+            profile.keyMap.put(KeyEvent.KEYCODE_DPAD_LEFT, KeyAction.KEY_LEFT.key)
+            profile.keyMap.put(KeyEvent.KEYCODE_DPAD_RIGHT, KeyAction.KEY_RIGHT.key)
+            profile.keyMap.put(KeyEvent.KEYCODE_DPAD_UP, KeyAction.KEY_UP.key)
+            profile.keyMap.put(KeyEvent.KEYCODE_DPAD_DOWN, KeyAction.KEY_DOWN.key)
+            profile.keyMap.put(KeyEvent.KEYCODE_ENTER, KeyAction.KEY_START.key)
+            profile.keyMap.put(KeyEvent.KEYCODE_SPACE, KeyAction.KEY_SELECT.key)
+            profile.keyMap.put(KeyEvent.KEYCODE_Q, KeyAction.KEY_A.key)
+            profile.keyMap.put(KeyEvent.KEYCODE_W, KeyAction.KEY_B.key)
+            profile.keyMap.put(KeyEvent.KEYCODE_A, KeyAction.KEY_A_TURBO.key)
+            profile.keyMap.put(KeyEvent.KEYCODE_S, KeyAction.KEY_B_TURBO.key)
             return profile
         }
 
@@ -83,16 +83,16 @@ class KeyboardProfile : Serializable {
         fun createPS3Profile(): KeyboardProfile {
             val profile = KeyboardProfile()
             profile.name = "ps3"
-            profile.keyMap.put(KeyEvent.KEYCODE_DPAD_LEFT, EmulatorController.KEY_LEFT)
-            profile.keyMap.put(KeyEvent.KEYCODE_DPAD_RIGHT, EmulatorController.KEY_RIGHT)
-            profile.keyMap.put(KeyEvent.KEYCODE_DPAD_UP, EmulatorController.KEY_UP)
-            profile.keyMap.put(KeyEvent.KEYCODE_DPAD_DOWN, EmulatorController.KEY_DOWN)
-            profile.keyMap.put(KeyEvent.KEYCODE_BUTTON_START, EmulatorController.KEY_START)
-            profile.keyMap.put(KeyEvent.KEYCODE_BUTTON_SELECT, EmulatorController.KEY_SELECT)
-            profile.keyMap.put(KeyEvent.KEYCODE_BUTTON_B, EmulatorController.KEY_A)
-            profile.keyMap.put(KeyEvent.KEYCODE_BUTTON_Y, EmulatorController.KEY_B)
-            profile.keyMap.put(KeyEvent.KEYCODE_BUTTON_A, EmulatorController.KEY_A_TURBO)
-            profile.keyMap.put(KeyEvent.KEYCODE_BUTTON_X, EmulatorController.KEY_B_TURBO)
+            profile.keyMap.put(KeyEvent.KEYCODE_DPAD_LEFT, KeyAction.KEY_LEFT.key)
+            profile.keyMap.put(KeyEvent.KEYCODE_DPAD_RIGHT, KeyAction.KEY_RIGHT.key)
+            profile.keyMap.put(KeyEvent.KEYCODE_DPAD_UP, KeyAction.KEY_UP.key)
+            profile.keyMap.put(KeyEvent.KEYCODE_DPAD_DOWN, KeyAction.KEY_DOWN.key)
+            profile.keyMap.put(KeyEvent.KEYCODE_BUTTON_START, KeyAction.KEY_START.key)
+            profile.keyMap.put(KeyEvent.KEYCODE_BUTTON_SELECT, KeyAction.KEY_SELECT.key)
+            profile.keyMap.put(KeyEvent.KEYCODE_BUTTON_B, KeyAction.KEY_A.key)
+            profile.keyMap.put(KeyEvent.KEYCODE_BUTTON_Y, KeyAction.KEY_B.key)
+            profile.keyMap.put(KeyEvent.KEYCODE_BUTTON_A, KeyAction.KEY_A_TURBO.key)
+            profile.keyMap.put(KeyEvent.KEYCODE_BUTTON_X, KeyAction.KEY_B_TURBO.key)
             profile.keyMap.put(KeyEvent.KEYCODE_BUTTON_R2, KeyboardControllerKeys.KEY_MENU)
             profile.keyMap.put(KeyEvent.KEYCODE_BUTTON_L2, KeyboardControllerKeys.KEY_BACK)
             profile.keyMap.put(KeyEvent.KEYCODE_BUTTON_L1, KeyboardControllerKeys.KEY_FAST_FORWARD)
@@ -102,47 +102,47 @@ class KeyboardProfile : Serializable {
         fun createWiimoteProfile(): KeyboardProfile {
             val profile = KeyboardProfile()
             profile.name = "wiimote"
-            profile.keyMap.put(KeyEvent.KEYCODE_DPAD_LEFT, EmulatorController.KEY_LEFT)
-            profile.keyMap.put(KeyEvent.KEYCODE_DPAD_RIGHT, EmulatorController.KEY_RIGHT)
-            profile.keyMap.put(KeyEvent.KEYCODE_DPAD_UP, EmulatorController.KEY_UP)
-            profile.keyMap.put(KeyEvent.KEYCODE_DPAD_DOWN, EmulatorController.KEY_DOWN)
-            profile.keyMap.put(KeyEvent.KEYCODE_P, EmulatorController.KEY_START)
-            profile.keyMap.put(KeyEvent.KEYCODE_M, EmulatorController.KEY_SELECT)
-            profile.keyMap.put(KeyEvent.KEYCODE_1, EmulatorController.KEY_B)
-            profile.keyMap.put(KeyEvent.KEYCODE_2, EmulatorController.KEY_A)
+            profile.keyMap.put(KeyEvent.KEYCODE_DPAD_LEFT, KeyAction.KEY_LEFT.key)
+            profile.keyMap.put(KeyEvent.KEYCODE_DPAD_RIGHT, KeyAction.KEY_RIGHT.key)
+            profile.keyMap.put(KeyEvent.KEYCODE_DPAD_UP, KeyAction.KEY_UP.key)
+            profile.keyMap.put(KeyEvent.KEYCODE_DPAD_DOWN, KeyAction.KEY_DOWN.key)
+            profile.keyMap.put(KeyEvent.KEYCODE_P, KeyAction.KEY_START.key)
+            profile.keyMap.put(KeyEvent.KEYCODE_M, KeyAction.KEY_SELECT.key)
+            profile.keyMap.put(KeyEvent.KEYCODE_1, KeyAction.KEY_B.key)
+            profile.keyMap.put(KeyEvent.KEYCODE_2, KeyAction.KEY_A.key)
             profile.keyMap.put(KeyEvent.KEYCODE_DPAD_CENTER, KeyboardControllerKeys.KEY_MENU)
             profile.keyMap.put(KeyEvent.KEYCODE_H, KeyboardControllerKeys.KEY_BACK)
             profile.keyMap.put(
                 KeyEvent.KEYCODE_O,
-                EmulatorController.KEY_LEFT + KeyboardControllerKeys.PLAYER2_OFFSET
+                KeyAction.KEY_LEFT.key + KeyboardControllerKeys.PLAYER2_OFFSET
             )
             profile.keyMap.put(
                 KeyEvent.KEYCODE_J,
-                EmulatorController.KEY_RIGHT + KeyboardControllerKeys.PLAYER2_OFFSET
+                KeyAction.KEY_RIGHT.key + KeyboardControllerKeys.PLAYER2_OFFSET
             )
             profile.keyMap.put(
                 KeyEvent.KEYCODE_I,
-                EmulatorController.KEY_UP + KeyboardControllerKeys.PLAYER2_OFFSET
+                KeyAction.KEY_UP.key + KeyboardControllerKeys.PLAYER2_OFFSET
             )
             profile.keyMap.put(
                 KeyEvent.KEYCODE_K,
-                EmulatorController.KEY_DOWN + KeyboardControllerKeys.PLAYER2_OFFSET
+                KeyAction.KEY_DOWN.key + KeyboardControllerKeys.PLAYER2_OFFSET
             )
             profile.keyMap.put(
                 KeyEvent.KEYCODE_PLUS,
-                EmulatorController.KEY_START + KeyboardControllerKeys.PLAYER2_OFFSET
+                KeyAction.KEY_START.key + KeyboardControllerKeys.PLAYER2_OFFSET
             )
             profile.keyMap.put(
                 KeyEvent.KEYCODE_MINUS,
-                EmulatorController.KEY_SELECT + KeyboardControllerKeys.PLAYER2_OFFSET
+                KeyAction.KEY_SELECT.key + KeyboardControllerKeys.PLAYER2_OFFSET
             )
             profile.keyMap.put(
                 KeyEvent.KEYCODE_COMMA,
-                EmulatorController.KEY_B + KeyboardControllerKeys.PLAYER2_OFFSET
+                KeyAction.KEY_B.key + KeyboardControllerKeys.PLAYER2_OFFSET
             )
             profile.keyMap.put(
                 KeyEvent.KEYCODE_PERIOD,
-                EmulatorController.KEY_A + KeyboardControllerKeys.PLAYER2_OFFSET
+                KeyAction.KEY_A.key + KeyboardControllerKeys.PLAYER2_OFFSET
             )
             return profile
         }

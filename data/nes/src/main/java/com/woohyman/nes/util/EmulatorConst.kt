@@ -44,19 +44,6 @@ object EmulatorConst {
         "[pal]"
     )
 
-    val keyMapping = mapOf(
-        EmulatorController.KEY_A to 0x01,
-        EmulatorController.KEY_B to 0x02,
-        EmulatorController.KEY_SELECT to 0x04,
-        EmulatorController.KEY_START to 0x08,
-        EmulatorController.KEY_UP to 0x10,
-        EmulatorController.KEY_DOWN to 0x20,
-        EmulatorController.KEY_LEFT to 0x40,
-        EmulatorController.KEY_RIGHT to 0x80,
-        EmulatorController.KEY_A_TURBO to 0x01 + 1000,
-        EmulatorController.KEY_B_TURBO to 0x02 + 1000,
-    )
-
     val pal = NesEmulatorInfo.NesGfxProfile(
         fps = 50,
         name = "PAL",

@@ -1,7 +1,6 @@
 package com.woohyman.keyboard.keyboard;
 
-import com.woohyman.keyboard.controllers.EmulatorController;
-
+import com.woohyman.keyboard.controllers.KeyAction;
 import com.woohyman.keyboard.data.entity.EmulatorInfo;
 
 abstract public class BasicEmulatorInfo implements EmulatorInfo {
@@ -20,12 +19,17 @@ abstract public class BasicEmulatorInfo implements EmulatorInfo {
 
     @Override
     public int[] getDeviceKeyboardCodes() {
-        int[] base = new int[]{EmulatorController.KEY_UP,
-                EmulatorController.KEY_DOWN, EmulatorController.KEY_RIGHT,
-                EmulatorController.KEY_LEFT, EmulatorController.KEY_START,
-                EmulatorController.KEY_SELECT, EmulatorController.KEY_A,
-                EmulatorController.KEY_B, EmulatorController.KEY_A_TURBO,
-                EmulatorController.KEY_B_TURBO,
+        int[] base = new int[]{
+                KeyAction.KEY_UP.getKey(),
+                KeyAction.KEY_DOWN.getKey(),
+                KeyAction.KEY_RIGHT.getKey(),
+                KeyAction.KEY_LEFT.getKey(),
+                KeyAction.KEY_START.getKey(),
+                KeyAction.KEY_SELECT.getKey(),
+                KeyAction.KEY_A.getKey(),
+                KeyAction.KEY_B.getKey(),
+                KeyAction.KEY_A_TURBO.getKey(),
+                KeyAction.KEY_B_TURBO.getKey(),
 
                 KeyboardControllerKeys.KEYS_LEFT_AND_UP,
                 KeyboardControllerKeys.KEYS_RIGHT_AND_UP,
