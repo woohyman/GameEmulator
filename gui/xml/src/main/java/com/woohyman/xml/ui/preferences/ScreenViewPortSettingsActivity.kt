@@ -4,28 +4,31 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.KeyEvent
 import androidx.appcompat.app.AppCompatActivity
-import com.woohyman.xml.R
-import com.woohyman.xml.ui.menu.GameMenu
-import com.woohyman.xml.ui.menu.GameMenu.GameMenuItem
-import com.woohyman.xml.ui.menu.GameMenu.OnGameMenuListener
-import com.woohyman.xml.ui.multitouchbutton.MultitouchLayer
 import com.woohyman.keyboard.base.EmulatorUtils
 import com.woohyman.keyboard.base.SlotUtils
 import com.woohyman.keyboard.data.database.GameDescription
 import com.woohyman.keyboard.data.entity.GfxProfile
 import com.woohyman.keyboard.utils.DatabaseHelper
 import com.woohyman.keyboard.utils.PreferenceUtil.getLastGfxProfile
+import com.woohyman.xml.R
+import com.woohyman.xml.ui.menu.GameMenu
+import com.woohyman.xml.ui.menu.GameMenu.GameMenuItem
+import com.woohyman.xml.ui.menu.GameMenu.OnGameMenuListener
+import com.woohyman.xml.ui.multitouchbutton.MultitouchLayer
 
 class ScreenViewPortSettingsActivity : AppCompatActivity(), OnGameMenuListener {
     var mtLayer: MultitouchLayer? = null
     var gameHash = ""
     var dbHelper: DatabaseHelper? = null
     var lastGameScreenshot: Bitmap? = null
-    private var gameMenu: GameMenu? = null
+
+    private val gameMenu by lazy {
+        GameMenu(this, this)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.controler_layout)
-        gameMenu = GameMenu(this, this)
         mtLayer = findViewById(R.id.touch_layer)
         dbHelper = DatabaseHelper(this)
     }
@@ -49,7 +52,7 @@ class ScreenViewPortSettingsActivity : AppCompatActivity(), OnGameMenuListener {
         gfxProfile = getLastGfxProfile(this)
         mtLayer!!.setLastgameScreenshot(
             lastGameScreenshot,
-            gfxProfile?.name!!
+            gfxProfile.name!!
         )
     }
 
@@ -87,10 +90,10 @@ class ScreenViewPortSettingsActivity : AppCompatActivity(), OnGameMenuListener {
     }
 
     fun openGameMenu() {
-        gameMenu!!.open()
+        gameMenu.open()
     }
 
     override fun openOptionsMenu() {
-        gameMenu!!.open()
+        gameMenu.open()
     }
 }

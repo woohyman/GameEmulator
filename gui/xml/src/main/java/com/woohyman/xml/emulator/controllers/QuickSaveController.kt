@@ -1,4 +1,4 @@
-package com.woohyman.xml.controllers
+package com.woohyman.xml.emulator.controllers
 
 import android.annotation.SuppressLint
 import android.view.GestureDetector.SimpleOnGestureListener
@@ -8,28 +8,21 @@ import androidx.core.view.GestureDetectorCompat
 import com.blankj.utilcode.util.Utils
 import com.woohyman.keyboard.controllers.EmulatorController
 import com.woohyman.keyboard.utils.PreferenceUtil.isQuickSaveEnabled
-import com.woohyman.xml.emulator.EmulatorMediator
+import com.woohyman.xml.emulator.IEmulatorMediator
 
 class QuickSaveController(
-    var emulatorMediator: EmulatorMediator,
+    var emulatorMediator: IEmulatorMediator,
     var touchController: TouchController?
 ) : EmulatorController {
-    private val gestureDetector: GestureDetectorCompat
+
+    private val gestureDetector = GestureDetectorCompat(Utils.getApp(), GestureListener())
     private var screenCenterX = 0
     private var isEnabled = false
-
-    init {
-        gestureDetector = GestureDetectorCompat(Utils.getApp(), GestureListener())
-    }
 
     override fun onResume() {
         isEnabled = isQuickSaveEnabled(Utils.getApp())
     }
 
-    override fun onPause() {}
-    override fun onWindowFocusChanged(hasFocus: Boolean) {}
-    override fun onGameStarted() {}
-    override fun onGamePaused() {}
     override fun connectToEmulator(port: Int) {}
     override val view: View = object : View(Utils.getApp()) {
         override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {

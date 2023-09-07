@@ -1,7 +1,6 @@
 package com.woohyman.xml.ui.opengl
 
 import android.annotation.SuppressLint
-import android.app.Application
 import android.graphics.Bitmap
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
@@ -12,11 +11,10 @@ import com.blankj.utilcode.util.Utils
 import com.woohyman.keyboard.base.ViewPort
 import com.woohyman.keyboard.base.ViewUtils.loadOrComputeViewPort
 import com.woohyman.keyboard.emulator.Emulator
-import com.woohyman.keyboard.utils.NLog
 import com.woohyman.keyboard.emulator.EmulatorView
 import com.woohyman.keyboard.utils.EmuUtils.emulator
-import com.woohyman.xml.emulator.EmulatorActivity
-import com.woohyman.xml.emulator.EmulatorMediator
+import com.woohyman.keyboard.utils.NLog
+import com.woohyman.xml.emulator.IEmulatorMediator
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
@@ -26,7 +24,7 @@ import javax.microedition.khronos.opengles.GL10
 
 @SuppressLint("ViewConstructor")
 internal class OpenGLView(
-    emulatorMediator: EmulatorMediator,
+    emulatorMediator: IEmulatorMediator,
     paddingLeft: Int,
     paddingTop: Int, shader: String
 ) : GLSurfaceView(Utils.getApp()), EmulatorView {
@@ -63,7 +61,7 @@ internal class OpenGLView(
         get() = renderer.viewPort!!
 
     internal class Renderer(
-        emulatorMediator: EmulatorMediator,
+        emulatorMediator: IEmulatorMediator,
         private val paddingLeft: Int,
         private val paddingTop: Int, shader: String
     ) : GLSurfaceView.Renderer {
@@ -128,7 +126,7 @@ internal class OpenGLView(
             val vp = loadOrComputeViewPort(
                 Utils.getApp(), emulator, width, height,
                 paddingLeft, paddingTop, false
-            )?:return
+            ) ?: return
             viewPort = vp
             Matrix.orthoM(
                 projMatrix, 0, -vp.width / 2f, +vp.width / 2f, -vp.height / 2f,

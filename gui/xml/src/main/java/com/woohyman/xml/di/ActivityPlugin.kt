@@ -1,7 +1,5 @@
 package com.woohyman.xml.di
 
-import com.woohyman.xml.emulator.EmulatorMediator
-import com.woohyman.xml.emulator.IEmulatorMediator
 import com.woohyman.xml.gamegallery.IPermissionManager
 import com.woohyman.xml.gamegallery.PermissionManager
 import dagger.Binds
@@ -12,13 +10,7 @@ import dagger.hilt.android.scopes.ActivityScoped
 
 @Module
 @InstallIn(ActivityComponent::class)
-abstract class EmulatorActivityComponent {
-
-    @Binds
-    @ActivityScoped
-    abstract fun bindEmulatorMediator(
-        emulatorMediator: EmulatorMediator,
-    ): IEmulatorMediator
+abstract class ActivityPlugin {
 
     @Binds
     @ActivityScoped

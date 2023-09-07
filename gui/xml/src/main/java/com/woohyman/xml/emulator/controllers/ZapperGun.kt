@@ -1,4 +1,4 @@
-package com.woohyman.xml.controllers
+package com.woohyman.xml.emulator.controllers
 
 import android.annotation.SuppressLint
 import android.view.MotionEvent
@@ -8,10 +8,10 @@ import com.woohyman.keyboard.controllers.EmulatorController
 import com.woohyman.keyboard.utils.EmuUtils
 import com.woohyman.keyboard.utils.EmuUtils.emulator
 import com.woohyman.keyboard.utils.PreferenceUtil.isZapperEnabled
-import com.woohyman.xml.emulator.EmulatorMediator
+import com.woohyman.xml.emulator.IEmulatorMediator
 
 class ZapperGun(
-    private var emulatorMediator: EmulatorMediator
+    private var emulatorMediator: IEmulatorMediator
 ) : EmulatorController {
     private val startX = 0f
     private val startY = 0f
@@ -25,9 +25,6 @@ class ZapperGun(
     private var inited = false
     private var isEnabled = false
 
-    override fun onResume() {}
-    override fun onWindowFocusChanged(hasFocus: Boolean) {}
-    override fun onPause() {}
     override fun connectToEmulator(port: Int) {}
     override val view: View = object : View(Utils.getApp()) {
         @SuppressLint("ClickableViewAccessibility")
@@ -67,11 +64,7 @@ class ZapperGun(
         }
     }
 
-    override fun onDestroy() {}
-
     override fun onGameStarted() {
         isEnabled = isZapperEnabled(Utils.getApp(), EmuUtils.fetchProxy.game.checksum)
     }
-
-    override fun onGamePaused() {}
 }

@@ -71,6 +71,7 @@ dependencies {
     val lifecycle_version = "2.5.1"
 
     implementation(project(":domain:keyboard"))
+    implementation(project(":domain:controller"))
     implementation(project(":data:nes"))
     api("com.google.dagger:hilt-android:2.44")
     kapt("com.google.dagger:hilt-android-compiler:2.44")

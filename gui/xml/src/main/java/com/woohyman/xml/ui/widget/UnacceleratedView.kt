@@ -1,18 +1,16 @@
 package com.woohyman.xml.ui.widget
 
-import android.app.Activity
-import android.app.Application
+import android.content.Context
 import android.graphics.Canvas
 import android.view.SurfaceView
 import android.view.View
 import com.woohyman.keyboard.base.ViewPort
 import com.woohyman.keyboard.base.ViewUtils.loadOrComputeViewPort
-import com.woohyman.keyboard.emulator.Emulator
 import com.woohyman.keyboard.emulator.EmulatorView
 import com.woohyman.keyboard.utils.EmuUtils.emulator
 
 internal class UnacceleratedView(
-    context: Activity?,
+    context: Context,
     paddingLeft: Int,
     paddingTop: Int
 ) : SurfaceView(context), EmulatorView {

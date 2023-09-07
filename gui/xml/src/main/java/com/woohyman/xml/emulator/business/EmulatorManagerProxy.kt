@@ -13,10 +13,11 @@ import com.woohyman.keyboard.utils.EmuUtils
 import com.woohyman.keyboard.utils.PreferenceUtil
 import com.woohyman.xml.R
 import com.woohyman.xml.emulator.EmulatorActivity
-import com.woohyman.xml.emulator.EmulatorMediator
+import com.woohyman.xml.emulator.IEmulatorMediator
+import javax.inject.Inject
 
-class EmulatorManagerProxy constructor(
-    private val emulatorMediator: EmulatorMediator,
+class EmulatorManagerProxy @Inject constructor(
+    private val emulatorMediator: IEmulatorMediator,
 ) : DefaultLifecycleObserver, Manager(Utils.getApp()) {
     private var isFF = false
     private var isToggleFF = false
@@ -93,9 +94,9 @@ class EmulatorManagerProxy constructor(
                 EmulatorActivity.oldConfig and ActivityInfo.CONFIG_ORIENTATION == ActivityInfo.CONFIG_ORIENTATION
             EmulatorActivity.oldConfig = 0
             if (emulatorMediator.shouldPause() && !wasRotated) {
-                emulatorMediator.gameMenuProxy.gameMenu?.open()
+                emulatorMediator.gameMenuProxy.gameMenu.open()
             }
-            if (emulatorMediator.gameMenuProxy.gameMenu?.isOpen == true) {
+            if (emulatorMediator.gameMenuProxy.gameMenu.isOpen) {
                 pauseEmulation()
             }
             emulatorMediator.setShouldPauseOnResume(true)

@@ -4,15 +4,14 @@ import android.view.View
 
 /*管理游戏控制器*/
 interface EmulatorController {
-    fun onResume()
-    fun onPause()
-    fun onWindowFocusChanged(hasFocus: Boolean)
-    fun onGameStarted()
-    fun onGamePaused()
-    fun connectToEmulator(port: Int)
-
     val view: View
-    fun onDestroy()
+    fun onResume(){}
+    fun onPause(){}
+    fun onWindowFocusChanged(hasFocus: Boolean){}
+    fun onGameStarted(){}
+    fun onGamePaused(){}
+    fun connectToEmulator(port: Int){}
+    fun onDestroy(){}
 }
 
 enum class KeyAction(val key: Int) {

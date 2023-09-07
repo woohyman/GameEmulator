@@ -7,28 +7,35 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import com.blankj.utilcode.util.ActivityUtils
 import com.blankj.utilcode.util.Utils
 import com.woohyman.keyboard.controllers.EmulatorController
 import com.woohyman.keyboard.emulator.EmulatorException
 import com.woohyman.keyboard.utils.EmuUtils
 import com.woohyman.keyboard.utils.PreferenceUtil
-import com.woohyman.xml.controllers.DynamicDPad
-import com.woohyman.xml.controllers.KeyboardController
-import com.woohyman.xml.controllers.QuickSaveController
-import com.woohyman.xml.controllers.TouchController
-import com.woohyman.xml.controllers.ZapperGun
-import com.woohyman.xml.emulator.EmulatorMediator
+import com.woohyman.xml.emulator.IEmulatorMediator
+import com.woohyman.xml.emulator.controllers.DynamicDPad
+import com.woohyman.xml.emulator.controllers.KeyboardController
+import com.woohyman.xml.emulator.controllers.QuickSaveController
+import com.woohyman.xml.emulator.controllers.TouchController
+import com.woohyman.xml.emulator.controllers.ZapperGun
+import javax.inject.Inject
 
-class GameControlProxy constructor(
-    private val emulatorMediator: EmulatorMediator,
+class GameControlProxy @Inject constructor(
+    private val emulatorMediator: IEmulatorMediator,
+    private val keyboardController: KeyboardController,
 ) : DefaultLifecycleObserver, EmulatorController {
+
+    private val activity by lazy {
+        ActivityUtils.getTopActivity()!!
+    }
 
     private var controllers: MutableList<EmulatorController> = mutableListOf()
     private var controllerViews: MutableList<View> = ArrayList()
 
     val group: ViewGroup by lazy {
         FrameLayout(Utils.getApp()).also {
-            val display = emulatorMediator.activity?.windowManager?.defaultDisplay ?: return@also
+            val display = activity.windowManager?.defaultDisplay ?: return@also
             val w = EmuUtils.getDisplayWidth(display)
             val h = EmuUtils.getDisplayHeight(display)
             val params = ViewGroup.LayoutParams(w, h)
@@ -38,8 +45,8 @@ class GameControlProxy constructor(
 
     private val dynamic: DynamicDPad? by lazy {
         touchController.connectToEmulator(0)
-        val display = emulatorMediator.activity?.windowManager?.defaultDisplay ?: return@lazy null
-        DynamicDPad(Utils.getApp(), display, touchController)
+        val display = activity.windowManager?.defaultDisplay ?: return@lazy null
+        DynamicDPad(display, touchController)
     }
 
     private val touchController: TouchController by lazy {
@@ -62,13 +69,7 @@ class GameControlProxy constructor(
         val zapper = ZapperGun(emulatorMediator)
         zapper.connectToEmulator(1)
         controllers.add(zapper)
-
-        val kc = KeyboardController(
-            EmuUtils.fetchProxy.game.checksum,
-            emulatorMediator
-        )
-        controllers.add(kc)
-
+        controllers.add(keyboardController)
 
         for (controller in controllers) {
             val controllerView = controller.view
@@ -78,7 +79,7 @@ class GameControlProxy constructor(
     }
 
     override fun onResume(owner: LifecycleOwner) {
-        super.onResume(owner)
+        super<DefaultLifecycleObserver>.onResume(owner)
         dynamic?.let {
             if (PreferenceUtil.isDynamicDPADEnable(Utils.getApp())) {
                 if (!controllers.contains(it)) {
@@ -113,7 +114,7 @@ class GameControlProxy constructor(
     }
 
     override fun onPause(owner: LifecycleOwner) {
-        super.onPause(owner)
+        super<DefaultLifecycleObserver>.onPause(owner)
         for (controller in controllers) {
             controller.onPause()
             controller.onGamePaused()
@@ -121,7 +122,7 @@ class GameControlProxy constructor(
     }
 
     override fun onDestroy(owner: LifecycleOwner) {
-        super.onDestroy(owner)
+        super<DefaultLifecycleObserver>.onDestroy(owner)
         for (controller in controllers) {
             controller.onDestroy()
         }

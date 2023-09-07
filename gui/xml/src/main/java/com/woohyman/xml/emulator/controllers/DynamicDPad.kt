@@ -1,8 +1,7 @@
-package com.woohyman.xml.controllers
+package com.woohyman.xml.emulator.controllers
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
@@ -12,14 +11,16 @@ import android.util.DisplayMetrics
 import android.view.Display
 import android.view.MotionEvent
 import android.view.View
+import com.blankj.utilcode.util.Utils
 import com.woohyman.keyboard.controllers.EmulatorController
 import com.woohyman.keyboard.controllers.KeyAction
 import com.woohyman.keyboard.utils.EmuUtils.emulator
 import com.woohyman.keyboard.utils.PreferenceUtil
 import com.woohyman.xml.R
+import kotlin.math.abs
+import kotlin.math.tan
 
 class DynamicDPad(
-    private var context: Context?,
     display: Display,
     private var touchController: TouchController?
 ) : EmulatorController {
@@ -50,13 +51,9 @@ class DynamicDPad(
     }
 
     override fun onResume() {
-        paint.alpha = PreferenceUtil.getControlsOpacity(context)
+        paint.alpha = PreferenceUtil.getControlsOpacity(Utils.getApp())
     }
 
-    override fun onPause() {}
-    override fun onWindowFocusChanged(hasFocus: Boolean) {}
-    override fun onGameStarted() {}
-    override fun onGamePaused() {}
     override fun connectToEmulator(port: Int) {
         this.port = port
         leftMapped = emulator.info.getMappingValue(KeyAction.KEY_LEFT)
@@ -65,23 +62,34 @@ class DynamicDPad(
         upMapped = emulator.info.getMappingValue(KeyAction.KEY_UP)
     }
 
-    override val view: View = DPadView(context)
+    override val view: View = DPadView(Utils.getApp())
 
     override fun onDestroy() {
-        context = null
         touchController = null
     }
 
-    private inner class DPadView(context: Context?) : View(context) {
+    private inner class DPadView(context: Context) : View(context) {
         private val ANGLE = 18
-        var direction = arrayOfNulls<Bitmap>(8)
+        val direction by lazy {
+            arrayOf(
+                BitmapFactory.decodeResource(resources, R.drawable.dynamic_dpad_right),
+                BitmapFactory.decodeResource(resources, R.drawable.dynamic_dpad_right_up),
+                BitmapFactory.decodeResource(resources, R.drawable.dynamic_dpad_up),
+                BitmapFactory.decodeResource(resources, R.drawable.dynamic_dpad_left_up),
+                BitmapFactory.decodeResource(resources, R.drawable.dynamic_dpad_left),
+                BitmapFactory.decodeResource(resources, R.drawable.dynamic_dpad_left_down),
+                BitmapFactory.decodeResource(resources, R.drawable.dynamic_dpad_down),
+                BitmapFactory.decodeResource(resources, R.drawable.dynamic_dpad_right_down),
+            )
+        }
+
         var btnW = -1
         var btnH = -1
         private var directionIdx = -1
         private val u1 = 0.0174532925f * ANGLE
         private val u2 = 0.0174532925f * (90 - ANGLE)
-        private val TAN_DIAGONAL_MIN = Math.tan(u1.toDouble()).toFloat()
-        private val TAN_DIAGONAL_MAX = Math.tan(u2.toDouble()).toFloat()
+        private val TAN_DIAGONAL_MIN = tan(u1.toDouble()).toFloat()
+        private val TAN_DIAGONAL_MAX = tan(u2.toDouble()).toFloat()
         private var activePointerId = -1
         private var optimizationCounter = 0
         private var vibrationDuration = 100
@@ -91,19 +99,9 @@ class DynamicDPad(
             paint.color = Color.WHITE
             paint.strokeWidth = 3f
             vibrator = getContext().getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-            vibrationDuration = PreferenceUtil.getVibrationDuration(context!!)
-            direction[0] = BitmapFactory.decodeResource(resources, R.drawable.dynamic_dpad_right)
-            btnW = direction[0]?.getWidth()!!
-            btnH = direction[0]?.getHeight()!!
-            direction[1] = BitmapFactory.decodeResource(resources, R.drawable.dynamic_dpad_right_up)
-            direction[2] = BitmapFactory.decodeResource(resources, R.drawable.dynamic_dpad_up)
-            direction[3] = BitmapFactory.decodeResource(resources, R.drawable.dynamic_dpad_left_up)
-            direction[4] = BitmapFactory.decodeResource(resources, R.drawable.dynamic_dpad_left)
-            direction[5] =
-                BitmapFactory.decodeResource(resources, R.drawable.dynamic_dpad_left_down)
-            direction[6] = BitmapFactory.decodeResource(resources, R.drawable.dynamic_dpad_down)
-            direction[7] =
-                BitmapFactory.decodeResource(resources, R.drawable.dynamic_dpad_right_down)
+            vibrationDuration = PreferenceUtil.getVibrationDuration(context)
+            btnW = direction[0]?.width!!
+            btnH = direction[0]?.height!!
         }
 
         override fun onDraw(canvas: Canvas) {
@@ -147,6 +145,7 @@ class DynamicDPad(
                     0
                 }
             }
+
             if (actionMasked == MotionEvent.ACTION_DOWN || actionMasked == MotionEvent.ACTION_POINTER_DOWN) {
                 if (activePointerId == -1) {
                     activePointerId = event.getPointerId(event.actionIndex)
@@ -163,6 +162,7 @@ class DynamicDPad(
                     }
                 }
             }
+
             if (actionMasked == MotionEvent.ACTION_MOVE) {
                 if (dpadCenterX != -1f) {
                     for (i in 0 until event.pointerCount) {
@@ -174,7 +174,7 @@ class DynamicDPad(
                                 currentY = y
                                 val dx = x - dpadCenterX
                                 val dy = dpadCenterY - y
-                                val tan = Math.abs(dy) / Math.abs(dx)
+                                val tan = abs(dy) / abs(dx)
                                 var left: Boolean
                                 var right: Boolean
                                 var up: Boolean
@@ -236,12 +236,15 @@ class DynamicDPad(
                 }
             }
             when (actionMasked) {
-                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL, MotionEvent.ACTION_POINTER_UP -> if (activePointerId != -1 && event.getPointerId(
-                        event.actionIndex
-                    ) == activePointerId
-                ) {
-                    release()
-                }
+                MotionEvent.ACTION_UP,
+                MotionEvent.ACTION_CANCEL,
+                MotionEvent.ACTION_POINTER_UP ->
+                    if (
+                        activePointerId != -1
+                        && event.getPointerId(event.actionIndex) == activePointerId
+                    ) {
+                        release()
+                    }
             }
             return true
         }

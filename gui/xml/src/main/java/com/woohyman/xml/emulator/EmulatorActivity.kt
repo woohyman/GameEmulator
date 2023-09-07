@@ -9,6 +9,7 @@ import android.os.Process
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.WindowManager
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.woohyman.keyboard.base.EmulatorUtils
 import com.woohyman.keyboard.emulator.EmulatorException
@@ -22,31 +23,29 @@ abstract class EmulatorActivity : AppCompatActivity() {
 
     private var exceptionOccurred = false
 
-    val emulatorMediator: EmulatorMediator by lazy {
-        EmulatorMediator(this)
-    }
+    private val viewModel:EmulatorViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        viewModel.addObserver(this)
         try {
-            emulatorMediator.baseDir = EmulatorUtils.getBaseDir(this)
+            viewModel.emulatorMediator.baseDir = EmulatorUtils.getBaseDir(this)
         } catch (e: EmulatorException) {
-            emulatorMediator.handleException(e)
+            viewModel.emulatorMediator.handleException(e)
             exceptionOccurred = true
             return
         }
 
         intent.extras?.let {
             if (it.getBoolean(EXTRA_FROM_GALLERY)) {
-                emulatorMediator.setShouldPauseOnResume(false)
+                viewModel.emulatorMediator.setShouldPauseOnResume(false)
                 intent.removeExtra(EXTRA_FROM_GALLERY)
             }
         }
 
-        emulatorMediator.canRestart = true
+        viewModel.emulatorMediator.canRestart = true
         d(TAG, "onCreate - BaseActivity")
-        emulatorMediator.slotToRun = -1
+        viewModel.emulatorMediator.slotToRun = -1
 
         val wParams = window.attributes
         wParams.flags = wParams.flags or WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
@@ -54,8 +53,8 @@ abstract class EmulatorActivity : AppCompatActivity() {
         wParams.flags = wParams.flags or WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
         window.attributes = wParams
 
-        emulatorMediator.gameControlProxy.group.addView(emulatorMediator.emulatorView.asView())
-        setContentView(emulatorMediator.gameControlProxy.group)
+        viewModel.emulatorMediator.gameControlProxy.group.addView(viewModel.emulatorMediator.emulatorView.asView())
+        setContentView(viewModel.emulatorMediator.gameControlProxy.group)
     }
 
     override fun onDestroy() {
@@ -68,19 +67,19 @@ abstract class EmulatorActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        emulatorMediator.setShouldPauseOnResume(false)
+        viewModel.emulatorMediator.setShouldPauseOnResume(false)
         if (resultCode == RESULT_OK) {
-            emulatorMediator.canRestart = false
+            viewModel.emulatorMediator.canRestart = false
             val slotIdx = data?.getIntExtra(EXTRA_SLOT, -1)
             when (requestCode) {
                 REQUEST_SAVE -> {
-                    emulatorMediator.slotToSave = slotIdx
-                    emulatorMediator.slotToRun = 0
+                    viewModel.emulatorMediator.slotToSave = slotIdx
+                    viewModel.emulatorMediator.slotToRun = 0
                 }
 
                 REQUEST_LOAD -> {
-                    emulatorMediator.slotToRun = slotIdx
-                    emulatorMediator.slotToSave = null
+                    viewModel.emulatorMediator.slotToRun = slotIdx
+                    viewModel.emulatorMediator.slotToSave = null
                 }
             }
         }
@@ -88,19 +87,19 @@ abstract class EmulatorActivity : AppCompatActivity() {
 
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
         val res = super.dispatchTouchEvent(ev)
-        emulatorMediator.gameControlProxy.dispatchTouchEvent(ev)
+        viewModel.emulatorMediator.gameControlProxy.dispatchTouchEvent(ev)
         return res
     }
 
     override fun dispatchKeyEvent(ev: KeyEvent): Boolean {
         val res = super.dispatchKeyEvent(ev)
-        emulatorMediator.gameControlProxy.dispatchKeyEvent(ev)
+        viewModel.emulatorMediator.gameControlProxy.dispatchKeyEvent(ev)
         return res
     }
 
     override fun onPause() {
         super.onPause()
-        if (emulatorMediator.isRestarting) {
+        if (viewModel.emulatorMediator.isRestarting) {
             finish()
             return
         }
@@ -108,13 +107,13 @@ abstract class EmulatorActivity : AppCompatActivity() {
             return
         }
         pm = null
-        if (emulatorMediator.dialog.isShowing) {
-            emulatorMediator.dialog.dismiss()
+        if (viewModel.emulatorMediator.dialog.isShowing) {
+            viewModel.emulatorMediator.dialog.dismiss()
         }
     }
 
     private fun restartProcess(activityToStartClass: Class<*>) {
-        emulatorMediator.isRestarting = true
+        viewModel.emulatorMediator.isRestarting = true
         val intent = Intent(this, RestarterActivity::class.java)
         intent.putExtras(getIntent())
         intent.putExtra(RestarterActivity.EXTRA_PID, Process.myPid())
@@ -126,18 +125,18 @@ abstract class EmulatorActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
-        emulatorMediator.isRestarting = false
+        viewModel.emulatorMediator.isRestarting = false
         val isAfterProcessRestart =
             intent.extras?.getBoolean(RestarterActivity.EXTRA_AFTER_RESTART) ?: false
 
         intent.removeExtra(RestarterActivity.EXTRA_AFTER_RESTART)
-        val shouldRestart = emulatorMediator.decreaseResumesToRestart() == 0
-        if (!isAfterProcessRestart && shouldRestart && emulatorMediator.canRestart) {
-            emulatorMediator.resetProcessResetCounter()
+        val shouldRestart = viewModel.emulatorMediator.decreaseResumesToRestart() == 0
+        if (!isAfterProcessRestart && shouldRestart && viewModel.emulatorMediator.canRestart) {
+            viewModel.emulatorMediator.resetProcessResetCounter()
             restartProcess(this.javaClass)
             return
         }
-        emulatorMediator.canRestart = true
+        viewModel.emulatorMediator.canRestart = true
         if (exceptionOccurred) {
             return
         }
@@ -155,16 +154,16 @@ abstract class EmulatorActivity : AppCompatActivity() {
         if (exceptionOccurred) {
             return
         }
-        emulatorMediator.gameControlProxy.onGameStarted()
+        viewModel.emulatorMediator.gameControlProxy.onGameStarted()
     }
 
     override fun startActivity(intent: Intent) {
-        emulatorMediator.setShouldPauseOnResume(false)
+        viewModel.emulatorMediator.setShouldPauseOnResume(false)
         super.startActivity(intent)
     }
 
     override fun startActivity(intent: Intent, options: Bundle?) {
-        emulatorMediator.setShouldPauseOnResume(false)
+        viewModel.emulatorMediator.setShouldPauseOnResume(false)
         super.startActivity(intent, options)
     }
 
@@ -196,7 +195,7 @@ abstract class EmulatorActivity : AppCompatActivity() {
         i(TAG, "activity key down event:$keyCode")
         return when (keyCode) {
             KeyEvent.KEYCODE_MENU -> {
-                emulatorMediator.gameMenuProxy.openGameMenu()
+                viewModel.emulatorMediator.gameMenuProxy.openGameMenu()
                 true
             }
 

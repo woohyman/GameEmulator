@@ -10,7 +10,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class EmulatorComponent {
+abstract class SingletonPlugin {
 
     @Binds
     @Singleton

@@ -1,5 +1,6 @@
 package com.woohyman.xml.emulator.business
 
+import android.app.Activity
 import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
@@ -9,6 +10,7 @@ import android.widget.Toast
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.blankj.utilcode.constant.PermissionConstants
+import com.blankj.utilcode.util.ActivityUtils
 import com.blankj.utilcode.util.PermissionUtils
 import com.blankj.utilcode.util.Utils
 import com.woohyman.keyboard.emulator.EmulatorException
@@ -19,10 +21,10 @@ import com.woohyman.keyboard.utils.PreferenceUtil
 import com.woohyman.xml.BaseApplication
 import com.woohyman.xml.R
 import com.woohyman.xml.emulator.EmulatorActivity
-import com.woohyman.xml.emulator.EmulatorMediator
-import com.woohyman.xml.ui.cheats.CheatsActivity
+import com.woohyman.xml.emulator.IEmulatorMediator
 import com.woohyman.xml.gamegallery.Constants
 import com.woohyman.xml.gamegallery.SlotSelectionActivity
+import com.woohyman.xml.ui.cheats.CheatsActivity
 import com.woohyman.xml.ui.menu.GameMenu
 import com.woohyman.xml.ui.preferences.GamePreferenceActivity
 import com.woohyman.xml.ui.preferences.GamePreferenceFragment
@@ -31,25 +33,31 @@ import com.woohyman.xml.ui.preferences.GeneralPreferenceFragment
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import javax.inject.Inject
 
-class GameMenuDelegate constructor(
-    private val emulatorMediator: EmulatorMediator,
+class GameMenuDelegate @Inject constructor(
+    private val emulatorMediator: IEmulatorMediator,
 ) : GameMenu.OnGameMenuListener, DefaultLifecycleObserver {
+
     private var runTimeMachine = false
 
-    val gameMenu: GameMenu? by lazy {
-        GameMenu(emulatorMediator.activity ?: return@lazy null, this)
+    private val activity by lazy {
+        ActivityUtils.getTopActivity()!!
+    }
+
+    val gameMenu by lazy {
+        GameMenu(activity, this)
     }
 
     override fun onPause(owner: LifecycleOwner) {
         super.onPause(owner)
-        if (gameMenu?.isOpen ?: return) {
-            gameMenu?.dismiss()
+        if (gameMenu.isOpen) {
+            gameMenu.dismiss()
         }
     }
 
     fun openGameMenu() {
-        gameMenu?.open()
+        gameMenu.open()
     }
 
     override fun onGameMenuCreate(menu: GameMenu) {
@@ -97,7 +105,7 @@ class GameMenuDelegate constructor(
                 }
 
                 R.string.game_menu_save -> {
-                    val i = Intent(emulatorMediator.activity, SlotSelectionActivity::class.java)
+                    val i = Intent(activity, SlotSelectionActivity::class.java)
                     i.putExtra(Constants.EXTRA_BASE_DIRECTORY, emulatorMediator.baseDir)
                     i.putExtra(
                         Constants.EXTRA_DIALOG_TYPE_INT,
@@ -107,7 +115,7 @@ class GameMenuDelegate constructor(
                 }
 
                 R.string.game_menu_load -> {
-                    val i = Intent(emulatorMediator.activity, SlotSelectionActivity::class.java)
+                    val i = Intent(activity, SlotSelectionActivity::class.java)
                     i.putExtra(Constants.EXTRA_BASE_DIRECTORY, emulatorMediator.baseDir)
                     i.putExtra(
                         Constants.EXTRA_DIALOG_TYPE_INT,
@@ -117,29 +125,29 @@ class GameMenuDelegate constructor(
                 }
 
                 R.string.game_menu_cheats -> {
-                    val i = Intent(emulatorMediator.activity, CheatsActivity::class.java)
+                    val i = Intent(activity, CheatsActivity::class.java)
                     i.putExtra(CheatsActivity.EXTRA_IN_GAME_HASH, EmuUtils.fetchProxy.game.checksum)
                     freeStartActivity(i)
                 }
 
                 R.string.game_menu_settings -> {
-                    val i = Intent(emulatorMediator.activity, GamePreferenceActivity::class.java)
+                    val i = Intent(activity, GamePreferenceActivity::class.java)
                     i.putExtra(PreferenceActivity.EXTRA_NO_HEADERS, true)
                     i.putExtra(
                         PreferenceActivity.EXTRA_SHOW_FRAGMENT,
                         GamePreferenceFragment::class.java.name
                     )
-                    emulatorMediator.activity?.startActivity(i)
+                    activity.startActivity(i)
                 }
 
                 R.string.gallery_menu_pref -> {
-                    val i = Intent(emulatorMediator.activity, GeneralPreferenceActivity::class.java)
+                    val i = Intent(activity, GeneralPreferenceActivity::class.java)
                     i.putExtra(PreferenceActivity.EXTRA_NO_HEADERS, true)
                     i.putExtra(
                         PreferenceActivity.EXTRA_SHOW_FRAGMENT,
                         GeneralPreferenceFragment::class.java.name
                     )
-                    emulatorMediator.activity?.startActivity(i)
+                    activity.startActivity(i)
                 }
 
                 R.string.game_menu_screenshot -> {
@@ -191,11 +199,11 @@ class GameMenuDelegate constructor(
         }
         try {
             val fos = FileOutputStream(to)
-            EmuUtils.createScreenshotBitmap(emulatorMediator.activity)
+            EmuUtils.createScreenshotBitmap(activity)
                 .compress(Bitmap.CompressFormat.PNG, 90, fos)
             fos.close()
             Toast.makeText(
-                emulatorMediator.activity,
+                activity,
                 Utils.getApp().getString(
                     R.string.act_game_screenshot_saved,
                     to.absolutePath
@@ -209,12 +217,12 @@ class GameMenuDelegate constructor(
 
     private fun freeStartActivityForResult(intent: Intent, requestCode: Int) {
         emulatorMediator.setShouldPauseOnResume(false)
-        emulatorMediator.activity?.startActivityForResult(intent, requestCode)
+        activity.startActivityForResult(intent, requestCode)
     }
 
     private fun freeStartActivity(intent: Intent) {
         emulatorMediator.setShouldPauseOnResume(false)
-        emulatorMediator.activity?.startActivity(intent)
+        activity.startActivity(intent)
     }
 
     private fun onGameBackToPast() {

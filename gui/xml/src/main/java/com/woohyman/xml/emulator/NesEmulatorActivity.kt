@@ -3,6 +3,7 @@ package com.woohyman.xml.emulator
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.addCallback
+import androidx.activity.viewModels
 import com.blankj.utilcode.util.ActivityUtils
 import com.woohyman.keyboard.emulator.NesEmulator
 import com.woohyman.keyboard.utils.NLog
@@ -14,11 +15,12 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class NesEmulatorActivity : EmulatorActivity() {
 
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         if (checkLastStack()) {
             val intent = Intent(this@NesEmulatorActivity, NesGalleryActivity::class.java)
             startActivity(intent)
-        }else{
+        } else {
             super.onBackPressed()
         }
     }

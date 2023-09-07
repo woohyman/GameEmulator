@@ -1,58 +1,64 @@
 package com.woohyman.xml.emulator
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.preference.PreferenceManager
 import android.widget.Toast
 import androidx.annotation.MainThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ViewModelProvider
+import com.blankj.utilcode.util.ActivityUtils
 import com.blankj.utilcode.util.Utils
-import com.woohyman.keyboard.data.database.GameDescription
 import com.woohyman.keyboard.emulator.EmulatorException
-import com.woohyman.keyboard.emulator.EmulatorRunner
 import com.woohyman.keyboard.utils.DialogUtils
 import com.woohyman.keyboard.utils.NLog
 import com.woohyman.keyboard.utils.PreferenceUtil
 import com.woohyman.xml.R
-import com.woohyman.xml.emulator.business.EmulatorManagerProxy
-import com.woohyman.xml.emulator.business.EmulatorViewProxy
-import com.woohyman.xml.emulator.business.GameControlProxy
-import com.woohyman.xml.emulator.business.GameMenuDelegate
 import com.woohyman.xml.ui.timetravel.TimeTravelDialog
 import kotlinx.atomicfu.atomic
 import kotlinx.atomicfu.getAndUpdate
-import java.lang.ref.WeakReference
 import javax.inject.Inject
 
-class EmulatorMediator constructor(
-    private val appCompatActivity: AppCompatActivity,
-) : IEmulatorMediator, EmulatorRunner.OnNotRespondingListener {
+class EmulatorMediator @Inject constructor(
 
-    val gameMenuProxy: GameMenuDelegate = GameMenuDelegate(this)
-    val emulatorManagerProxy: EmulatorManagerProxy = EmulatorManagerProxy(this)
-    val gameControlProxy: GameControlProxy = GameControlProxy(this)
-    val emulatorView = EmulatorViewProxy(this)
+) : IEmulatorMediator {
 
-    val activity: AppCompatActivity? get() = WeakReference(appCompatActivity).get()
+    private val activity by lazy {
+        ActivityUtils.getTopActivity()!!
+    }
+
+    private val emulatorViewModel by lazy {
+        ViewModelProvider(activity as AppCompatActivity)[EmulatorViewModel::class.java]
+    }
+
+    override val gameMenuProxy by lazy {
+        emulatorViewModel.gameMenuProxy
+    }
+
+    override val emulatorManagerProxy by lazy {
+        emulatorViewModel.emulatorManagerProxy
+    }
+
+    override val gameControlProxy by lazy {
+        emulatorViewModel.gameControlProxy
+    }
+
+    override val emulatorView by lazy {
+        emulatorViewModel.emulatorView
+    }
 
     private val maxPRC = 10
     private var autoHide = false
     private var warningShowing = atomic(false)
 
-    var isRestarting = false
-    var canRestart = false
-    var slotToRun: Int? = null
-    var slotToSave: Int? = null
-    var baseDir: String? = null
+    override var isRestarting = false
+    override var canRestart = false
+    override var slotToRun: Int? = null
+    override var slotToSave: Int? = null
+    override var baseDir: String? = null
 
-    init {
-        appCompatActivity.lifecycle.addObserver(this)
-        appCompatActivity.lifecycle.addObserver(gameMenuProxy)
-        appCompatActivity.lifecycle.addObserver(emulatorManagerProxy)
-        appCompatActivity.lifecycle.addObserver(gameControlProxy)
-    }
-
-    val dialog: TimeTravelDialog by lazy {
+    override val dialog: TimeTravelDialog by lazy {
         TimeTravelDialog(Utils.getApp(), emulatorManagerProxy)
     }
 
@@ -88,22 +94,22 @@ class EmulatorMediator constructor(
         val dialog = AlertDialog.Builder(Utils.getApp())
             .setMessage(R.string.too_slow)
             .create()
-        dialog.setOnDismissListener { activity?.finish() }
+        dialog.setOnDismissListener { (activity as? Activity)?.finish() }
         emulatorManagerProxy.pauseEmulation()
         DialogUtils.show(dialog, true)
     }
 
-    fun setShouldPauseOnResume(b: Boolean) {
+    override fun setShouldPauseOnResume(b: Boolean) {
         PreferenceManager.getDefaultSharedPreferences(Utils.getApp()).edit()
             .putBoolean("emulator_activity_pause", b).apply()
     }
 
-    fun shouldPause(): Boolean {
+    override fun shouldPause(): Boolean {
         return PreferenceManager.getDefaultSharedPreferences(Utils.getApp())
             .getBoolean("emulator_activity_pause", false)
     }
 
-    fun decreaseResumesToRestart(): Int {
+    override fun decreaseResumesToRestart(): Int {
         var prc =
             PreferenceManager.getDefaultSharedPreferences(Utils.getApp()).getInt("PRC", maxPRC)
         if (prc > 0) {
@@ -115,20 +121,20 @@ class EmulatorMediator constructor(
         return prc
     }
 
-    fun resetProcessResetCounter() {
+    override fun resetProcessResetCounter() {
         val editor = PreferenceManager.getDefaultSharedPreferences(Utils.getApp()).edit()
         editor.putInt("PRC", maxPRC)
         editor.apply()
     }
 
-    fun hideTouchController() {
+    override fun hideTouchController() {
         NLog.i(EmulatorActivity.TAG, "hide controler")
         if (autoHide) {
             gameControlProxy.hideTouchController()
         }
     }
 
-    fun quickSave() {
+    override fun quickSave() {
         emulatorManagerProxy.saveState(10)
         Toast.makeText(
             Utils.getApp(),
@@ -136,15 +142,15 @@ class EmulatorMediator constructor(
         ).show()
     }
 
-    fun quickLoad() {
+    override fun quickLoad() {
         emulatorManagerProxy.loadState(10)
     }
 
-    fun handleException(e: EmulatorException) {
-        val dialog = AlertDialog.Builder(appCompatActivity)
-            .setMessage(e.getMessage(appCompatActivity))
+    override fun handleException(e: EmulatorException) {
+        val dialog = AlertDialog.Builder(activity)
+            .setMessage(e.getMessage(activity))
             .create()
-        dialog.setOnDismissListener { appCompatActivity.finish() }
+        dialog.setOnDismissListener { (activity as? Activity)?.finish() }
         DialogUtils.show(dialog, true)
     }
 }

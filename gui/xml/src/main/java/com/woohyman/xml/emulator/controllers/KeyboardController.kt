@@ -1,7 +1,8 @@
-package com.woohyman.xml.controllers
+package com.woohyman.xml.emulator.controllers
 
 import android.view.KeyEvent
 import android.view.View
+import com.blankj.utilcode.util.ActivityUtils
 import com.blankj.utilcode.util.Utils
 import com.woohyman.keyboard.controllers.EmulatorController
 import com.woohyman.keyboard.keyboard.KeyboardControllerKeys
@@ -17,30 +18,33 @@ import com.woohyman.keyboard.keyboard.KeyboardControllerKeys.Companion.KEY_SAVE_
 import com.woohyman.keyboard.keyboard.KeyboardControllerKeys.Companion.KEY_XPERIA_CIRCLE
 import com.woohyman.keyboard.keyboard.KeyboardControllerKeys.Companion.PLAYER2_OFFSET
 import com.woohyman.keyboard.keyboard.KeyboardProfile
+import com.woohyman.keyboard.utils.EmuUtils
 import com.woohyman.keyboard.utils.EmuUtils.emulator
 import com.woohyman.keyboard.utils.NLog
-import com.woohyman.xml.emulator.EmulatorMediator
+import com.woohyman.xml.emulator.IEmulatorMediator
+import javax.inject.Inject
 
-class KeyboardController(
-    private var gameHash: String,
-    private var emulatorMediator: EmulatorMediator
+class KeyboardController @Inject constructor(
+    private var emulatorMediator: IEmulatorMediator,
 ) : EmulatorController {
+
+    private val activity by lazy {
+        ActivityUtils.getTopActivity()!!
+    }
+
     private val tmpKeys = IntArray(2)
     private val loadingOrSaving = BooleanArray(4)
     private var profile: KeyboardProfile? = null
 
     override fun onResume() {
-        profile = KeyboardProfile.getSelectedProfile(gameHash, Utils.getApp())
+        profile =
+            KeyboardProfile.getSelectedProfile(EmuUtils.fetchProxy.game.checksum, Utils.getApp())
         emulator.resetKeys()
         for (i in loadingOrSaving.indices) {
             loadingOrSaving[i] = false
         }
     }
 
-    override fun onPause() {}
-    override fun onWindowFocusChanged(hasFocus: Boolean) {}
-    override fun onGameStarted() {}
-    override fun onGamePaused() {}
     override fun connectToEmulator(port: Int) {
         throw UnsupportedOperationException()
     }
@@ -63,9 +67,10 @@ class KeyboardController(
                 }
                 keyCode
             }.let {
-                return if (profile != null && profile!!.keyMap[it, -1].also {
-                        mapValue = it
-                    } != -1) {
+                val value = profile?.keyMap?.get(it, -1)?.also { value ->
+                    mapValue = value
+                }
+                return if (value != -1 && value != null) {
                     processKey(mapValue, true)
                     true
                 } else {
@@ -84,9 +89,10 @@ class KeyboardController(
                 }
                 keyCode
             }.let {
-                return if (profile != null && profile!!.keyMap[it, -1].also {
-                        mapValue = it
-                    } != -1) {
+                val value = profile?.keyMap?.get(it, -1)?.also { value ->
+                    mapValue = value
+                }
+                return if (value != null && value != -1) {
                     processKey(mapValue, false)
                     emulatorMediator.hideTouchController()
                     true
@@ -110,7 +116,7 @@ class KeyboardController(
             when {
                 it == KEY_BACK -> {
                     if (pressed) {
-                        emulatorMediator.activity?.finish()
+                        activity.finish()
                     }
                 }
 
@@ -184,10 +190,6 @@ class KeyboardController(
         if (!isKeyPressed) {
             loadingOrSaving[slot] = false
         }
-    }
-
-    override fun onDestroy() {
-
     }
 
     companion object {

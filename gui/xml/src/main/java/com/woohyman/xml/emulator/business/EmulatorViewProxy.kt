@@ -2,6 +2,7 @@ package com.woohyman.xml.emulator.business
 
 import android.content.res.Configuration
 import android.view.View
+import com.blankj.utilcode.util.ActivityUtils
 import com.blankj.utilcode.util.Utils
 import com.woohyman.keyboard.base.Benchmark
 import com.woohyman.keyboard.base.ViewPort
@@ -11,14 +12,19 @@ import com.woohyman.keyboard.utils.EmuUtils
 import com.woohyman.keyboard.utils.PreferenceUtil
 import com.woohyman.xml.R
 import com.woohyman.xml.emulator.EmulatorActivity
-import com.woohyman.xml.emulator.EmulatorMediator
+import com.woohyman.xml.emulator.IEmulatorMediator
 import com.woohyman.xml.ui.opengl.OpenGLView
 import com.woohyman.xml.ui.widget.UnacceleratedView
+import javax.inject.Inject
 
-class EmulatorViewProxy(
-    private val emulatorMediator: EmulatorMediator,
+class EmulatorViewProxy @Inject constructor(
+    private val emulatorMediator: IEmulatorMediator,
 ) : EmulatorView {
     val gLTextureSize = 256
+
+    private val activity by lazy {
+        ActivityUtils.getTopActivity()!!
+    }
 
     fun getTextureBounds(emulator: Emulator?): IntArray? {
         return null
@@ -33,7 +39,7 @@ class EmulatorViewProxy(
         var paddingTop = 0
         if (Utils.getApp().resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
             paddingTop =
-                emulatorMediator.activity?.resources?.getDimensionPixelSize(R.dimen.top_panel_touchcontroler_height)
+                activity.resources?.getDimensionPixelSize(R.dimen.top_panel_touchcontroler_height)
                     ?: 0
         }
         val shader = EmuUtils.fetchProxy.fragmentShader
@@ -58,7 +64,7 @@ class EmulatorViewProxy(
             }
         }
         openGLView ?: UnacceleratedView(
-            emulatorMediator.activity,
+            activity,
             paddingLeft,
             paddingTop
         )

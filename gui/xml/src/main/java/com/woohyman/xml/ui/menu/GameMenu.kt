@@ -9,16 +9,16 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
-import androidx.appcompat.app.AppCompatActivity
 import com.woohyman.keyboard.utils.DialogUtils.show
 import com.woohyman.keyboard.utils.EmuUtils.getDisplayWidth
 import com.woohyman.xml.R
 import com.woohyman.xml.databinding.GameMenuItemBinding
 
-class GameMenu(
-    var activity: AppCompatActivity,
-    private var listener: OnGameMenuListener
+class GameMenu constructor(
+    private val activity: Context,
+    private val listener: OnGameMenuListener
 ) {
+
     private var items = ArrayList<GameMenuItem>()
     private var inflater: LayoutInflater =
         activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
