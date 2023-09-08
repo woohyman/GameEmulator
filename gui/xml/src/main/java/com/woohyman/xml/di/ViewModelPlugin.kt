@@ -12,10 +12,6 @@ import dagger.hilt.android.scopes.ViewModelScoped
 @InstallIn(ViewModelComponent::class)
 abstract class ViewModelPlugin {
 
-    @Binds
-    @ViewModelScoped
-    abstract fun bindEmulatorMediator(
-        emulatorMediator: EmulatorMediator,
-    ): IEmulatorMediator
+
 
 }

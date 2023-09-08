@@ -5,48 +5,30 @@ import android.app.AlertDialog
 import android.preference.PreferenceManager
 import android.widget.Toast
 import androidx.annotation.MainThread
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.ViewModelProvider
-import com.blankj.utilcode.util.ActivityUtils
 import com.blankj.utilcode.util.Utils
 import com.woohyman.keyboard.emulator.EmulatorException
 import com.woohyman.keyboard.utils.DialogUtils
 import com.woohyman.keyboard.utils.NLog
 import com.woohyman.keyboard.utils.PreferenceUtil
 import com.woohyman.xml.R
+import com.woohyman.xml.emulator.business.EmulatorManagerProxy
+import com.woohyman.xml.emulator.business.EmulatorViewProxy
+import com.woohyman.xml.emulator.business.GameControlProxy
+import com.woohyman.xml.emulator.business.GameMenuDelegate
 import com.woohyman.xml.ui.timetravel.TimeTravelDialog
 import kotlinx.atomicfu.atomic
 import kotlinx.atomicfu.getAndUpdate
 import javax.inject.Inject
 
 class EmulatorMediator @Inject constructor(
-
+    private val activity: Activity,
 ) : IEmulatorMediator {
 
-    private val activity by lazy {
-        ActivityUtils.getTopActivity()!!
-    }
-
-    private val emulatorViewModel by lazy {
-        ViewModelProvider(activity as AppCompatActivity)[EmulatorViewModel::class.java]
-    }
-
-    override val gameMenuProxy by lazy {
-        emulatorViewModel.gameMenuProxy
-    }
-
-    override val emulatorManagerProxy by lazy {
-        emulatorViewModel.emulatorManagerProxy
-    }
-
-    override val gameControlProxy by lazy {
-        emulatorViewModel.gameControlProxy
-    }
-
-    override val emulatorView by lazy {
-        emulatorViewModel.emulatorView
-    }
+    override lateinit var gameMenuProxy: GameMenuDelegate
+    override lateinit var emulatorManagerProxy: EmulatorManagerProxy
+    override lateinit var gameControlProxy: GameControlProxy
+    override lateinit var emulatorView: EmulatorViewProxy
 
     private val maxPRC = 10
     private var autoHide = false

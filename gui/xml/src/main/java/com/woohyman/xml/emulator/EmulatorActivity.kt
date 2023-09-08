@@ -9,7 +9,6 @@ import android.os.Process
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.WindowManager
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.woohyman.keyboard.base.EmulatorUtils
 import com.woohyman.keyboard.emulator.EmulatorException
@@ -17,35 +16,58 @@ import com.woohyman.keyboard.utils.NLog.d
 import com.woohyman.keyboard.utils.NLog.i
 import com.woohyman.keyboard.utils.PreferenceUtil.ROTATION
 import com.woohyman.keyboard.utils.PreferenceUtil.getDisplayRotation
+import com.woohyman.xml.emulator.business.EmulatorManagerProxy
+import com.woohyman.xml.emulator.business.EmulatorViewProxy
+import com.woohyman.xml.emulator.business.GameControlProxy
+import com.woohyman.xml.emulator.business.GameMenuDelegate
 import com.woohyman.xml.ui.control.RestarterActivity
+import javax.inject.Inject
 
 abstract class EmulatorActivity : AppCompatActivity() {
 
     private var exceptionOccurred = false
 
-    private val viewModel:EmulatorViewModel by viewModels()
+    @Inject
+    lateinit var emulatorMediator: IEmulatorMediator
+
+    @Inject
+    lateinit var gameMenuProxy: GameMenuDelegate
+
+    @Inject
+    lateinit var emulatorManagerProxy: EmulatorManagerProxy
+
+    @Inject
+    lateinit var gameControlProxy: GameControlProxy
+
+    @Inject
+    lateinit var emulatorView: EmulatorViewProxy
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.addObserver(this)
+
+        lifecycle.addObserver(emulatorMediator)
+        lifecycle.addObserver(gameMenuProxy)
+        lifecycle.addObserver(emulatorManagerProxy)
+        lifecycle.addObserver(gameControlProxy)
+
         try {
-            viewModel.emulatorMediator.baseDir = EmulatorUtils.getBaseDir(this)
+            emulatorMediator.baseDir = EmulatorUtils.getBaseDir(this)
         } catch (e: EmulatorException) {
-            viewModel.emulatorMediator.handleException(e)
+            emulatorMediator.handleException(e)
             exceptionOccurred = true
             return
         }
 
         intent.extras?.let {
             if (it.getBoolean(EXTRA_FROM_GALLERY)) {
-                viewModel.emulatorMediator.setShouldPauseOnResume(false)
+                emulatorMediator.setShouldPauseOnResume(false)
                 intent.removeExtra(EXTRA_FROM_GALLERY)
             }
         }
 
-        viewModel.emulatorMediator.canRestart = true
+        emulatorMediator.canRestart = true
         d(TAG, "onCreate - BaseActivity")
-        viewModel.emulatorMediator.slotToRun = -1
+        emulatorMediator.slotToRun = -1
 
         val wParams = window.attributes
         wParams.flags = wParams.flags or WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
@@ -53,8 +75,8 @@ abstract class EmulatorActivity : AppCompatActivity() {
         wParams.flags = wParams.flags or WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
         window.attributes = wParams
 
-        viewModel.emulatorMediator.gameControlProxy.group.addView(viewModel.emulatorMediator.emulatorView.asView())
-        setContentView(viewModel.emulatorMediator.gameControlProxy.group)
+        gameControlProxy.group.addView(emulatorView.asView())
+        setContentView(gameControlProxy.group)
     }
 
     override fun onDestroy() {
@@ -67,19 +89,19 @@ abstract class EmulatorActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        viewModel.emulatorMediator.setShouldPauseOnResume(false)
+        emulatorMediator.setShouldPauseOnResume(false)
         if (resultCode == RESULT_OK) {
-            viewModel.emulatorMediator.canRestart = false
+            emulatorMediator.canRestart = false
             val slotIdx = data?.getIntExtra(EXTRA_SLOT, -1)
             when (requestCode) {
                 REQUEST_SAVE -> {
-                    viewModel.emulatorMediator.slotToSave = slotIdx
-                    viewModel.emulatorMediator.slotToRun = 0
+                    emulatorMediator.slotToSave = slotIdx
+                    emulatorMediator.slotToRun = 0
                 }
 
                 REQUEST_LOAD -> {
-                    viewModel.emulatorMediator.slotToRun = slotIdx
-                    viewModel.emulatorMediator.slotToSave = null
+                    emulatorMediator.slotToRun = slotIdx
+                    emulatorMediator.slotToSave = null
                 }
             }
         }
@@ -87,19 +109,19 @@ abstract class EmulatorActivity : AppCompatActivity() {
 
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
         val res = super.dispatchTouchEvent(ev)
-        viewModel.emulatorMediator.gameControlProxy.dispatchTouchEvent(ev)
+        gameControlProxy.dispatchTouchEvent(ev)
         return res
     }
 
     override fun dispatchKeyEvent(ev: KeyEvent): Boolean {
         val res = super.dispatchKeyEvent(ev)
-        viewModel.emulatorMediator.gameControlProxy.dispatchKeyEvent(ev)
+        gameControlProxy.dispatchKeyEvent(ev)
         return res
     }
 
     override fun onPause() {
         super.onPause()
-        if (viewModel.emulatorMediator.isRestarting) {
+        if (emulatorMediator.isRestarting) {
             finish()
             return
         }
@@ -107,13 +129,13 @@ abstract class EmulatorActivity : AppCompatActivity() {
             return
         }
         pm = null
-        if (viewModel.emulatorMediator.dialog.isShowing) {
-            viewModel.emulatorMediator.dialog.dismiss()
+        if (emulatorMediator.dialog.isShowing) {
+            emulatorMediator.dialog.dismiss()
         }
     }
 
     private fun restartProcess(activityToStartClass: Class<*>) {
-        viewModel.emulatorMediator.isRestarting = true
+        emulatorMediator.isRestarting = true
         val intent = Intent(this, RestarterActivity::class.java)
         intent.putExtras(getIntent())
         intent.putExtra(RestarterActivity.EXTRA_PID, Process.myPid())
@@ -125,18 +147,18 @@ abstract class EmulatorActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
-        viewModel.emulatorMediator.isRestarting = false
+        emulatorMediator.isRestarting = false
         val isAfterProcessRestart =
             intent.extras?.getBoolean(RestarterActivity.EXTRA_AFTER_RESTART) ?: false
 
         intent.removeExtra(RestarterActivity.EXTRA_AFTER_RESTART)
-        val shouldRestart = viewModel.emulatorMediator.decreaseResumesToRestart() == 0
-        if (!isAfterProcessRestart && shouldRestart && viewModel.emulatorMediator.canRestart) {
-            viewModel.emulatorMediator.resetProcessResetCounter()
+        val shouldRestart = emulatorMediator.decreaseResumesToRestart() == 0
+        if (!isAfterProcessRestart && shouldRestart && emulatorMediator.canRestart) {
+            emulatorMediator.resetProcessResetCounter()
             restartProcess(this.javaClass)
             return
         }
-        viewModel.emulatorMediator.canRestart = true
+        emulatorMediator.canRestart = true
         if (exceptionOccurred) {
             return
         }
@@ -154,16 +176,16 @@ abstract class EmulatorActivity : AppCompatActivity() {
         if (exceptionOccurred) {
             return
         }
-        viewModel.emulatorMediator.gameControlProxy.onGameStarted()
+        gameControlProxy.onGameStarted()
     }
 
     override fun startActivity(intent: Intent) {
-        viewModel.emulatorMediator.setShouldPauseOnResume(false)
+        emulatorMediator.setShouldPauseOnResume(false)
         super.startActivity(intent)
     }
 
     override fun startActivity(intent: Intent, options: Bundle?) {
-        viewModel.emulatorMediator.setShouldPauseOnResume(false)
+        emulatorMediator.setShouldPauseOnResume(false)
         super.startActivity(intent, options)
     }
 
@@ -195,7 +217,7 @@ abstract class EmulatorActivity : AppCompatActivity() {
         i(TAG, "activity key down event:$keyCode")
         return when (keyCode) {
             KeyEvent.KEYCODE_MENU -> {
-                viewModel.emulatorMediator.gameMenuProxy.openGameMenu()
+                gameMenuProxy.openGameMenu()
                 true
             }
 

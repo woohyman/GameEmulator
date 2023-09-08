@@ -1,5 +1,7 @@
 package com.woohyman.xml.di
 
+import com.woohyman.xml.emulator.EmulatorMediator
+import com.woohyman.xml.emulator.IEmulatorMediator
 import com.woohyman.xml.gamegallery.IPermissionManager
 import com.woohyman.xml.gamegallery.PermissionManager
 import dagger.Binds
@@ -17,5 +19,11 @@ abstract class ActivityPlugin {
     abstract fun bindPermissionManager(
         permissionManager: PermissionManager,
     ): IPermissionManager
+
+    @Binds
+    @ActivityScoped
+    abstract fun bindEmulatorMediator(
+        emulatorMediator: EmulatorMediator,
+    ): IEmulatorMediator
 
 }

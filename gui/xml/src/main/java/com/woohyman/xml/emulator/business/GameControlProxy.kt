@@ -1,5 +1,6 @@
 package com.woohyman.xml.emulator.business
 
+import android.app.Activity
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
@@ -7,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import com.blankj.utilcode.util.ActivityUtils
 import com.blankj.utilcode.util.Utils
 import com.woohyman.keyboard.controllers.EmulatorController
 import com.woohyman.keyboard.emulator.EmulatorException
@@ -24,10 +24,11 @@ import javax.inject.Inject
 class GameControlProxy @Inject constructor(
     private val emulatorMediator: IEmulatorMediator,
     private val keyboardController: KeyboardController,
+    private val activity: Activity,
 ) : DefaultLifecycleObserver, EmulatorController {
 
-    private val activity by lazy {
-        ActivityUtils.getTopActivity()!!
+    init {
+        emulatorMediator.gameControlProxy = this
     }
 
     private var controllers: MutableList<EmulatorController> = mutableListOf()

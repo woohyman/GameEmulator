@@ -37,13 +37,14 @@ import javax.inject.Inject
 
 class GameMenuDelegate @Inject constructor(
     private val emulatorMediator: IEmulatorMediator,
+    private val activity: Activity,
 ) : GameMenu.OnGameMenuListener, DefaultLifecycleObserver {
 
-    private var runTimeMachine = false
-
-    private val activity by lazy {
-        ActivityUtils.getTopActivity()!!
+    init {
+        emulatorMediator.gameMenuProxy = this
     }
+
+    private var runTimeMachine = false
 
     val gameMenu by lazy {
         GameMenu(activity, this)

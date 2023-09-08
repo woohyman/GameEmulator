@@ -1,5 +1,6 @@
 package com.woohyman.xml.emulator.business
 
+import android.app.Activity
 import android.content.res.Configuration
 import android.view.View
 import com.blankj.utilcode.util.ActivityUtils
@@ -19,12 +20,14 @@ import javax.inject.Inject
 
 class EmulatorViewProxy @Inject constructor(
     private val emulatorMediator: IEmulatorMediator,
+    private val activity: Activity,
 ) : EmulatorView {
-    val gLTextureSize = 256
 
-    private val activity by lazy {
-        ActivityUtils.getTopActivity()!!
+    init {
+        emulatorMediator.emulatorView = this
     }
+
+    val gLTextureSize = 256
 
     fun getTextureBounds(emulator: Emulator?): IntArray? {
         return null

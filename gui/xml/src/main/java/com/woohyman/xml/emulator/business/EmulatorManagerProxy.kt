@@ -19,6 +19,11 @@ import javax.inject.Inject
 class EmulatorManagerProxy @Inject constructor(
     private val emulatorMediator: IEmulatorMediator,
 ) : DefaultLifecycleObserver, Manager(Utils.getApp()) {
+
+    init {
+        emulatorMediator.emulatorManagerProxy = this
+    }
+
     private var isFF = false
     private var isToggleFF = false
     private var isFFPressed = false

@@ -10,10 +10,10 @@ import com.woohyman.xml.emulator.business.GameMenuDelegate
 import com.woohyman.xml.ui.timetravel.TimeTravelDialog
 
 interface IEmulatorMediator : DefaultLifecycleObserver, EmulatorRunner.OnNotRespondingListener {
-    val gameMenuProxy: GameMenuDelegate
-    val emulatorManagerProxy: EmulatorManagerProxy
-    val gameControlProxy: GameControlProxy
-    val emulatorView: EmulatorViewProxy
+    var gameMenuProxy: GameMenuDelegate
+    var emulatorManagerProxy: EmulatorManagerProxy
+    var gameControlProxy: GameControlProxy
+    var emulatorView: EmulatorViewProxy
     fun handleException(e: EmulatorException)
     var isRestarting: Boolean
     var canRestart: Boolean
