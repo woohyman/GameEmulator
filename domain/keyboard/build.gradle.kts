@@ -55,7 +55,7 @@ dependencies {
     api("com.liulishuo.filedownloader:library:1.7.7")
     api("me.laoyuyu.aria:core:3.8.16")
     api("androidx.core:core-ktx:1.10.1")
-    annotationProcessor("me.laoyuyu.aria:compiler:3.8.16")
+    kapt("me.laoyuyu.aria:compiler:3.8.16")
     api("com.squareup.okhttp3:okhttp:4.11.0")
 
     implementation("com.liulishuo.filedownloader:library:1.7.7")
